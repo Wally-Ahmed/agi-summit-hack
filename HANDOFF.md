@@ -18,22 +18,21 @@ _Last updated: 2026-07-18 ~15:45 EDT (session 1 post-compact — cloud setup exe
 
 ## Project (CURRENT — supersedes the "judging platform" idea)
 
-**Multi-harness orchestration system built around Cotal.ai.** Wally is a *participant* in the AGI
-Summit 2026 Hackathon (not a judge). The real build:
+**Cotal.ai mesh with the EXISTING Hermes as planner.** Wally is a *participant* in the AGI
+Summit 2026 Hackathon (not a judge). The real build (corrected 2026-07-18 ~17:15 — we are NOT
+building a new harness; "Hermes" = the existing Nous Research `hermes-agent`, already a Cotal
+connector: `cotal spawn --agent hermes`):
 
-- A **main harness ("Hermes")** handles long-running tasks but does **not execute them itself** — it
-  *outlines/plans* a task, then **hands it off to a different harness**: Claude Code, Gemini CLI,
-  Codex CLI, etc. Each sub-harness runs under its **own legitimate auth/subscription**.
-- **Goal / framing:** legitimately route work across *official* provider harnesses to stay within
-  fair use while working around third-party-harness restrictions. The compliant interpretation we
-  build to: **orchestrate official CLIs** — never bypass auth or reverse-engineer tokens.
-- **Benchmark objective:** compare **Cotal-based coordination** vs. spinning up third-party
-  subagents via MCP (openrouter MCP, gpt-subscription MCP, kilo MCP).
-- **First concrete step:** convert the existing MCP servers to **CLI versions** — specifically
-  `openrouter-subagents` (openrouter MCP) and `gpt-subagents-subscription` (gpt subscription MCP).
-- **Win condition (Wally's answers):** "Both" — our hackathon *submission* AND a genuinely
-  operational tool. Judging role = "hybrid: agents screen, humans decide" — **now obsolete**, kept
-  only as history. Naturally targets the **Cotal.ai sponsor prize ($500)**.
+- **Existing Hermes** is the mesh's planner/supervisor: it *outlines/plans* long-running tasks and
+  **hands execution to other harness connectors** — Claude Code (connector exemplar exists in the
+  Cotal repo), Gemini CLI, Codex CLI candidates. Each harness runs under its **own legitimate
+  auth/subscription** (fair-use compliant; never bypass auth or reverse-engineer tokens).
+- **Benchmark objective:** Cotal-mesh coordination (Hermes → connectors) vs. direct subagents.
+  **Subagent pool (scope decision 2026-07-18): `openrouter-subagents` CLI + `gpt-subagents-api`
+  MCP only. `gpt-subagents-subscription` is DROPPED from the hackathon. Wally personally owns
+  `gpt-subagents-api` updates (it has his uncommitted WIP — HANDS OFF that repo).**
+- **Win condition:** "Both" — hackathon *submission* AND an operational tool. Targets the
+  **Cotal.ai sponsor prize ($500)**.
 
 ### Cotal.ai (the core dependency — researched 2026-07-18)
 - Open standard **protocol for AI-agent coordination**: "one protocol, any topology" (peer-to-peer,
@@ -112,10 +111,18 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
    orchestrator's value-add); "Hermes" name COLLIDES with an existing Cotal connector (Nous
    Research) — needs Wally's rename decision; easiest harness integration = Connector plugin
    (Claude Code exemplar exists).
-2. Wally: finish gpt-subscription restructure → then re-sync the Codespace clone.
-3. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
-4. Design + build Hermes (planner harness) & the Cotal-vs-MCP-subagents benchmark on the
-   Codespace (Fable 5 @ xhigh there).
+2. **Mesh spec (Wally, 2026-07-18 ~17:25):** existing **Hermes runs persistently as planner**,
+   hands each task off so **the user's own subscription finishes it** — workers: **Claude Code**
+   (Claude subscription; connector exemplar exists in Cotal repo) and **Codex CLI** (ChatGPT
+   subscription; NO Cotal connector exemplar known — likely author one via the easy-path
+   `Connector` interface). (in flight) research on connect-hermes.md / hermes-agent
+   install+auth / Claude Code connector / personas.
+3. Benchmark arm 2 ready on Codespace: `openrouter-subagents` + `gpt-subagents-api` MCP servers
+   registered with Claude Code (user scope), both **✔ Connected**; `.env` keys copied. gpt-api
+   updates are Wally's (his WIP is uncommitted on the Mac — hands off).
+4. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
+5. Then: stand up the mesh on the Codespace (cotal setup/up, spawn Hermes planner persona,
+   Claude Code + Codex workers) and run the benchmark (Fable 5 @ xhigh there).
 
 ## Recovery / revival procedures
 
