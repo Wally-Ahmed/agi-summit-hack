@@ -1,6 +1,6 @@
 ---
 name: benchmark-model-rules
-description: Benchmarks via OpenRouter use Opus 4.8 ONLY — never run Fable through OpenRouter; Fable 5 xhigh is for Codespace Claude sessions
+description: Benchmarks via OpenRouter use Opus 4.8 ONLY — never Fable through OpenRouter; Fable 5 xhigh is for Codespace Claude sessions; benchmark arms must run HERMETIC (stock harness, no dev-env memory layers/MCP)
 metadata: 
   node_type: memory
   type: feedback
@@ -19,3 +19,11 @@ his daily-driver harness model on subscription.
 **How to apply:** `benchmark/run.sh` defaults (BENCH_CODEX_MODEL/BENCH_CLAUDE_MODEL) stay on
 Opus 4.8; only override for the Gemini/GPT matrix on the [[project-definition]] antigravity
 branch, never to Fable-via-OpenRouter.
+
+**Second rule (Wally, 2026-07-19):** harness-vs-harness benchmarks must run WITHOUT the memory
+layers / additions of our dev environment — stock harnesses only. run.sh has hermetic mode
+(default ON, BENCH_HERMETIC=0 to disable): claude gets a clean CLAUDE_CONFIG_DIR (credentials +
+minimal settings, `--strict-mcp-config`; no global MCP servers, plugins, CLAUDE.md, memory);
+codex gets a clean CODEX_HOME (config minus `[mcp_servers.*]`); agy gets its global
+`~/.gemini/config/mcp_config.json` stashed/emptied for the run. Pre-hermetic runs (1, 2, 4)
+carried ~2 global MCP servers of boot overhead per invocation on each arm — re-run or caveat.

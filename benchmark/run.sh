@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Benchmark one harness over the task suite. Same model, same effort (xhigh), per-task
 # fresh workdir, pass/fail judged ONLY by the task's own test.py.
-#   usage: run.sh <codex|claude> [task...]
-# Codex: model+effort from ~/.codex/config.toml (anthropic/claude-opus-4.8, xhigh, OpenRouter).
-# Claude: --model claude-opus-4-8, effortLevel xhigh from ~/.claude/settings.json.
+#   usage: run.sh <codex|claude|agy> [task...]
+# Codex: model+effort from a hermetic copy of ~/.codex/config.toml (Opus 4.8, xhigh, OpenRouter).
+# Claude: --model claude-opus-4-8, effortLevel xhigh from a hermetic CLAUDE_CONFIG_DIR.
+# HERMETIC (default): harnesses run stock — dev-env MCP servers / plugins / memory layers
+# are excluded per arm so no harness pays our environment's boot cost or sees its context.
 set -u
 HARNESS="$1"; shift
 BENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,11 +15,58 @@ OUT="$RESULTS/${HARNESS}.jsonl"; : > "$OUT"
 HARNESS_TIMEOUT="${BENCH_TIMEOUT:-900}"
 TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
 # Same model on both harnesses (Opus 4.8 default per benchmark spec; xhigh comes from
-# ~/.codex/config.toml model_reasoning_effort and ~/.claude/settings.json effortLevel).
+# ~/.codex/config.toml model_reasoning_effort and the hermetic settings.json effortLevel).
 CODEX_MODEL="${BENCH_CODEX_MODEL:-anthropic/claude-opus-4.8}"
 CLAUDE_MODEL="${BENCH_CLAUDE_MODEL:-claude-opus-4-8}"
 # agy model names are display strings with the reasoning level baked in.
 AGY_MODEL="${BENCH_AGY_MODEL:-Gemini 3.1 Pro (High)}"
+
+# Hermetic mode (default ON): each harness runs STOCK — none of the dev-env additions
+# (global MCP servers, plugins, memory layers) that would add per-invocation startup
+# latency or context. Disable with BENCH_HERMETIC=0 to measure the dev env itself.
+HERMETIC="${BENCH_HERMETIC:-1}"
+CLAUDE_ENV=(env)
+CODEX_ENV=(env)
+if [ "$HERMETIC" = "1" ]; then
+  case "$HARNESS" in
+    claude)
+      # Clean config dir: credentials + minimal settings only. No ~/.claude.json MCP
+      # servers, no plugins, no global CLAUDE.md, no memory.
+      CCFG=/tmp/bench-claude-home
+      mkdir -p "$CCFG"
+      cp "$HOME/.claude/.credentials.json" "$CCFG/" 2>/dev/null || true
+      cat > "$CCFG/settings.json" <<'EOF'
+{
+  "effortLevel": "xhigh",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": ["Bash", "Write", "Edit", "Read", "Glob", "Grep"]
+  }
+}
+EOF
+      [ -f "$CCFG/.claude.json" ] || echo '{"hasCompletedOnboarding": true}' > "$CCFG/.claude.json"
+      CLAUDE_ENV=(env CLAUDE_CONFIG_DIR="$CCFG")
+      ;;
+    codex)
+      # Clean CODEX_HOME: config.toml minus all [mcp_servers.*] sections. Auth is via
+      # env OPENROUTER_API_KEY (env_key in the provider block), so no auth.json needed.
+      CXH=/tmp/bench-codex-home
+      mkdir -p "$CXH"
+      awk '/^\[mcp_servers/{skip=1;next} /^\[/{skip=0} !skip' "$HOME/.codex/config.toml" > "$CXH/config.toml"
+      CODEX_ENV=(env CODEX_HOME="$CXH")
+      ;;
+    agy)
+      # agy only reads the global ~/.gemini/config/mcp_config.json: stash it and leave
+      # an empty server map for the duration of the run, restore on exit.
+      AGY_MCP="$HOME/.gemini/config/mcp_config.json"
+      if [ -f "$AGY_MCP" ] && [ ! -f "$AGY_MCP.bench-stash" ]; then
+        cp "$AGY_MCP" "$AGY_MCP.bench-stash"
+        echo '{"mcpServers":{}}' > "$AGY_MCP"
+        trap 'mv "$AGY_MCP.bench-stash" "$AGY_MCP" 2>/dev/null' EXIT
+      fi
+      ;;
+  esac
+fi
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
@@ -27,13 +76,13 @@ for t in "${TASKS[@]}"; do
   START=$(date +%s)
   case "$HARNESS" in
     codex)
-      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" codex exec --skip-git-repo-check \
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CODEX_ENV[@]}" codex exec --skip-git-repo-check \
         --model "$CODEX_MODEL" \
         --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     claude)
-      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" claude -p --model "$CLAUDE_MODEL" "$PROMPT" \
-        >"$WORK/harness.log" 2>&1)
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CLAUDE_ENV[@]}" claude -p --model "$CLAUDE_MODEL" \
+        --strict-mcp-config "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     agy)
       # script(1) pseudo-TTY wrapper is load-bearing: agy -p under a non-TTY drops its
