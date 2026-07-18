@@ -16,6 +16,8 @@ TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
 # ~/.codex/config.toml model_reasoning_effort and ~/.claude/settings.json effortLevel).
 CODEX_MODEL="${BENCH_CODEX_MODEL:-anthropic/claude-opus-4.8}"
 CLAUDE_MODEL="${BENCH_CLAUDE_MODEL:-claude-opus-4-8}"
+# agy model names are display strings with the reasoning level baked in.
+AGY_MODEL="${BENCH_AGY_MODEL:-Gemini 3.1 Pro (High)}"
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
@@ -31,6 +33,13 @@ for t in "${TASKS[@]}"; do
       ;;
     claude)
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" claude -p --model "$CLAUDE_MODEL" "$PROMPT" \
+        >"$WORK/harness.log" 2>&1)
+      ;;
+    agy)
+      # script(1) pseudo-TTY wrapper is load-bearing: agy -p under a non-TTY drops its
+      # final response from stdout while exiting 0 (known bug).
+      (cd "$WORK" && timeout --signal=TERM --kill-after=15 "$HARNESS_TIMEOUT" \
+        script -qec "agy -p \"\$(cat PROMPT.md)\" --model \"$AGY_MODEL\" --dangerously-skip-permissions --print-timeout 25m" /dev/null \
         >"$WORK/harness.log" 2>&1)
       ;;
     *) echo "unknown harness: $HARNESS" >&2; exit 2 ;;
