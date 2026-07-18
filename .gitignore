@@ -17,6 +17,12 @@ __pycache__/
 *.pyc
 .venv/
 
+# Brainstorming visual companion sessions
+.superpowers/
+
+# Scraped pages
+.firecrawl/
+
 # OS / editor
 .DS_Store
 *.swp
