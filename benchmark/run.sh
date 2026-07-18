@@ -87,8 +87,12 @@ for t in "${TASKS[@]}"; do
     agy)
       # script(1) pseudo-TTY wrapper is load-bearing: agy -p under a non-TTY drops its
       # final response from stdout while exiting 0 (known bug).
+      # --add-dir "$PWD" is load-bearing too: without the workdir in agy's workspace,
+      # new files land in ~/.gemini/antigravity-cli/scratch/ or $HOME instead of the
+      # cwd — the model "passes" in its own transcript while the workdir stays empty
+      # (observed on 4 of 7 pre-hermetic failures; edit-existing-file tasks were fine).
       (cd "$WORK" && timeout --signal=TERM --kill-after=15 "$HARNESS_TIMEOUT" \
-        script -qec "agy -p \"\$(cat PROMPT.md)\" --model \"$AGY_MODEL\" --dangerously-skip-permissions --print-timeout 25m" /dev/null \
+        script -qec "agy -p \"\$(cat PROMPT.md)\" --model \"$AGY_MODEL\" --add-dir \"\$PWD\" --dangerously-skip-permissions --print-timeout 25m" /dev/null \
         >"$WORK/harness.log" 2>&1)
       ;;
     *) echo "unknown harness: $HARNESS" >&2; exit 2 ;;
