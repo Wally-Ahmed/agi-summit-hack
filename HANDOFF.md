@@ -5,14 +5,15 @@
 > **Keep it current** — update Status / Next steps / Decisions after every milestone and before
 > context gets long. Verify claims against `git log --oneline -5` and `ls` before trusting them.
 
-_Last updated: 2026-07-18 ~15:00 EDT (session 1 — mid-brainstorm, prepping for compact)_
+_Last updated: 2026-07-18 ~15:45 EDT (session 1 post-compact — cloud setup executed)_
 
 ## ⚠️ Read first after a compact
 
 1. **MemPalace MCP drops on every `/compact`** (silent, no data loss). Check
    `mcp__plugin_mempalace_mempalace__*` tools; if disconnected, ask Wally to run `/plugin` or `/mcp`
    to revive. Until then, use file memory + graphify. (Also in CLAUDE.md.)
-2. We are **mid-decision on moving dev to a cloud server** (see Migration section) — not done yet.
+2. **Cloud setup is DONE** (private repo `Wally-Ahmed/agi-summit-hack`, bootstrap.sh,
+   SERVER_SETUP.md, `.memory/` mirror). See Migration section for what remains manual.
 3. The project is **NOT a judging platform** — that was the original misframing. See Project below.
 
 ## Project (CURRENT — supersedes the "judging platform" idea)
@@ -59,33 +60,31 @@ AI Infra Tools, OpenClaw Integrations.
 | **file memory** | `~/.claude/projects/-Users-wally-Documents-GitHub-agi-summit-hack/memory/` (MEMORY.md + standing-handoff.md) | ⚠️ machine-local — mirror into repo to travel |
 | **auto-memory** | **NOT set up.** Global hooks are empty (`{}`). No auto-memory plugin found (plugins: claude-plugins-official, mempalace, thedotmack, zero-plugins) | ❓ see open decision |
 
-## Cloud-server migration plan (IN PROGRESS — not executed)
+## Cloud-server migration (EXECUTED 2026-07-18)
 
-Reason: local wifi too slow to build. Move dev to a cloud server, preserve all memory layers.
+Reason: local wifi too slow to build. The repo is the transport; see `SERVER_SETUP.md`.
 
-Portability foundation (do regardless of which server):
-1. **Push repo to a PRIVATE GitHub remote** (project has sensitive "work around restrictions"
-   framing → must be private). Carries CLAUDE.md, HANDOFF.md, graphify-out/, mempalace.yaml.
-2. **Mirror file memory into the repo** (e.g. `.memory/`) so it clones with the repo.
-3. Write a **`SERVER_SETUP.md` / `bootstrap.sh`**: clone repo → install uv, graphify(y), mempalace,
-   claude-mem, node → `mempalace mine .` → reinstall Claude Code plugins/MCP → verify.
-4. **claude-mem**: decide whether to export/sync `~/.claude-mem` or start fresh on the server.
+Done:
+1. **Private GitHub remote**: `Wally-Ahmed/agi-summit-hack` (private — sensitive framing).
+2. **File memory mirrored** into `.memory/`; `scripts/sync-memory.sh push|restore` moves it
+   between repo and `~/.claude/projects/<slug>/memory/` (slug computed per-machine).
+3. **`bootstrap.sh`** (idempotent): installs uv → graphifyy → mempalace → Claude Code CLI,
+   re-mines `.mempalace/`, re-pins graphify interpreter, restores file memory, verifies.
+4. **claude-mem**: fresh DB on server; recent context travels via CLAUDE.local.md (full ~1.5 GB
+   Mac history stays local — accepted trade-off).
+5. **Auto-memory**: `scripts/sync-memory.sh` + hook config staged at
+   `.claude/settings.json.proposed` (PreCompact + SessionEnd → memory push). Activating hooks
+   needed Wally's explicit approval (auto-mode blocked it):
+   `mv .claude/settings.json.proposed .claude/settings.json`
 
-## Open decisions (BLOCKING — need Wally)
-
-1. **Which cloud server?** Does Wally already have one? Provider (VPS/DO/AWS) vs. GitHub Codespaces
-   vs. Claude Code remote environment? Answer changes the bootstrap approach.
-2. **What "auto-memory" means to Wally** — a Stop/PreCompact hook that auto-writes memory? Or just
-   ensuring claude-mem auto-capture is active? Default plan if unspecified: add a PreCompact/Stop
-   hook (via the `update-config` skill) that auto-refreshes HANDOFF.md + file memory.
-3. **GitHub account/org** for the private remote (get via `get_me`).
+Manual per-machine steps (cannot script): `claude` → `/login`; `/plugin` to reinstall mempalace
+MCP; activate the proposed hooks.
 
 ## Next steps
 
-1. Get answers to the two blocking decisions (cloud server, auto-memory meaning).
-2. Create private GitHub remote + push; mirror file memory into repo; write bootstrap.
-3. Set up auto-memory (hook or claude-mem confirmation).
-4. On the cloud server: run bootstrap, verify all layers, then resume the actual build
+1. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
+2. On the cloud machine (Codespace or other): clone → `bash bootstrap.sh` → `claude` + `/login`.
+3. Verify all layers on the server, then resume the actual build
    (start with the MCP→CLI conversion of openrouter + gpt-subscription).
 
 ## Recovery / revival procedures
@@ -115,3 +114,8 @@ Portability foundation (do regardless of which server):
   openrouter + gpt-subscription servers.
 - 2026-07-18: Moving dev to a cloud server (slow local wifi); private GitHub remote is the transport;
   memory layers preserved via git + re-mine + reinstall.
+- 2026-07-18 (post-compact): Cloud setup executed — private repo `Wally-Ahmed/agi-summit-hack`,
+  bootstrap.sh + SERVER_SETUP.md, `.memory/` mirror + sync script. claude-mem starts fresh on
+  server (recent context rides in CLAUDE.local.md). Auto-memory hooks staged as
+  `.claude/settings.json.proposed` — activation requires Wally (auto-mode denied writing live
+  hooks; that was self-modification territory).

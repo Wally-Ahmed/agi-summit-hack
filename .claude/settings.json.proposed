@@ -1,0 +1,25 @@
+{
+  "_note": "Proposed auto-memory hooks — review, then activate with: mv .claude/settings.json.proposed .claude/settings.json",
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/sync-memory.sh\" push"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/sync-memory.sh\" push"
+          }
+        ]
+      }
+    ]
+  }
+}
