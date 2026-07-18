@@ -26,3 +26,6 @@ __pycache__/
 # OS / editor
 .DS_Store
 *.swp
+
+# claude-mem context droppings — must not leak into benchmark task dirs
+benchmark/**/CLAUDE.local.md
