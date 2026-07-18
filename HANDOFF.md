@@ -123,6 +123,9 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
 4. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
 5. Then: stand up the mesh on the Codespace (cotal setup/up, spawn Hermes planner persona,
    Claude Code + Codex workers) and run the benchmark (Fable 5 @ xhigh there).
+   **Runbook + all operational detail: `docs/hermes-mesh-runbook.md`** (Hermes connector is
+   ALPHA, needs raw provider key env — we have OPENROUTER_API_KEY on the Codespace; Codex
+   connector must be authored by us).
 
 ## Recovery / revival procedures
 
