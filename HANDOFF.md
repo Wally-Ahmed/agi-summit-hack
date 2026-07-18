@@ -107,8 +107,11 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
 
 ## Next steps
 
-1. (in flight) Cotal wire-contract research — read github.com/cotal-ai/cotal spec/SDK/CLI to
-   ground the Hermes design (flagged prerequisite).
+1. ✅ Cotal wire-contract research DONE → **`docs/cotal-wire-contract.md`** (read it before any
+   orchestrator design). Headlines: NATS/JetStream not HTTP; NO task lifecycle in Cotal (our
+   orchestrator's value-add); "Hermes" name COLLIDES with an existing Cotal connector (Nous
+   Research) — needs Wally's rename decision; easiest harness integration = Connector plugin
+   (Claude Code exemplar exists).
 2. Wally: finish gpt-subscription restructure → then re-sync the Codespace clone.
 3. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
 4. Design + build Hermes (planner harness) & the Cotal-vs-MCP-subagents benchmark on the
