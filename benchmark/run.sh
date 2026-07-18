@@ -13,7 +13,7 @@ OUT="$RESULTS/${HARNESS}.jsonl"; : > "$OUT"
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
-  cp "$BENCH_DIR/tasks/$t/"* "$WORK/"
+  cp "$BENCH_DIR/tasks/$t/"* "$WORK/" && rm -f "$WORK/CLAUDE.local.md" "$WORK/CLAUDE.md"
   PROMPT=$(cat "$WORK/PROMPT.md")
   START=$(date +%s)
   case "$HARNESS" in
