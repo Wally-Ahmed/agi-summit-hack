@@ -80,17 +80,39 @@ Done:
 Manual per-machine steps (cannot script): `claude` → `/login`; `/plugin` to reinstall mempalace
 MCP; activate the proposed hooks.
 
+## Status (2026-07-18 ~16:45 EDT)
+
+**Codespace LIVE + fully bootstrapped**: `glowing-acorn-q79w9x4vj4wx3xrgj` (2-core, 30-min idle).
+Connect: `gh codespace ssh -c glowing-acorn-q79w9x4vj4wx3xrgj` (or VS Code/web). On it:
+- All memory layers verified (git, graphify, mempalace palace at `~/.mempalace/palace`, file
+  memory restored). Claude CLI 2.1.214, Wally logged in (**different account than the Mac**).
+- `~/.claude/settings.json` set to **`model: claude-fable-5`, `effortLevel: xhigh`** (Wally's
+  standing instruction for all cloud sessions).
+- **openrouter-subagents CLI**: cloned to `/workspaces/openrouter-subagents`, built, npm-linked,
+  `.env` (API key) copied over SSH, **live-tested OK** (`openrouter-subagents ask -m ...`).
+- **gpt-subagents-subscription CLI**: cloned/built/linked at fa8c34b, patterns verified; NOT
+  ChatGPT-authenticated there (needs `gpt-subagents-subscription login` + port-forward 1455).
+
+**MCP→CLI conversion**: openrouter already had a CLI twin (pre-existing). I built the
+gpt-subscription CLI this session — `src/cli.ts` (ask/usage/patterns/pattern/login), 10 unit
+tests, README section, live-tested on the Mac — commits `da66a9e` + `fa8c34b` pushed to
+`Wally-Ahmed/gpt-subagents-subscription`. **fa8c34b also committed Wally's previously
+uncommitted working tree** (gpt-5.6 models, none→max effort, HTTP transport) — required for
+remote clones to compile.
+
+**⚠️ Wally is now RESTRUCTURING gpt-subagents-subscription himself** (his message ~16:40) and
+will update us. HANDS OFF that repo (local + remote + the Codespace clone) until he says
+otherwise. The Codespace clone/link may go stale during his restructure — rebuild it after
+(`git pull && npm i && npm run build && npm link`).
+
 ## Next steps
 
-1. **Codespace is LIVE and bootstrapped**: `glowing-acorn-q79w9x4vj4wx3xrgj` (2-core, 30-min idle
-   timeout). Connect: `gh codespace ssh -c glowing-acorn-q79w9x4vj4wx3xrgj` (or VS Code/web).
-   Verified on-server: git @ 99e6ed4, graphify graph.json ok, mempalace palace mined
-   (16 files → 97 drawers at `~/.mempalace/palace`), file memory restored, claude CLI 2.1.214.
-2. Wally on the Codespace: `claude` → `/login` (interactive, can't be scripted).
-3. Wally anywhere: activate auto-memory hooks
-   (`mv .claude/settings.json.proposed .claude/settings.json`).
-4. Then resume the actual build on the Codespace
-   (start with the MCP→CLI conversion of openrouter + gpt-subscription).
+1. (in flight) Cotal wire-contract research — read github.com/cotal-ai/cotal spec/SDK/CLI to
+   ground the Hermes design (flagged prerequisite).
+2. Wally: finish gpt-subscription restructure → then re-sync the Codespace clone.
+3. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
+4. Design + build Hermes (planner harness) & the Cotal-vs-MCP-subagents benchmark on the
+   Codespace (Fable 5 @ xhigh there).
 
 ## Recovery / revival procedures
 
