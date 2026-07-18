@@ -90,11 +90,23 @@ DROPPED; Wally owns gpt-api updates — hands off his repo).
   env-switchable (BENCH_CODEX_MODEL / BENCH_CLAUDE_MODEL / BENCH_AGY_MODEL).
 - Benchmark fairness rules learned: cp -R (subdirs!), strip CLAUDE.local.md from workdirs,
   prompt BEFORE variadic --allowedTools, tests validated against references before use.
+- **HERMETIC RULE (Wally, Jul 19): harness benchmarks run WITHOUT our dev-env memory layers.**
+  Audit found the Codespace claude env had NO memory layers (no global CLAUDE.md/hooks/claude-mem;
+  cotal plugin scoped to /workspaces/agi-summit-hack only) BUT two global MCP servers
+  (openrouter-subagents, gpt-subagents-api) booted on every `claude -p`; codex + agy also had
+  MCP registered. run.sh now has hermetic mode (default ON; BENCH_HERMETIC=0 disables): clean
+  CLAUDE_CONFIG_DIR + --strict-mcp-config / clean CODEX_HOME minus mcp_servers / agy mcp_config
+  stashed+emptied with EXIT-trap restore. Runs 1–2 claude+codex arms need a hermetic RE-RUN
+  after the matrix finishes (do NOT run concurrently with it — 2-core box); run 4 arms all
+  carried similar MCP boot overhead symmetrically → caveat, not re-run, unless Wally asks.
 
 ## Next steps
 
-1. When `MATRIX-DONE`: write run-4 table into `benchmark/RESULTS.md` (Gemini native-vs-foreign
-   harness; Antigravity 3-model shootout), commit, push.
+1. When `MATRIX-DONE`: (a) autopsy the agy failure workdirs (`/tmp/bench-agy-*`; agy+Gemini-3.1-
+   Pro-High went 3/7 while codex+same-Gemini went 7/7 — verify real failures vs agy stdout bug
+   before publishing), (b) write run-4 table into `benchmark/RESULTS.md`, (c) `git pull` run.sh
+   onto the Codespace and HERMETIC-RE-RUN runs 1–2 (codex + claude arms, suites t1–t3 and
+   t4–t7), update RESULTS.md with the stock-harness numbers, commit, push.
 2. Author `cotal-connector-agy` (Antigravity as a mesh worker) — reuse the codex connector shim
    pattern (`docs/codex-connector-plan.md` + `connectors/cotal-connector-codex/`), with the
    pTTY wrapper from `docs/antigravity-brief.md`.
