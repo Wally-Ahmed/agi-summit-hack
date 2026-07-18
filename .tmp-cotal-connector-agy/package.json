@@ -1,0 +1,29 @@
+{
+  "name": "cotal-connector-agy",
+  "version": "0.1.0",
+  "description": "Cotal connector for the Google Antigravity CLI (agy): a Node shim owns the mesh agent and drives per-turn `agy -p` runs under a pseudo-TTY, serving the cotal_* tools over local streamable HTTP MCP wired in via the global ~/.gemini/config/mcp_config.json.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && npm run bundle",
+    "bundle": "esbuild src/index.js --bundle --platform=node --format=esm --target=node20 --outfile=dist/index.js --external:@cotal-ai/core && esbuild src/serve.js --bundle --platform=node --format=esm --target=node20 --outfile=dist/serve.js --banner:js=\"import { createRequire as __cotalCreateRequire } from 'node:module'; const require = __cotalCreateRequire(import.meta.url);\""
+  },
+  "peerDependencies": {
+    "@cotal-ai/core": ">=0.1.0"
+  },
+  "devDependencies": {
+    "@cotal-ai/core": "0.12.0",
+    "@cotal-ai/connector-core": "0.12.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "esbuild": "^0.28.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
