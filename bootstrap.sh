@@ -49,12 +49,28 @@ claude --version 2>/dev/null || true
 step "restore file memory (repo/.memory -> ~/.claude/projects/<slug>/memory)"
 bash scripts/sync-memory.sh restore || FAIL=1
 
+step "harness CLIs (openrouter-subagents + gpt-subagents-subscription)"
+# The two MCP-servers-turned-CLIs the benchmark drives. Cloned as siblings of
+# this repo, built, and npm-linked so their bins are on PATH.
+CLI_BASE="$(dirname "$REPO_DIR")"
+for repo in openrouter-subagents gpt-subagents-subscription; do
+  dir="$CLI_BASE/$repo"
+  if [ ! -d "$dir" ]; then
+    git clone -q "https://github.com/Wally-Ahmed/$repo.git" "$dir" || { FAIL=1; continue; }
+  else
+    git -C "$dir" pull -q || true
+  fi
+  (cd "$dir" && npm install --no-fund --no-audit --silent && npm run build >/dev/null && npm link >/dev/null 2>&1) || FAIL=1
+done
+
 step "verify"
 echo "git:        $(git log --oneline -1 2>/dev/null || echo MISSING)"
 echo "graphify:   $( [ -f graphify-out/graph.json ] && echo graph.json ok || echo MISSING )"
 echo "mempalace:  $( { [ -d .mempalace ] || [ -d "$HOME/.mempalace" ]; } && echo vector DB ok || echo 'MISSING (mine failed?)' )"
 echo "memory:     $( [ -d "$HOME/.claude/projects/$(printf '%s' "$REPO_DIR" | sed 's/[^a-zA-Z0-9]/-/g')/memory" ] && echo restored || echo MISSING )"
 echo "claude:     $(command -v claude || echo 'MISSING — needs npm i -g @anthropic-ai/claude-code')"
+echo "openrouter: $(command -v openrouter-subagents || echo 'MISSING (npm link failed?)')"
+echo "gpt-cli:    $(command -v gpt-subagents-subscription || echo 'MISSING (npm link failed?)')"
 
 cat <<'EOF'
 
