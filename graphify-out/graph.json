@@ -1,0 +1,349 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "subagent_pattern_propagation_group",
+        "label": "Policies Extended to All Subagents",
+        "nodes": [
+          "claude_subagent_pattern_propagation",
+          "claude_token_usage_rules",
+          "claude_graphify_usage",
+          "claude_mempalace_usage",
+          "claude_working_style"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "CLAUDE.md"
+      },
+      {
+        "id": "low_token_context_retrieval_flow",
+        "label": "Low-Token Context Retrieval Flow",
+        "nodes": [
+          "claude_token_usage_rules",
+          "claude_graphify",
+          "claude_mempalace"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "CLAUDE.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "Token Usage Rules",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Token Usage Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Keep context small: check Graphify outputs first, use MemPalace only when prior project decisions may matter, open only needed files, prefer targeted reads over large scans, and summarize findings before continuing. Applies to all subagents.",
+      "id": "claude_token_usage_rules",
+      "community": 2,
+      "norm_label": "token usage rules"
+    },
+    {
+      "label": "Graphify",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Serves as the first-pass repo map for codebase structure, relationships, and missed connections; its findings reduce unnecessary file reads. Broad search is a fallback only when the graph report is missing, stale, or insufficient.",
+      "id": "claude_graphify",
+      "community": 0,
+      "norm_label": "graphify"
+    },
+    {
+      "label": "MemPalace",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "## MemPalace Usage",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Long-term project memory for prior discussions, architecture decisions, earlier reasoning, plans, and conventions. Not for every task; recalled memory is not automatically true and must be verified against the current repo.",
+      "id": "claude_mempalace",
+      "community": 1,
+      "norm_label": "mempalace"
+    },
+    {
+      "label": "Graphify Usage Policy",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Before architecture work, refactors, dependency tracing, or 'where is this implemented?' tasks: check graphify-out/GRAPH_REPORT.md, use it to identify relevant modules/files, and only fall back to broad search when the report is missing, stale, or insufficient.",
+      "id": "claude_graphify_usage",
+      "community": 0,
+      "norm_label": "graphify usage policy"
+    },
+    {
+      "label": "MemPalace Usage Policy",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "## MemPalace Usage",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Use MemPalace when the user says something was discussed before, prior architecture decisions matter, the task depends on earlier reasoning, or previous plans/conventions must be recalled. Do not use for every task; verify recalled memory against the repo.",
+      "id": "claude_mempalace_usage",
+      "community": 1,
+      "norm_label": "mempalace usage policy"
+    },
+    {
+      "label": "graphify-out/GRAPH_REPORT.md",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_graph_report",
+      "community": 0,
+      "norm_label": "graphify-out/graph_report.md"
+    },
+    {
+      "label": "Revive MemPalace After Compact",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "### Revive MemPalace after every compact",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The MemPalace MCP server (stdio) drops silently across long sessions and every /compact boundary; tools show as disconnected with no error and no data loss (palace and mempalace.yaml stay intact). After every /compact, verify connection and prompt the user to run /plugin or /mcp to revive it (the agent cannot invoke slash-commands itself). Until reconnected, fall back to file memory plus Graphify.",
+      "id": "claude_mempalace_revival_after_compact",
+      "community": 1,
+      "norm_label": "revive mempalace after compact"
+    },
+    {
+      "label": "Working Style",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Working Style",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Implementation tasks: identify the smallest relevant file set, explain the intended change briefly, make focused edits, run the narrowest useful test, avoid unnecessary rewrites. Design tasks: use Graphify for repo structure, MemPalace for past decisions only if relevant, keep answers concise and action-oriented.",
+      "id": "claude_working_style",
+      "community": 2,
+      "norm_label": "working style"
+    },
+    {
+      "label": "Low-Token High-Signal Project Rule",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "## Project Rule",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Optimize for low-token, high-signal work. Prefer precise context retrieval over loading large files or repeating architecture summaries. This is the overarching design intent behind the token usage, Graphify, and MemPalace policies.",
+      "id": "claude_project_rule",
+      "community": 2,
+      "norm_label": "low-token high-signal project rule"
+    },
+    {
+      "label": "Subagent Pattern Propagation",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "repeated across sections",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Every major policy section explicitly repeats 'This whole pattern applies for all subagents too', extending token usage, Graphify, MemPalace, and working-style rules to all spawned subagents, not just the top-level agent.",
+      "id": "claude_subagent_pattern_propagation",
+      "community": 3,
+      "norm_label": "subagent pattern propagation"
+    }
+  ],
+  "links": [
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Project Rule",
+      "weight": 1.0,
+      "source": "claude_project_rule",
+      "target": "claude_token_usage_rules"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Token Usage Rules",
+      "weight": 1.0,
+      "source": "claude_token_usage_rules",
+      "target": "claude_graphify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Token Usage Rules",
+      "weight": 1.0,
+      "source": "claude_token_usage_rules",
+      "target": "claude_mempalace"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "weight": 1.0,
+      "source": "claude_graphify",
+      "target": "claude_graph_report"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_graphify",
+      "target": "claude_mempalace"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "weight": 1.0,
+      "source": "claude_graphify_usage",
+      "target": "claude_graphify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "### Revive MemPalace after every compact",
+      "weight": 1.0,
+      "source": "claude_mempalace_revival_after_compact",
+      "target": "claude_graphify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Working Style",
+      "weight": 1.0,
+      "source": "claude_working_style",
+      "target": "claude_graphify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "### Revive MemPalace after every compact",
+      "weight": 1.0,
+      "source": "claude_mempalace_revival_after_compact",
+      "target": "claude_mempalace"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## MemPalace Usage",
+      "weight": 1.0,
+      "source": "claude_mempalace_usage",
+      "target": "claude_mempalace"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Working Style",
+      "weight": 1.0,
+      "source": "claude_working_style",
+      "target": "claude_mempalace"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Graphify Usage",
+      "weight": 1.0,
+      "source": "claude_graphify_usage",
+      "target": "claude_graph_report"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Project Rule",
+      "weight": 1.0,
+      "source": "claude_project_rule",
+      "target": "claude_graphify_usage"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "## Project Rule",
+      "weight": 1.0,
+      "source": "claude_project_rule",
+      "target": "claude_working_style"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "subagent_pattern_propagation_group",
+      "label": "Policies Extended to All Subagents",
+      "nodes": [
+        "claude_subagent_pattern_propagation",
+        "claude_token_usage_rules",
+        "claude_graphify_usage",
+        "claude_mempalace_usage",
+        "claude_working_style"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "low_token_context_retrieval_flow",
+      "label": "Low-Token Context Retrieval Flow",
+      "nodes": [
+        "claude_token_usage_rules",
+        "claude_graphify",
+        "claude_mempalace"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md"
+    }
+  ]
+}
