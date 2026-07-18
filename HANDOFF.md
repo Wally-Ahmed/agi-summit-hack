@@ -82,9 +82,14 @@ MCP; activate the proposed hooks.
 
 ## Next steps
 
-1. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
-2. On the cloud machine (Codespace or other): clone → `bash bootstrap.sh` → `claude` + `/login`.
-3. Verify all layers on the server, then resume the actual build
+1. **Codespace is LIVE and bootstrapped**: `glowing-acorn-q79w9x4vj4wx3xrgj` (2-core, 30-min idle
+   timeout). Connect: `gh codespace ssh -c glowing-acorn-q79w9x4vj4wx3xrgj` (or VS Code/web).
+   Verified on-server: git @ 99e6ed4, graphify graph.json ok, mempalace palace mined
+   (16 files → 97 drawers at `~/.mempalace/palace`), file memory restored, claude CLI 2.1.214.
+2. Wally on the Codespace: `claude` → `/login` (interactive, can't be scripted).
+3. Wally anywhere: activate auto-memory hooks
+   (`mv .claude/settings.json.proposed .claude/settings.json`).
+4. Then resume the actual build on the Codespace
    (start with the MCP→CLI conversion of openrouter + gpt-subscription).
 
 ## Recovery / revival procedures
