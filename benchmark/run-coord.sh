@@ -35,6 +35,7 @@ for t in "${TASKS[@]}"; do
       ;;
     mcp)
       (cd "$WORK" && timeout "$POLL_LIMIT" claude -p \
+        --allowedTools "mcp__openrouter-subagents__ask_openrouter" \
         "You are an orchestrator. You must NOT write the solution code yourself. Use the mcp__openrouter-subagents__ask_openrouter tool (model: $SUBAGENT_MODEL, reasoning effort xhigh) to have a subagent produce the required file contents for the task below, then write the subagent's output to the required file(s) in the current directory, run 'python3 test.py', and iterate with the subagent (send it the test failure) until the test passes. TASK SPEC: $PROMPT" \
         >"$WORK/harness.log" 2>&1)
       if (cd "$WORK" && timeout 120 python3 test.py >/dev/null 2>&1); then PASS=true; else PASS=false; fi
