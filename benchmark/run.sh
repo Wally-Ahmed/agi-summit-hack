@@ -15,7 +15,8 @@ TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
-  cp "$BENCH_DIR/tasks/$t/"* "$WORK/" && rm -f "$WORK/CLAUDE.local.md" "$WORK/CLAUDE.md"
+  cp -R "$BENCH_DIR/tasks/$t/"* "$WORK/" && rm -f "$WORK/CLAUDE.local.md" "$WORK/CLAUDE.md"
+  find "$WORK" -name CLAUDE.local.md -delete 2>/dev/null
   PROMPT=$(cat "$WORK/PROMPT.md")
   START=$(date +%s)
   case "$HARNESS" in
