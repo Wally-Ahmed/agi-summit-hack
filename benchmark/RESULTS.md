@@ -1,3 +1,30 @@
+# Benchmark run 3 — coordination: Cotal mesh vs direct MCP subagents (the core question)
+
+_2026-07-18 night. Same goal delivered two ways, measured dispatch → task's own test passing
+on disk. Mesh arm: anycast → Hermes planner (sonnet-4.6 brain) → delegates → Claude Code
+worker (Fable 5 xhigh on Max) executes + verifies. MCP arm: one `claude -p` orchestrator
+(Fable 5 xhigh) that may NOT write code itself — delegates content to `ask_openrouter`
+(sonnet-4.6 xhigh), writes results, tests, iterates._
+
+| Task | Cotal mesh (plan→handoff→execute) | Direct MCP subagent (orchestrate→generate→write) |
+|---|---|---|
+| t1-lru | ✅ 32s | ✅ 46s |
+| t2-bugfix | ✅ 31s | ✅ 51s |
+| t3-cli | ✅ 32s | ✅ 40s |
+| **Total** | **3/3 · 95s** | **3/3 · 137s** |
+
+## Read (run 3)
+
+- **The mesh arm WON on wall-clock (~30% faster) at equal quality (3/3 both).** Cotal's
+  coordination overhead (anycast + claim + reply correlation) is cheaper than the MCP
+  orchestration round-trip (subagent produces text → orchestrator transcribes to disk →
+  test → iterate). The worker *executing in place* beats generation-at-a-distance.
+- Mesh handoff cost ≈ noise: mesh end-to-end (95s) ≈ bare `claude -p` on the same tasks in
+  run 1 (97s). Planning+delegation is effectively free when pipelined.
+- Caveats: worker models differ by arm (Fable-executes vs sonnet-generates+Fable-transcribes) —
+  this benchmarks the COORDINATION TOPOLOGY, not model quality; n=3 easy tasks; single run.
+  10s poll granularity on the mesh arm.
+
 # Benchmark run 2 — suite v2 (hard tasks), Claude Opus 4.8: Codex vs Claude Code
 
 _2026-07-18 evening, same setup as run 1, harder validated suite (`t4`–`t7`), xhigh both arms,
