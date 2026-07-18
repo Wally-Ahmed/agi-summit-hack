@@ -138,9 +138,22 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
    planner brain must be tool-capable (sonnet-4.6 chosen; deepseek-chat-v3.1 = cheap alt);
    (f) worker permission prompts need manual Enter via `cotal attach` — for unattended runs,
    configure auto-accept on the claude connector spawn (TODO).
-6. Next: Codex worker connector (author `cotal-connector-codex`), auto-accept for workers,
-   then the benchmark: mesh-coordination arm vs. direct-subagents arm (openrouter CLI +
-   gpt-api MCP). Wally's gpt-api update still UNCOMMITTED on his Mac (incl. new cli.ts).
+6. **NEW DIRECTIVE (Wally, ~22:30 UTC, full permission granted):** benchmark matrix, ALL at
+   xhigh: (a) Opus 4.8 on Codex-harness (via OpenRouter) vs Claude-Code-harness — RUNNING NOW;
+   (b) then on a NEW BRANCH: Cotal↔Google-Antigravity-CLI connector, Gemini on all harnesses,
+   MCP/CLI tools for Antigravity, test GPT + Opus 4.8 there (research in flight).
+7. State: gpt-api update committed+pushed (`08a348d`, his cli.ts; Codespace synced).
+   Worker perms: acceptEdits + allow-list in Codespace ~/.claude/settings.json
+   (bypassPermissions FAILS for spawns — interactive confirm dialog kills the pty).
+   **Codex CLI 0.144.6 on Codespace runs Opus 4.8 via OpenRouter**: ~/.codex/config.toml →
+   model_provider openrouter (base_url https://openrouter.ai/api/v1, env_key
+   OPENROUTER_API_KEY, wire_api "responses" — "chat" was REMOVED in 0.144; OpenRouter speaks
+   Responses natively), model anthropic/claude-opus-4.8, model_reasoning_effort xhigh,
+   openrouter-subagents registered as MCP. Smoke test passed.
+   Benchmark suite: `benchmark/` (3 tasks + run.sh; results to benchmark/results/*.jsonl;
+   fairness: CLAUDE.local.md excluded from workdirs). Codex-mesh connector build plan:
+   `docs/codex-connector-plan.md` (task #10, pending).
+   Hands-free mesh handoff re-test (task #9) still pending — interrupted by the redirect.
 
 ## Recovery / revival procedures
 
