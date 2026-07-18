@@ -49,11 +49,12 @@ claude --version 2>/dev/null || true
 step "restore file memory (repo/.memory -> ~/.claude/projects/<slug>/memory)"
 bash scripts/sync-memory.sh restore || FAIL=1
 
-step "harness CLIs (openrouter-subagents + gpt-subagents-subscription)"
-# The two MCP-servers-turned-CLIs the benchmark drives. Cloned as siblings of
-# this repo, built, and npm-linked so their bins are on PATH.
+step "subagent backends (openrouter-subagents CLI + gpt-subagents-api MCP)"
+# The benchmark's subagent pool (decision 2026-07-18: gpt-subscription DROPPED
+# from the hackathon). Cloned as siblings of this repo, built, npm-linked where
+# a bin exists. Wally owns gpt-subagents-api updates — this only clones/pulls.
 CLI_BASE="$(dirname "$REPO_DIR")"
-for repo in openrouter-subagents gpt-subagents-subscription; do
+for repo in openrouter-subagents gpt-subagents-api; do
   dir="$CLI_BASE/$repo"
   if [ ! -d "$dir" ]; then
     git clone -q "https://github.com/Wally-Ahmed/$repo.git" "$dir" || { FAIL=1; continue; }
@@ -70,7 +71,7 @@ echo "mempalace:  $( { [ -d .mempalace ] || [ -d "$HOME/.mempalace" ]; } && echo
 echo "memory:     $( [ -d "$HOME/.claude/projects/$(printf '%s' "$REPO_DIR" | sed 's/[^a-zA-Z0-9]/-/g')/memory" ] && echo restored || echo MISSING )"
 echo "claude:     $(command -v claude || echo 'MISSING — needs npm i -g @anthropic-ai/claude-code')"
 echo "openrouter: $(command -v openrouter-subagents || echo 'MISSING (npm link failed?)')"
-echo "gpt-cli:    $(command -v gpt-subagents-subscription || echo 'MISSING (npm link failed?)')"
+echo "gpt-api:    $( [ -f "$CLI_BASE/gpt-subagents-api/dist/server.js" ] && echo built || echo 'MISSING (build failed?)' )"
 
 cat <<'EOF'
 
