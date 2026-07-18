@@ -14,6 +14,19 @@ RESULTS="$BENCH_DIR/results"; mkdir -p "$RESULTS"
 OUT="$RESULTS/${HARNESS}.jsonl"; : > "$OUT"
 HARNESS_TIMEOUT="${BENCH_TIMEOUT:-900}"
 TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
+
+# Template integrity tripwire: refuse to run if benchmark/tasks differs from the committed
+# state. A harness once wrote its solutions INTO the templates (agy resolving relative paths
+# against its workspace instead of cwd, pre --add-dir), which silently poisoned every later
+# run's workdirs with copied solutions. Abort loudly rather than benchmark a solved suite.
+if git -C "$BENCH_DIR/.." rev-parse >/dev/null 2>&1; then
+  DIRTY=$(git -C "$BENCH_DIR/.." status --porcelain -- "$BENCH_DIR/tasks" | grep -v '__pycache__' || true)
+  if [ -n "$DIRTY" ]; then
+    echo "FATAL: benchmark/tasks differs from git — template contamination? Refusing to run." >&2
+    echo "$DIRTY" >&2
+    exit 3
+  fi
+fi
 # Same model on both harnesses (Opus 4.8 default per benchmark spec; xhigh comes from
 # ~/.codex/config.toml model_reasoning_effort and the hermetic settings.json effortLevel).
 CODEX_MODEL="${BENCH_CODEX_MODEL:-anthropic/claude-opus-4.8}"
