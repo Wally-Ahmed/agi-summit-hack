@@ -12,6 +12,10 @@ RESULTS="$BENCH_DIR/results"; mkdir -p "$RESULTS"
 OUT="$RESULTS/${HARNESS}.jsonl"; : > "$OUT"
 HARNESS_TIMEOUT="${BENCH_TIMEOUT:-900}"
 TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
+# Same model on both harnesses (Opus 4.8 default per benchmark spec; xhigh comes from
+# ~/.codex/config.toml model_reasoning_effort and ~/.claude/settings.json effortLevel).
+CODEX_MODEL="${BENCH_CODEX_MODEL:-anthropic/claude-opus-4.8}"
+CLAUDE_MODEL="${BENCH_CLAUDE_MODEL:-claude-opus-4-8}"
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
@@ -22,10 +26,11 @@ for t in "${TASKS[@]}"; do
   case "$HARNESS" in
     codex)
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" codex exec --skip-git-repo-check \
+        --model "$CODEX_MODEL" \
         --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     claude)
-      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" claude -p --model claude-opus-4-8 "$PROMPT" \
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" claude -p --model "$CLAUDE_MODEL" "$PROMPT" \
         >"$WORK/harness.log" 2>&1)
       ;;
     *) echo "unknown harness: $HARNESS" >&2; exit 2 ;;
