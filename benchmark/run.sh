@@ -68,6 +68,16 @@ EOF
       awk '/^\[mcp_servers/{skip=1;next} /^\[/{skip=0} !skip' "$HOME/.codex/config.toml" > "$CXH/config.toml"
       CODEX_ENV=(env CODEX_HOME="$CXH")
       ;;
+    codex-sub)
+      # Codex on Wally's ChatGPT subscription (native OpenAI model): clean home with the
+      # OAuth auth.json and a minimal config — no provider override, no MCP. Model is
+      # codex's own default unless BENCH_CODEX_SUB_MODEL is set; effort pinned xhigh.
+      CXS=/tmp/bench-codex-sub-home
+      mkdir -p "$CXS"
+      cp "$HOME/.codex/auth.json" "$CXS/"
+      printf 'model_reasoning_effort = "xhigh"\npreferred_auth_method = "chatgpt"\n' > "$CXS/config.toml"
+      CODEX_ENV=(env CODEX_HOME="$CXS")
+      ;;
     agy)
       # agy only reads the global ~/.gemini/config/mcp_config.json: stash it and leave
       # an empty server map for the duration of the run, restore on exit.
@@ -92,6 +102,11 @@ for t in "${TASKS[@]}"; do
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CODEX_ENV[@]}" codex exec --skip-git-repo-check \
         --model "$CODEX_MODEL" \
         --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
+      ;;
+    codex-sub)
+      SUBARGS=(); [ -n "${BENCH_CODEX_SUB_MODEL:-}" ] && SUBARGS=(--model "$BENCH_CODEX_SUB_MODEL")
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CODEX_ENV[@]}" codex exec --skip-git-repo-check \
+        "${SUBARGS[@]}" --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     claude)
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CLAUDE_ENV[@]}" claude -p --model "$CLAUDE_MODEL" \
