@@ -142,6 +142,18 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
    xhigh: (a) Opus 4.8 on Codex-harness (via OpenRouter) vs Claude-Code-harness — RUNNING NOW;
    (b) then on a NEW BRANCH: Cotal↔Google-Antigravity-CLI connector, Gemini on all harnesses,
    MCP/CLI tools for Antigravity, test GPT + Opus 4.8 there (research in flight).
+6a. **THREE-HARNESS MESH PROVEN (2026-07-18 ~22:40 UTC, branch `antigravity`):**
+   `cotal-connector-codex` built/installed/tested (commit `ca6d347`, source in
+   `connectors/` + standalone repo at /workspaces/cotal-connector-codex; worker2 spawn +
+   DM round-trip verified, needs `--dangerously-bypass-approvals-and-sandbox` or MCP calls
+   get auto-cancelled). Hands-free handoff VERIFIED end-to-end (allow-list must include
+   `mcp__cotal`; permission changes need worker respawn). Suite v2 results in
+   `benchmark/RESULTS.md`: Opus 4.8 8/8 on both harnesses, Codex ~5× faster on hard tasks.
+   **⚠️ BLOCKER: OpenRouter balance $0.47 (of $435) — Opus turns 402; planner STOPPED to
+   silence error spam (respawn after top-up: export OPENROUTER_API_KEY +
+   HERMES_MODEL=anthropic/claude-sonnet-4.6, `cotal spawn planner --agent hermes --detach`).**
+   **⚠️ BLOCKER 2: Antigravity `agy` 1.1.4 installed + MCP wired (~/.gemini/config/
+   mcp_config.json) but needs Wally's interactive Google sign-in (`agy` in the Codespace).**
 7. State: gpt-api update committed+pushed (`08a348d`, his cli.ts; Codespace synced).
    Worker perms: acceptEdits + allow-list in Codespace ~/.claude/settings.json
    (bypassPermissions FAILS for spawns — interactive confirm dialog kills the pty).
