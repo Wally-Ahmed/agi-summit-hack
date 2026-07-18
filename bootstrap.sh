@@ -29,10 +29,11 @@ command -v mempalace >/dev/null 2>&1 || uv tool install mempalace -q
 mempalace --version || FAIL=1
 
 step "re-mine MemPalace vector DB (machine-local, rebuilt from repo)"
-if [ ! -d .mempalace ]; then
+# Palace location varies by version: <=3.4 uses ./.mempalace, >=3.6 uses ~/.mempalace/palace
+if [ ! -d .mempalace ] && [ ! -d "$HOME/.mempalace" ]; then
   yes | mempalace mine . || FAIL=1
 else
-  echo ".mempalace exists — skipping (run 'yes | mempalace mine .' to refresh)"
+  echo "palace exists — skipping (run 'yes | mempalace mine .' to refresh)"
 fi
 
 step "Claude Code CLI"
@@ -51,7 +52,7 @@ bash scripts/sync-memory.sh restore || FAIL=1
 step "verify"
 echo "git:        $(git log --oneline -1 2>/dev/null || echo MISSING)"
 echo "graphify:   $( [ -f graphify-out/graph.json ] && echo graph.json ok || echo MISSING )"
-echo "mempalace:  $( [ -d .mempalace ] && echo vector DB ok || echo 'MISSING (mine failed?)' )"
+echo "mempalace:  $( { [ -d .mempalace ] || [ -d "$HOME/.mempalace" ]; } && echo vector DB ok || echo 'MISSING (mine failed?)' )"
 echo "memory:     $( [ -d "$HOME/.claude/projects/$(printf '%s' "$REPO_DIR" | sed 's/[^a-zA-Z0-9]/-/g')/memory" ] && echo restored || echo MISSING )"
 echo "claude:     $(command -v claude || echo 'MISSING — needs npm i -g @anthropic-ai/claude-code')"
 
