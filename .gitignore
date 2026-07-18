@@ -1,0 +1,22 @@
+# MemPalace vector DB (binary, machine-local — regenerate with `mempalace mine .`)
+.mempalace/
+
+# Graphify cache (regenerated from source; keep graph.json + GRAPH_REPORT.md tracked)
+graphify-out/cache/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies / build
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+.DS_Store
+*.swp
