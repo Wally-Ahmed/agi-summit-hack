@@ -12,9 +12,22 @@ _Last updated: 2026-07-18 ~23:50 EDT (session 1, post-compact era — benchmark 
    disconnected, ask Wally to run `/plugin`; until then use file memory + graphify.
 2. **Active branch is `antigravity`** (local Mac + Codespace both on it). `main` is behind —
    it stops at benchmark run 1. Everything since lives on the branch.
-3. A 4-run benchmark MATRIX may still be executing on the Codespace (background task
-   `bne85143e`, sentinel line `MATRIX-DONE`). Check
-   `/workspaces/agi-summit-hack/benchmark/results/*.jsonl` before rerunning anything.
+3. **TWO BACKGROUND JOBS IN FLIGHT at compact time (~00:15 EDT Jul 19)** — their completion
+   notifications will re-invoke you; here's what each is and what to do:
+   a. **Benchmark matrix** (bg task `bne85143e`, sentinel `MATRIX-DONE`): 4 runs × 7 tasks —
+      agy+Gemini-3.1-Pro-High, codex+google/gemini-3.1-pro-preview, agy+Opus-4.6-Thinking,
+      agy+GPT-OSS-120B. On completion: read its output, assemble the run-4 table into
+      `benchmark/RESULTS.md` (per-run snapshots at `/workspaces/agi-summit-hack/benchmark/
+      results/{agy-gemini31pro,codex-gemini31pro,agy-opus46,agy-gptoss}.jsonl`), commit+push.
+      Wally's Google account is a PAID tier — agy failures are NOT quota.
+   b. **cotal-connector-agy build agent** (Agent id `a387fb0c0ce4fa218`): building the
+      Antigravity mesh connector modeled on connectors/cotal-connector-codex (pTTY turn loop,
+      global ~/.gemini/config/mcp_config.json merge/restore, worker3 persona). It is GATED to
+      not run live agy tests until the matrix finishes. It commits+pushes to `antigravity`
+      itself — on completion read its report, `git pull`, verify, relay to Wally.
+   Neither job should be re-launched if its notification says it completed — check artifacts.
+4. Open question awaiting Wally: file the connector-hermes ESM-bug upstream via
+   `cotal feedback`? (Outward-facing — needs his yes/no.)
 
 ## Project (one paragraph)
 
