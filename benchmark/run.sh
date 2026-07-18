@@ -10,6 +10,8 @@ BENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TASKS=("$@"); [ ${#TASKS[@]} -eq 0 ] && TASKS=(t1-lru t2-bugfix t3-cli)
 RESULTS="$BENCH_DIR/results"; mkdir -p "$RESULTS"
 OUT="$RESULTS/${HARNESS}.jsonl"; : > "$OUT"
+HARNESS_TIMEOUT="${BENCH_TIMEOUT:-900}"
+TEST_TIMEOUT="${BENCH_TEST_TIMEOUT:-120}"
 
 for t in "${TASKS[@]}"; do
   WORK=$(mktemp -d "/tmp/bench-${HARNESS}-${t}-XXXX")
@@ -18,17 +20,17 @@ for t in "${TASKS[@]}"; do
   START=$(date +%s)
   case "$HARNESS" in
     codex)
-      (cd "$WORK" && timeout 900 codex exec --skip-git-repo-check \
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" codex exec --skip-git-repo-check \
         --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     claude)
-      (cd "$WORK" && timeout 900 claude -p --model claude-opus-4-8 "$PROMPT" \
+      (cd "$WORK" && timeout "$HARNESS_TIMEOUT" claude -p --model claude-opus-4-8 "$PROMPT" \
         >"$WORK/harness.log" 2>&1)
       ;;
     *) echo "unknown harness: $HARNESS" >&2; exit 2 ;;
   esac
   RC=$?
   SECONDS_TAKEN=$(( $(date +%s) - START ))
-  if (cd "$WORK" && timeout 60 python3 test.py >/dev/null 2>&1); then PASS=true; else PASS=false; fi
+  if (cd "$WORK" && timeout "$TEST_TIMEOUT" python3 test.py >/dev/null 2>&1); then PASS=true; else PASS=false; fi
   echo "{\"harness\":\"$HARNESS\",\"task\":\"$t\",\"seconds\":$SECONDS_TAKEN,\"pass\":$PASS,\"harness_rc\":$RC,\"work\":\"$WORK\"}" | tee -a "$OUT"
 done
