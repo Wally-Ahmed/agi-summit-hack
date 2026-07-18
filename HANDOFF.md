@@ -121,11 +121,26 @@ otherwise. The Codespace clone/link may go stale during his restructure — rebu
    registered with Claude Code (user scope), both **✔ Connected**; `.env` keys copied. gpt-api
    updates are Wally's (his WIP is uncommitted on the Mac — hands off).
 4. Wally: activate auto-memory hooks (`mv .claude/settings.json.proposed .claude/settings.json`).
-5. Then: stand up the mesh on the Codespace (cotal setup/up, spawn Hermes planner persona,
-   Claude Code + Codex workers) and run the benchmark (Fable 5 @ xhigh there).
-   **Runbook + all operational detail: `docs/hermes-mesh-runbook.md`** (Hermes connector is
-   ALPHA, needs raw provider key env — we have OPENROUTER_API_KEY on the Codespace; Codex
-   connector must be authored by us).
+5. ✅ **MESH IS LIVE + FIRST HANDOFF SUCCEEDED (2026-07-18 ~21:21 UTC).** On the Codespace:
+   `cotal up` (nats+delivery+manager), planner = Hermes connector, worker = Claude Code
+   (**verified running Fable 5 xhigh on Claude Max**). End-to-end test passed: anycast task →
+   planner delegated (never executed) → worker wrote `mesh-handoff-proof.txt`, self-verified
+   (cat+xxd), DM'd STATUS/EVIDENCE + posted #results → planner independently re-verified.
+   **Fixes applied to get here (all documented in `docs/hermes-mesh-runbook.md`):**
+   (a) `hermes` bin must be on PATH → `uv tool install "hermes-agent>=0.16,<0.17"`;
+   (b) connector-hermes 0.12.0 ESM bundle crash (`Dynamic require of "crypto"`) → 2-line
+   createRequire shim prepended to `~/.config/cotal/extensions/.../dist/launch.js`
+   (backup `launch.js.orig`; consider `cotal feedback` upstream — needs Wally's OK);
+   (c) detached spawns inherit the MANAGER's env → restart stack with
+   `OPENROUTER_API_KEY` + `HERMES_MODEL` exported (also appended to ~/.bashrc, interactive
+   shells only); (d) `HERMES_MODEL` takes a BARE OpenRouter id (`anthropic/claude-sonnet-4.6`),
+   no `openrouter:` prefix; (e) NO nousresearch/* model on OpenRouter supports tool calls —
+   planner brain must be tool-capable (sonnet-4.6 chosen; deepseek-chat-v3.1 = cheap alt);
+   (f) worker permission prompts need manual Enter via `cotal attach` — for unattended runs,
+   configure auto-accept on the claude connector spawn (TODO).
+6. Next: Codex worker connector (author `cotal-connector-codex`), auto-accept for workers,
+   then the benchmark: mesh-coordination arm vs. direct-subagents arm (openrouter CLI +
+   gpt-api MCP). Wally's gpt-api update still UNCOMMITTED on his Mac (incl. new cli.ts).
 
 ## Recovery / revival procedures
 
