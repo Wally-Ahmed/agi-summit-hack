@@ -1,3 +1,33 @@
+# Benchmark run 2 — suite v2 (hard tasks), Claude Opus 4.8: Codex vs Claude Code
+
+_2026-07-18 evening, same setup as run 1, harder validated suite (`t4`–`t7`), xhigh both arms,
+30-min/task cap. t5 numbers are the corrected re-run (a runner bug initially shipped t5 without
+its `taskq/` package — both harnesses then simply WROTE the package from spec and passed; those
+invalid results are excluded)._
+
+| Task | Codex (Opus 4.8 via OpenRouter) | Claude Code (Opus 4.8 on Max) |
+|---|---|---|
+| t4-interp (build a mini-language interpreter) | ✅ 45s · 119,260 tok | ✅ 175s · n/a |
+| t5-taskq (3 planted bugs + missing feature, multi-file) | ✅ 20s · 67,520 tok | ✅ 60s · n/a |
+| t6-diff (provably minimal diff + perf gate) | ✅ 26s · 67,411 tok | ✅ 224s · n/a |
+| t7-ratelimit (dual-constraint limiter, exact boundaries) | ✅ 15s · 65,055 tok | ✅ 65s · n/a |
+| **Total** | **4/4 · 106s · ~319k tok** | **4/4 · 524s** |
+
+## Read (run 2)
+
+- **Correctness still cannot separate them: 8/8 combined across both suites, both harnesses.**
+  Opus 4.8 at xhigh clears even adversarial tests (minimality proofs, boundary-exact semantics,
+  planted-bug taxonomies) in one shot on either harness.
+- **The wall-clock gap WIDENS with difficulty: ~2× on trivial tasks → ~5× on hard ones**
+  (t6: 26s vs 224s). Claude Code's interactive-session machinery (hooks, richer tool loop,
+  transcript) costs real time per turn; Codex's exec loop is lean. For a planner choosing a
+  delegation target, this is the actionable finding: **latency, not capability, differentiates
+  harnesses on same-model tasks.**
+- Aside from the excluded run: with test.py as the only spec, both harnesses reconstructed the
+  entire t5 package from scratch and passed — worth remembering when designing benchmarks
+  (tests ARE a spec) and when arguing the fair-use framing (behavior is reproducible from
+  contracts).
+
 # Benchmark run 1 — Claude Opus 4.8: Codex harness vs Claude Code harness
 
 _2026-07-18, Codespace `glowing-acorn` (2-core Linux). Same model (`claude-opus-4.8` /
