@@ -13,19 +13,24 @@ _Last updated: 2026-07-18 ~23:50 EDT (session 1, post-compact era — benchmark 
 2. **Active branch is `antigravity`** (local Mac + Codespace both on it). `main` is behind —
    it stops at benchmark run 1. Everything since lives on the branch.
 3. **BACKGROUND JOBS (state as of ~01:30 EDT Jul 19):**
-   a. **Pre-hermetic matrix (`bne85143e`) COMPLETED** — 4 runs × 7 tasks archived at
-      `benchmark/results/{agy-gemini31pro,codex-gemini31pro,agy-opus46,agy-gptoss}.jsonl`:
-      agy+Gemini 3/7, codex+Gemini 7/7, agy+Opus4.6 5/7, agy+GPT-OSS 4/7. **Autopsy verdict:
-      most agy fails were NOT model fails — without `--add-dir`, agy wrote new files to
-      ~/.gemini/antigravity-cli/scratch/ or $HOME instead of the workdir** (edit-existing-file
-      tasks passed; create-new-file tasks landed elsewhere; t5-XqXT even passes its test now).
-      These numbers are dev-env-era AND structurally depressed — footnote-only, never headline.
-   b. **HERMETIC QUEUE IN FLIGHT (bg task `b5a67sacc`, sentinel `HERMETIC-DONE`)**: runs 1–2
+   a. **Pre-hermetic matrix (`bne85143e`) is INVALID — TEMPLATE CONTAMINATION.** agy without
+      `--add-dir` resolved relative paths against its workspace and WROTE SOLUTIONS INTO
+      `benchmark/tasks/` itself (t3 wordfreq 23:03, t5 taskq + t6 mydiff 23:06–:08, t2
+      intervals 23:23 UTC). Every run after 23:03 copied solved templates into workdirs —
+      arm B's (codex+gemini) 7/7 included freebies; arms C/D too. Also agy wrote other files
+      to ~/.gemini/…/scratch/ or $HOME (its 3/7 was structurally depressed, not model skill).
+      Templates restored from git on the Codespace; contaminated copies preserved at
+      /tmp/template-quarantine (incl. first aborted hermetic attempt `b5a67sacc`, killed by
+      a 402 + this discovery). **Runs 1–3 all finished ≤22:57 → still VALID.** run.sh now has
+      a template-integrity tripwire (aborts if benchmark/tasks dirty vs git) @ cde2fbd.
+   b. **HERMETIC QUEUE IN FLIGHT (bg task `buubjaoq8`, sentinel `HERMETIC-DONE`)**: runs 1–2
       re-run (codex+claude, easy+hard, Opus 4.8) then run-4 matrix (agy+Gemini31ProHigh,
       codex+gemini-3.1-pro-preview, agy+"Claude Opus 4.6 (Thinking)", agy+"GPT-OSS 120B
-      (Medium)"), each arm snapshotted to `benchmark/results/hermetic-*.jsonl`. All arms stock
-      (hermetic run.sh @ e68f231, smoke-tested) + agy `--add-dir $PWD` fix. ETA ~2–2.5h. On
-      completion: write RESULTS.md runs 1/2/4 from hermetic numbers, commit+push.
+      (Medium)"), each arm snapshotted to `benchmark/results/hermetic-*.jsonl`. All arms
+      stock + agy `--add-dir $PWD` + tripwire; clean templates; OpenRouter topped up (~$11).
+      ETA ~2–2.5h. On completion: write RESULTS.md runs 1/2/4 from hermetic numbers (checking
+      codex arms for 402s first), commit+push. Early (contaminated-but-indicative) hermetic
+      claude-easy was 77s vs 97s dev-env — our MCP boot overhead on claude -p is real (~7s/task).
    c. **cotal-connector-agy build agent** (`a387fb0c0ce4fa218`): gated on MATRIX-DONE, its
       poller had not fired yet at queue launch. It commits+pushes to `antigravity` itself — on
       its notification: read report, `git pull`, verify, relay. Its live test merges a cotal
