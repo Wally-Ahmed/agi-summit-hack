@@ -27,6 +27,16 @@ cp -R "$BENCH_DIR/tasks/t4-interp/"* "$WORK/"
 rm -f "$WORK/CLAUDE.local.md" "$WORK/CLAUDE.md"
 find "$WORK" -name CLAUDE.local.md -delete 2>/dev/null
 say "workdir: $WORK"
+
+# Wait until NO builder is busy before sending: a freshly spawned worker shows
+# "working (orienting)" and would be mistaken for the assignee (attempt-1 lesson —
+# we killed an orienting bystander while the real delegate worked undisturbed).
+for _ in $(seq 1 36); do
+  BUSY=$(cotal endpoints 2>/dev/null | strip | awk -F'[ /]' '/builder/ && /working/ {print $1}')
+  [ -z "$BUSY" ] && break
+  say "waiting for busy builders to settle: $BUSY"
+  sleep 5
+done
 say "pre-run roster:"; cotal endpoints 2>&1 | strip | tee -a "$LOG"
 
 cotal send ask planner "TASK: complete the assignment described in $WORK/PROMPT.md, working in the directory $WORK. Delegate it to exactly ONE builder. You are responsible for completion: monitor progress, and if the assigned builder goes offline or stops responding, re-delegate the task to a different builder. DONE-WHEN: cd $WORK && python3 test.py prints PASS." 2>&1 | strip | tee -a "$LOG"
