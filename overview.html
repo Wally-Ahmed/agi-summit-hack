@@ -583,7 +583,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 
     <div class="cards">
       <div class="card"><div class="path">tools/hermes-handoff/</div><p>The product: a zero-dependency wizard CLI. Detects harnesses + auth, you pick one, it wires Hermes as the front door — planner brain via subscription OAuth (<code>hermes login</code>) or any provider key.</p></div>
-      <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core 0.12.0, and prepared as two pull requests to <code>Cotal-AI/Cotal</code>.</p></div>
+      <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core 0.12.0, and submitted as pull requests <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> to <code>Cotal-AI/Cotal</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-codex/</div><p>Our Codex mesh connector — Node shim owns one MeshAgent; cotal tools served over local streamable-HTTP MCP; turn chain via <code>codex exec resume</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — pTTY turn loop, conversation resume, MCP-config merge/restore. Live-tested: "AGY WORKER OK" on #general.</p></div>
       <div class="card"><div class="path">benchmark/</div><p>12 validated tasks (easy, adversarial, reasoning, grounding), hermetic runners for four harness arms, coordination + throughput + cost studies, full RESULTS.md.</p></div>
@@ -744,7 +744,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 
   <!-- ==================== TAB: PULL REQUESTS ==================== -->
   <section class="view" id="view-prs">
-    <div class="hint">Two connectors we built for this project, ported into <b>Cotal's open-source monorepo</b> (<code>Cotal-AI/Cotal</code>, connectors live under <code>extensions/</code>) and prepared as upstream pull requests — the project gives its infrastructure back.</div>
+    <div class="hint">Two connectors we built for this project, ported into <b>Cotal's open-source monorepo</b> (<code>Cotal-AI/Cotal</code>, connectors live under <code>extensions/</code>) and submitted as upstream pull requests <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> — the project gives its infrastructure back.</div>
 
     <div class="panel">
       <span class="chip new">PR 1 · extensions/connector-codex</span>
@@ -789,9 +789,9 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     </div>
 
     <div class="cards">
-      <div class="card"><div class="path">Wally-Ahmed/Cotal:add-connector-codex</div><p>Branch pushed, built, import-verified. PR body drafted with the pull-only relationship addressed head-on (supersede or coexist — maintainers' call).</p></div>
-      <div class="card"><div class="path">Wally-Ahmed/Cotal:add-connector-agy</div><p>Branch pushed, built, import-verified. PR body documents the v1 fail-loud limits as design choices with their reasons.</p></div>
-      <div class="card"><div class="path">docs/cotal-pr-drafts.md</div><p>Both PR bodies in full plus the exact <code>gh pr create</code> commands — review and fire.</p></div>
+      <div class="card"><div class="path">PR #254 — connector-codex</div><p><a href="https://github.com/Cotal-AI/Cotal/pull/254">Open against Cotal-AI/Cotal</a>: TypeScript to the monorepo's standard, one squashed commit, the pull-only relationship addressed head-on (supersede or coexist — maintainers' call).</p></div>
+      <div class="card"><div class="path">PR #255 — connector-agy</div><p><a href="https://github.com/Cotal-AI/Cotal/pull/255">Open against Cotal-AI/Cotal</a>: TypeScript to the monorepo's standard, one squashed commit, the v1 fail-loud limits documented as design choices with their reasons.</p></div>
+      <div class="card"><div class="path">Standards pass before sending</div><p>Ported to strict TS matching sibling connectors (types, typecheck, declaration emit, changesets fixed group), verified against the CI gates (frozen lockfile, pack), and bundle-diffed against the live-tested JS — logic identical.</p></div>
     </div>
     <div class="foot">Why give the connectors away? Because the product (<code>hermes-handoff</code>) is better when the ecosystem ships them — and a benchmark-backed contribution is the strongest possible sponsor pitch.</div>
   </section>
@@ -906,8 +906,8 @@ const INFO = {
   pool:{t:"MCP subagents — the comparison baseline",p:"The architecture Cotal's setup is measured **against**: a single harness loop that calls different models as MCP subagents (openrouter-subagents, gpt-api) and transcribes their answers into place. Run 3 puts the two head-to-head — **multiple harnesses, each invoked for its own associated model** vs one loop juggling many models — and the harness-per-model setup wins ~30% at equal quality."},
   bus:{t:"The Cotal mesh",p:"**NATS + JetStream** under the hood — not HTTP. Presence cards, anycast claims (first idle qualified worker takes the task), and reply correlation via contextId. Supervision is by channel-ACL convention."},
   claude:{t:"Claude Code — worker",p:"Anthropic's official CLI on a **Claude Max subscription**, spawned via the official Cotal connector. Executes in place, runs the task's own test, reports verified results. 7/7 across both suites; fastest native-subscription arm (run 5)."},
-  codex:{t:"Codex CLI — worker2 (our connector)",p:"OpenAI's official CLI on a **ChatGPT subscription**. Cotal ships only an experimental **pull-only** codex integration (an interactive session can see the mesh, but delegation never wakes it; built on connector-core 0.2.0 vs today's 0.12.0). Ours is the **autonomous worker**: push delegation drives turns via `codex exec resume <threadId>`, with cotal tools over a local streamable-HTTP MCP endpoint. **Now prepared as a PR to the Cotal monorepo** — built in-tree against connector-core 0.12.0."},
-  agy:{t:"Antigravity CLI — worker3 (our connector)",p:"Google's agentic CLI on a **Google account**. We built this connector: pTTY-wrapped `agy -p` turns, `--conversation` resume discovered from state inspection, global MCP-config merge/restore with clean teardown, and `--add-dir` workspace grounding. Live-tested: \"AGY WORKER OK\" on #general. **Now prepared as a PR to the Cotal monorepo** — the first Antigravity connector in the tree."},
+  codex:{t:"Codex CLI — worker2 (our connector)",p:"OpenAI's official CLI on a **ChatGPT subscription**. Cotal ships only an experimental **pull-only** codex integration (an interactive session can see the mesh, but delegation never wakes it; built on connector-core 0.2.0 vs today's 0.12.0). Ours is the **autonomous worker**: push delegation drives turns via `codex exec resume <threadId>`, with cotal tools over a local streamable-HTTP MCP endpoint. **Now PR #254 to the Cotal monorepo** — built in-tree against connector-core 0.12.0."},
+  agy:{t:"Antigravity CLI — worker3 (our connector)",p:"Google's agentic CLI on a **Google account**. We built this connector: pTTY-wrapped `agy -p` turns, `--conversation` resume discovered from state inspection, global MCP-config merge/restore with clean teardown, and `--add-dir` workspace grounding. Live-tested: \"AGY WORKER OK\" on #general. **Now PR #255 to the Cotal monorepo** — the first Antigravity connector in the tree."},
   s1:{t:"Step 1 — ASK",p:"The task + DONE-WHEN is anycast to the planner. Nothing here is fire-and-forget: the done condition makes completion checkable by anyone."},
   s2:{t:"Step 2 — PLAN",p:"The planner decomposes the task and selects a worker from live presence — by availability, and (informed by our benchmarks) by which backend is fastest for the job."},
   s3:{t:"Step 3 — HANDOFF",p:"Delegation travels over the mesh with full context attached. Measured cost of this hop: ≈ nothing (run 3 — mesh end-to-end ≈ a bare local session)."},
