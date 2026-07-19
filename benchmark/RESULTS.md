@@ -1,5 +1,25 @@
 # Benchmark results
 
+## Run 6 — mesh throughput: parallel fan-out vs serial through one worker (live mesh)
+
+_2026-07-19. Same planner (Hermes), same 3 easy tasks, two scheduling shapes. Makespan =
+dispatch → every task's own test passing on disk. Runner: `benchmark/run-parallel.sh`._
+
+| Arm | Result | Makespan | Per-task |
+|---|---|---|---|
+| Parallel — one task to each of worker/worker2/worker3 | **3/3** | **203s** | t1 36s · t3 46s · t2 203s |
+| Sequential — all three through `worker` only | **1/3 · DNF** | 1504s (cap) | t1 27s ✓, then t2/t3 never dispatched |
+
+- **The heterogeneous pool works:** fan-out completed everything, makespan bounded by the
+  slowest worker (203s; the fastest finished in 36s).
+- **The honest half:** the serial arm exposed a planner reliability gap — after completing
+  task 1 it dropped the remaining queue (workdir autopsy: t2 untouched template, t3 empty).
+  This is a coordination-failure finding, not a timing number; it motivates the planned
+  failover/reclaim study and argues for DONE-WHEN-per-task rather than batched serial asks.
+- Caveats: n=1 per arm; parallel t2 (203s) rode the slowest worker (codex worker2 pinned to
+  a small model); easy suite only.
+
+
 _All headline numbers below are from the **hermetic re-run** (2026-07-19 ~00:00 UTC, Codespace
 `glowing-acorn`, 2-core Linux): every harness runs STOCK — clean `CLAUDE_CONFIG_DIR` +
 `--strict-mcp-config`, clean `CODEX_HOME` without MCP servers, agy with its global MCP config
