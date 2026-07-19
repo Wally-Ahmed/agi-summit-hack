@@ -36,6 +36,32 @@ incident) are preserved in the appendix — they are footnotes, not findings._
 - Codex+OpenRouter burns most of its Gemini tokens on its large fixed system prompt; per-task
   token spend tracks task difficulty on top of a ~13k floor.
 
+## Run 5 — each harness on its OWN subscription (hermetic): the real-world mesh question
+
+_Codex on Wally's ChatGPT subscription (native default model **gpt-5.6-sol**, xhigh) vs Claude
+Code on Max (Opus 4.8, xhigh). Different models by design — this measures the end-to-end
+delegation targets a mesh planner actually chooses between, each harness under its own
+flat-rate auth (no 402s, no per-token billing)._
+
+| Suite | Codex (gpt-5.6-sol on ChatGPT sub) | Claude Code (Opus 4.8 on Max) |
+|---|---|---|
+| easy t1–t3 | 3/3 · 100s (43+30+27) | 3/3 · 79s (22+28+29) |
+| hard t4–t7 | 4/4 · 344s (135+89+71+49) | 4/4 · 234s (105+43+55+31) |
+| **Total** | **7/7 · 444s · ~95k tok** | **7/7 · 313s** |
+
+### Read (run 5)
+
+- **The latency story INVERTS on native subscriptions: Claude Code wins (~1.4×).** Codex's
+  ~2× speed advantage in runs 1–2 came from the same model (Opus 4.8) answering faster via
+  OpenRouter than gpt-5.6-sol thinks at xhigh on the ChatGPT backend. Harness overhead is
+  real but second-order; **the backend+model pair dominates end-to-end latency.**
+- Correctness stays saturated: 7/7 both. Every frontier subscription pairing clears the suite.
+- Codex's token counter reports ~10–21k/task here vs ~56–142k via OpenRouter — the
+  subscription wire accounts its fixed system prompt differently; don't compare token columns
+  across providers.
+- For the mesh: pick delegation targets by *backend latency and quota*, not harness brand —
+  exactly the decision a Cotal planner can make per-task.
+
 ## Run 2 — hard suite (hermetic): Claude Opus 4.8 on Codex vs Claude Code, xhigh both
 
 | Task | Codex (Opus 4.8 via OpenRouter) | Claude Code (Opus 4.8 on Max) |
@@ -114,5 +140,3 @@ bash benchmark/run.sh codex-sub        # Codex on the ChatGPT subscription (nati
 # arm snapshots land in benchmark/results/hermetic-*.jsonl
 ```
 
-_Pending: `codex-sub` arms (Codex on the ChatGPT subscription, native GPT model @ xhigh) — the
-"each harness on its own subscription" comparison vs Claude Code on Max._

@@ -4,7 +4,7 @@
 > crash, `/compact`, or fresh session: this is the single source of truth. Read it once, then act.
 > Verify claims against `git log --oneline -5` and `cotal ps` before trusting them.
 
-_Last updated: 2026-07-19 ~04:10 UTC — agy connector LIVE-TESTED ✓; codex-sub arms pending login_
+_Last updated: 2026-07-19 ~04:30 UTC — ALL benchmarks done (runs 1-5); both connectors live-tested; next: merge + packaging_
 
 ## ⚠️ Read first — SESSION PAUSED CLEANLY (Jul 19 ~00:45 UTC), resume checklist below
 
@@ -34,13 +34,12 @@ _Last updated: 2026-07-19 ~04:10 UTC — agy connector LIVE-TESTED ✓; codex-su
    → worker offline + cotal entry removed cleanly. Both open assumptions verified: headless
    `--conversation` resume works; agy accepts streamable-HTTP `serverUrl`. THREE connectors
    now proven: hermes (planner), codex (worker2), agy (worker3).
-2. **codex-sub benchmark arms — blocked on Wally's login (deliberate).** He REFUSED reusing
-   the Mac OAuth token (rotation would log his Mac out) — rule in memory. The copied token was
-   DELETED from Codespace + bench home. Resume: run `nohup codex login --device-auth
-   > /tmp/codex-login.log` on the Codespace, give Wally the URL+code, then
-   `bash benchmark/run.sh codex-sub t1-lru t2-bugfix t3-cli` + hard suite, snapshot to
-   `hermetic-codexsub-{easy,hard}.jsonl`, add the subscription table to RESULTS.md (pull real
-   model id from harness.log). Port-1455 login server and gh port-forward were killed at pause.
+2. **codex-sub arms DONE (Jul 19 ~04:30 UTC) — run 5 published.** Wally did a FRESH browser
+   login on the Codespace (port-1455 forward; device-auth was disabled on his ChatGPT account;
+   Mac token never reused — his rule, in memory). Native model = **gpt-5.6-sol** @ xhigh:
+   7/7, easy 100s / hard 344s vs Claude Code on Max 79s/234s — **latency story inverts on
+   native subscriptions; backend+model dominates harness overhead.** Snapshots
+   `hermetic-codexsub-{easy,hard}.jsonl`. Forward + login server torn down after.
 3. **Benchmarks are DONE and PUBLISHED otherwise** — see benchmark/RESULTS.md @ 2b52049
    (hermetic runs 1/2/4 + still-valid run 3; contamination appendix). Standing rules: hermetic
    mode stays ON; templates tripwire in run.sh; agy needs `--add-dir`; OpenRouter = Opus 4.8
