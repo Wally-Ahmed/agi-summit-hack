@@ -1,5 +1,61 @@
 # Benchmark results
 
+## Run 9 — reasoning & grounding (suite v4): constraint satisfaction · hallucination resistance
+
+_2026-07-19. Two new validated tasks isolating non-coding dimensions: **t12-reasoning**
+(constraint scheduling — place 5 jobs on 3 machines under five interacting constraints; the
+checker validates the constraints themselves, so ANY valid assignment passes, not one
+canonical answer) and **t13-hallucination** (grounding probe — 8 concrete questions about a
+small local library, 3 of which reference functions/constants/parameters that DO NOT exist;
+the only correct answer for those is exactly `DOES_NOT_EXIST`). Hermetic; the three
+subscription-native arms. Both tasks validated virgin-fail/ref-pass before use._
+
+| Arm | t12-reasoning | t13-hallucination | Total |
+|---|---|---|---|
+| Claude Code · Opus 4.8 (Max) | ✅ 18s | ✅ 33s | **2/2 · 51s** |
+| Codex · gpt-5.6-sol (ChatGPT) | ✅ 24s | ✅ 39s | **2/2 · 63s** |
+| Antigravity · Gemini 3.1 Pro (High) | ✅ 28s | ✅ 21s | **2/2 · 49s** |
+
+- **6/6, and zero hallucinations: every arm answered `DOES_NOT_EXIST` on all three traps**
+  (verified in each workdir's answers.json). The mechanism matters: an agentic harness
+  grounds itself — it reads or executes `lib/` instead of confabulating plausible behavior,
+  turning a "knowledge" question into a lookup. Hallucination resistance is a *harness*
+  property as much as a model property.
+- First table Antigravity tops (49s): at this task size the three subscription stacks sit
+  within ~30% of each other — consistent with runs 5/7. Worker choice remains about quota,
+  gated-model access, latency, and cost, not capability.
+
+_Run 8 (failover & reclaim on the live mesh) is designed and scripted
+(`benchmark/run-failover.sh`) but pending: the OpenRouter balance that powers the planner
+brain was drained overnight (see run 10's idle-burn finding) — runs after a top-up._
+
+## Run 10 — cost per verified task (analysis over the runs 1–4 token records)
+
+| Arm (metered, OpenRouter) | Tokens (7 tasks) | Est. cost | Est. $/PASS |
+|---|---|---|---|
+| Codex · Opus 4.8 (runs 1–2) | 511,421 | ~$3.58 | **~$0.51** |
+| Codex · Gemini 3.1 Pro (run 4) | 332,796 | ~$1.00 | **~$0.14** |
+
+| Arm (subscription) | Marginal $/PASS | Real constraint |
+|---|---|---|
+| Claude Code (Max) · Codex (ChatGPT) · Antigravity (Google) | ≈ $0 | quota windows / rate limits |
+
+- Method: codex reports one blended "tokens used" figure, so cost assumes the 90/10
+  input/output split typical of agentic loops (context re-sent per turn dominates input) at
+  list prices (Opus 4.8 $5/$25 per M in/out; Gemini 3.1 Pro $2/$12). Bounds: the Opus arm is
+  $2.56 all-input to $12.79 all-output; the Gemini arm $0.67–$3.99. Read these as
+  order-of-magnitude, not invoices.
+- **Same harness, same tasks: Gemini is ~3.6× cheaper per verified task than Opus**, and on
+  its native harness it was also the faster arm (run 4). For metered work, the
+  cheap-frontier arm wins on both axes.
+- **Subscriptions invert the economics.** All three subscription arms cleared every suite,
+  so their marginal cost per verified task is ≈ $0 against flat monthly fees — the planner's
+  real scheduling constraint is quota, not dollars.
+- **Orchestrator idle-burn is a first-class cost line:** overnight, a wedged planner (hermes
+  `skill_manage` loop) drained ~$4 of OpenRouter credit while producing nothing. Metered
+  brains punish unattended loops; idle-timeouts and supervision are cost controls, not just
+  reliability features.
+
 ## Run 7 — capability dimensions (suite v3): agentic depth · knowledge precision · self-verification
 
 _2026-07-19. Three new validated tasks, each isolating a capability rather than raw
