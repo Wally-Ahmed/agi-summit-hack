@@ -211,6 +211,22 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
   filter:drop-shadow(0 0 4px rgba(94,234,212,.45));
 }
 
+/* connector-status ribbon — the gap we filled, visible in the diagram itself */
+.gaps{margin-top:-4px}
+.gap{
+  border:1px dashed var(--line);border-radius:10px;padding:9px 13px;
+  font-size:11px;color:var(--dim);line-height:1.5;transition:border-color .25s,opacity .35s;
+}
+.gap .g-label{
+  display:block;font-family:var(--sans);font-size:9px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--dim2);margin-bottom:4px;font-weight:600;
+}
+.gap b{color:var(--accent);font-weight:600}
+.gap b.no{color:var(--fail)}
+.gap.ours-gap{border-color:rgba(94,234,212,.4);cursor:pointer;background:linear-gradient(180deg,rgba(94,234,212,.045),transparent)}
+.gap.ours-gap:hover{border-color:var(--accent)}
+.arch.dimmed .gap{opacity:.2}
+
 /* flow strip */
 .flow{display:flex;flex-wrap:wrap;margin-top:20px}
 .step{
@@ -499,6 +515,12 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="name">Antigravity CLI</div>
           <div class="sub">Google account · our connector</div>
         </div>
+      </div>
+
+      <div class="row r-workers gaps">
+        <div class="gap"><span class="g-label">connector status</span>official Cotal connector — full worker, works out of the box</div>
+        <div class="gap ours-gap" data-k="codex"><span class="g-label">connector status</span>official = pull-only experiment: the mesh <b class="no">can't wake it</b> → <b>ours: autonomous worker, delegation pushes turns</b></div>
+        <div class="gap ours-gap" data-k="agy"><span class="g-label">connector status</span>official = <b class="no">none</b> → <b>ours: autonomous worker, built &amp; live-tested tonight</b></div>
       </div>
 
       <div class="flow" id="flow">
