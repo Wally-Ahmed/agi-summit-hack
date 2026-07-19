@@ -1,0 +1,3 @@
+{"harness":"claude","task":"t1-lru","seconds":22,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t1-lru-VvBS"}
+{"harness":"claude","task":"t2-bugfix","seconds":28,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t2-bugfix-m84x"}
+{"harness":"claude","task":"t3-cli","seconds":29,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t3-cli-Ynbb"}

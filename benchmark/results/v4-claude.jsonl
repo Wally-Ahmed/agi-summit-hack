@@ -1,0 +1,2 @@
+{"harness":"claude","task":"t12-reasoning","seconds":18,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t12-reasoning-bvhK"}
+{"harness":"claude","task":"t13-hallucination","seconds":33,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t13-hallucination-4cRE"}

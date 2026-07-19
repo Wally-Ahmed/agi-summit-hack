@@ -1,0 +1,4 @@
+{"harness":"codex-sub","task":"t4-interp","seconds":135,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t4-interp-JCI0"}
+{"harness":"codex-sub","task":"t5-taskq","seconds":89,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t5-taskq-RA4M"}
+{"harness":"codex-sub","task":"t6-diff","seconds":71,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t6-diff-RksW"}
+{"harness":"codex-sub","task":"t7-ratelimit","seconds":49,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t7-ratelimit-lsKM"}

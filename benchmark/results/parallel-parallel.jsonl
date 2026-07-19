@@ -1,0 +1,4 @@
+{"arm":"parallel","task":"t1-lru","seconds":36,"pass":true,"work":"/tmp/par-parallel-t1-lru-RA7A"}
+{"arm":"parallel","task":"t3-cli","seconds":46,"pass":true,"work":"/tmp/par-parallel-t3-cli-tG8w"}
+{"arm":"parallel","task":"t2-bugfix","seconds":203,"pass":true,"work":"/tmp/par-parallel-t2-bugfix-vnVT"}
+{"arm":"parallel","makespan":203}

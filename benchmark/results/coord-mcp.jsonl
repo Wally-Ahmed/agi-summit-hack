@@ -1,0 +1,3 @@
+{"arm":"mcp","task":"t1-lru","seconds":46,"pass":true,"work":"/tmp/coord-mcp-t1-lru-enOl"}
+{"arm":"mcp","task":"t2-bugfix","seconds":51,"pass":true,"work":"/tmp/coord-mcp-t2-bugfix-iHHG"}
+{"arm":"mcp","task":"t3-cli","seconds":40,"pass":true,"work":"/tmp/coord-mcp-t3-cli-6wxJ"}

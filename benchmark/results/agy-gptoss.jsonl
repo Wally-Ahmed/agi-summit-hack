@@ -1,0 +1,7 @@
+{"harness":"agy","task":"t1-lru","seconds":61,"pass":false,"harness_rc":0,"work":"/tmp/bench-agy-t1-lru-lnJN"}
+{"harness":"agy","task":"t2-bugfix","seconds":125,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t2-bugfix-NB3L"}
+{"harness":"agy","task":"t3-cli","seconds":14,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t3-cli-uide"}
+{"harness":"agy","task":"t4-interp","seconds":19,"pass":false,"harness_rc":0,"work":"/tmp/bench-agy-t4-interp-tkWu"}
+{"harness":"agy","task":"t5-taskq","seconds":125,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t5-taskq-ZIZV"}
+{"harness":"agy","task":"t6-diff","seconds":12,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t6-diff-s0VS"}
+{"harness":"agy","task":"t7-ratelimit","seconds":19,"pass":false,"harness_rc":0,"work":"/tmp/bench-agy-t7-ratelimit-RPlL"}

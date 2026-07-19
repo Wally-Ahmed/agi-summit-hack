@@ -1,0 +1,3 @@
+{"harness":"codex-sub","task":"t8-agentic","seconds":36,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t8-agentic-N5mO"}
+{"harness":"codex-sub","task":"t9-omniscience","seconds":72,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t9-omniscience-ivCJ"}
+{"harness":"codex-sub","task":"t10-selfcheck","seconds":39,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t10-selfcheck-oiSr"}

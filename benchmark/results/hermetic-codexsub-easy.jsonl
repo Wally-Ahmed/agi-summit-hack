@@ -1,0 +1,3 @@
+{"harness":"codex-sub","task":"t1-lru","seconds":43,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t1-lru-hCqV"}
+{"harness":"codex-sub","task":"t2-bugfix","seconds":30,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t2-bugfix-YACZ"}
+{"harness":"codex-sub","task":"t3-cli","seconds":27,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t3-cli-h7FP"}

@@ -1,0 +1,3 @@
+{"arm":"mesh","task":"t1-lru","seconds":32,"pass":true,"work":"/tmp/coord-mesh-t1-lru-G1RQ"}
+{"arm":"mesh","task":"t2-bugfix","seconds":31,"pass":true,"work":"/tmp/coord-mesh-t2-bugfix-cc4j"}
+{"arm":"mesh","task":"t3-cli","seconds":32,"pass":true,"work":"/tmp/coord-mesh-t3-cli-sK5h"}

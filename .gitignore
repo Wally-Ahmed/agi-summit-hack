@@ -29,3 +29,10 @@ __pycache__/
 
 # claude-mem context droppings — must not leak into benchmark task dirs
 benchmark/**/CLAUDE.local.md
+
+# cotal runtime state — never commit (credentials + logs)
+.cotal/auth/
+.cotal/nats/
+.cotal/*.creds
+.cotal/*.log
+.cotal/membership.json

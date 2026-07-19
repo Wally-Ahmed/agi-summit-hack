@@ -1,0 +1,4 @@
+{"arm":"sequential","task":"t1-lru","seconds":27,"pass":true,"work":"/tmp/par-sequential-t1-lru-9zlN"}
+{"arm":"sequential","task":"t2-bugfix","seconds":1504,"pass":false,"work":"/tmp/par-sequential-t2-bugfix-bZIt"}
+{"arm":"sequential","task":"t3-cli","seconds":1504,"pass":false,"work":"/tmp/par-sequential-t3-cli-aY8m"}
+{"arm":"sequential","makespan":1504}

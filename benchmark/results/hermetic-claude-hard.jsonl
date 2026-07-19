@@ -1,0 +1,4 @@
+{"harness":"claude","task":"t4-interp","seconds":105,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t4-interp-tLls"}
+{"harness":"claude","task":"t5-taskq","seconds":43,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t5-taskq-DvbZ"}
+{"harness":"claude","task":"t6-diff","seconds":55,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t6-diff-W05D"}
+{"harness":"claude","task":"t7-ratelimit","seconds":31,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t7-ratelimit-ZSYt"}

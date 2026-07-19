@@ -1,0 +1,2 @@
+{"harness":"agy","task":"t12-reasoning","seconds":28,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t12-reasoning-cFgb"}
+{"harness":"agy","task":"t13-hallucination","seconds":21,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t13-hallucination-7WYO"}

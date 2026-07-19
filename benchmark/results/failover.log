@@ -1,0 +1,27 @@
+[+0s] workdir: /tmp/bench-failover-3Kz1
+[+1s] waiting for busy builders to settle: worker
+[+7s] waiting for busy builders to settle: worker
+[+13s] waiting for busy builders to settle: worker
+[+21s] waiting for busy builders to settle: worker
+[+27s] waiting for busy builders to settle: worker
+[+33s] waiting for busy builders to settle: worker
+[+39s] waiting for busy builders to settle: worker
+[+45s] waiting for busy builders to settle: worker
+[+51s] pre-run roster:
+manager/manager  endpoint  ○ idle  supervisor (pty)
+planner/planner  agent     ● working  search_files: /tmp/bench-failover-kRrD
+worker/builder   agent     ○ idle  bench-failover task done; ready for assignments
+worker3/builder  agent     ○ idle  agy turn
+→ @planner  TASK: complete the assignment described in /tmp/bench-failover-3Kz1/PROMPT.md, working in the directory /tmp/bench-failover-3Kz1. Delegate it to exactly ONE builder. You are responsible for completion: monitor progress, and if the assigned builder goes offline or stops responding, re-delegate the task to a different builder. DONE-WHEN: cd /tmp/bench-failover-3Kz1 && python3 test.py prints PASS.
+[+53s] task sent to planner
+[+78s] builder working: worker — letting it run 20s
+[+98s] killing worker
+✓ stopped worker
+[+100s] victim=worker killed
+[+101s] roster: planner:idle worker:idle worker3:idle 
+[+112s] roster: planner:idle worker3:idle 
+[+903s] RESULT pass=false total=903s victim=worker kill_at=100s work=/tmp/bench-failover-3Kz1
+[+903s] post-run roster:
+manager/manager  endpoint  ○ idle  supervisor (pty)
+planner/planner  agent     ○ idle  cotal_send
+worker3/builder  agent     ○ idle  agy turn

@@ -1,0 +1,3 @@
+{"harness":"agy","task":"t8-agentic","seconds":61,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t8-agentic-DX4u"}
+{"harness":"agy","task":"t9-omniscience","seconds":49,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t9-omniscience-BtkW"}
+{"harness":"agy","task":"t10-selfcheck","seconds":51,"pass":true,"harness_rc":0,"work":"/tmp/bench-agy-t10-selfcheck-QcfB"}

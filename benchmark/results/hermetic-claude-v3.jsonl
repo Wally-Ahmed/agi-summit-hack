@@ -1,0 +1,3 @@
+{"harness":"claude","task":"t8-agentic","seconds":37,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t8-agentic-9ZpE"}
+{"harness":"claude","task":"t9-omniscience","seconds":32,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t9-omniscience-6Uxm"}
+{"harness":"claude","task":"t10-selfcheck","seconds":42,"pass":true,"harness_rc":0,"work":"/tmp/bench-claude-t10-selfcheck-yiXw"}

@@ -1,0 +1,7 @@
+{"harness":"codex","task":"t1-lru","seconds":20,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t1-lru-ifH0"}
+{"harness":"codex","task":"t2-bugfix","seconds":56,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t2-bugfix-MZqj"}
+{"harness":"codex","task":"t3-cli","seconds":52,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t3-cli-D1lL"}
+{"harness":"codex","task":"t4-interp","seconds":121,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t4-interp-swbO"}
+{"harness":"codex","task":"t5-taskq","seconds":137,"pass":true,"harness_rc":1,"work":"/tmp/bench-codex-t5-taskq-KihR"}
+{"harness":"codex","task":"t6-diff","seconds":232,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t6-diff-zG8v"}
+{"harness":"codex","task":"t7-ratelimit","seconds":77,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-t7-ratelimit-5JIx"}

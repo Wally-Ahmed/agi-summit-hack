@@ -1,0 +1,2 @@
+{"harness":"codex-sub","task":"t12-reasoning","seconds":24,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t12-reasoning-eUYu"}
+{"harness":"codex-sub","task":"t13-hallucination","seconds":39,"pass":true,"harness_rc":0,"work":"/tmp/bench-codex-sub-t13-hallucination-e25L"}
