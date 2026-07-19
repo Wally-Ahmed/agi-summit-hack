@@ -476,7 +476,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   <div class="badges">
     <span class="badge">2 connectors built by us</span>
     <span class="badge">2 PRs upstream to Cotal</span>
-    <span class="badge alt">9 benchmark studies</span>
+    <span class="badge alt">10 benchmark studies</span>
     <span class="badge alt">57/58 hermetic tasks passed</span>
     <span class="badge">no API credits needed</span>
   </div>
@@ -694,11 +694,22 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </article>
 
         <article class="slide">
+          <span class="chip new">Resilience · new</span>
+          <h2>Run 8 — Kill the assigned worker mid-task</h2>
+          <div class="q">The planner gets a task with explicit responsibility language — "monitor progress; if the builder goes offline, re-delegate." We wait until its chosen worker is mid-build, kill that worker, and watch for 15 minutes. <b>Variable isolated: what happens when a worker dies.</b></div>
+          <div class="bars">
+            <div class="barrow"><span>Attempt 1 — bystander killed by mistake</span><div class="barbg"><div class="bar c-mesh" data-w="10"></div></div><span class="score">✅ 94s</span><span class="taskbreak">assignee untouched, finished normally — and the planner re-ran the test itself before accepting</span></div>
+            <div class="barrow"><span>Attempt 2 — planner killed by mistake</span><div class="barbg"><div class="bar c-mesh" data-w="6"></div></div><span class="score">✅ 50s</span><span class="taskbreak">delegated work survived planner death; warm worker recreated the solution from memory</span></div>
+            <div class="barrow"><span>Attempt 3 — clean: assigned worker killed +100s</span><div class="barbg"><div class="bar c-fail" data-w="100"></div></div><span class="score">✗ DNF · 903s</span><span class="taskbreak">planner never re-delegated — session autopsy: zero messages reached it after the kill</span></div>
+          </div>
+          <div class="verdict"><b>No autonomous reclaim — and the autopsy says why.</b> Cotal has no task lifecycle, so a dying worker emits no event; Hermes is event-driven, so no event means no turn. "Monitor progress" can't execute without a wake source. Resilience belongs to the convention layer: DONE-WHEN + polling, heartbeats, watchdogs.</div>
+        </article>
+
+        <article class="slide">
           <span class="chip">Roadmap</span>
           <h2>What we test next</h2>
-          <div class="q">Three dimensions the current studies don't cover — each is a scripted runner away.</div>
+          <div class="q">Two dimensions the current studies don't cover — each is a scripted runner away.</div>
           <div class="next-grid">
-            <div class="card"><b>Failover &amp; reclaim</b><p>Kill a worker mid-task: does the planner detect the dropout and re-delegate? Runner already written (<code>benchmark/run-failover.sh</code>) — awaiting a planner-brain window.</p></div>
             <div class="card"><b>Routing policy</b><p>Planner armed with run-4/5 latency data routes per-task vs random assignment — does informed routing measurably win?</p></div>
             <div class="card"><b>Long-horizon tasks</b><p>Multi-file refactors with dependencies between subtasks — where planner decomposition should matter most.</p></div>
           </div>
@@ -826,8 +837,10 @@ const EXPLAIN = [
    b:"t12: constraint scheduler (machine capacity, co-location, and exclusion constraints); test.py validates the constraints themselves, so any valid assignment passes — no canonical answer to pattern-match. t13: answers.json must map 3 nonexistence traps to the literal string DOES_NOT_EXIST while 5 real questions are computed from lib/ at test time. Result: 6/6, zero hallucinated traps across all arms (verified per-workdir). Hallucination resistance here is substantially a harness property: agentic loops ground themselves by reading or executing the library."},
   {a:"What does one finished, verified task actually cost? Paying per use through an API: between fourteen and fifty-one cents depending on the model. On a subscription you already own: effectively nothing extra — your limit is a monthly usage cap, not a bill. That's the core argument of this whole project. And a warning from experience: an orchestrator stuck in a broken loop burned four dollars overnight while producing nothing. Automated spenders need supervision.",
    b:"Priced from measured token totals at list rates (Opus 4.8 $5/$25 per M in/out; Gemini 3.1 Pro $2/$12) under a 90/10 input/output split typical of agentic loops. Opus: 511k tokens over 7 tasks ≈ $0.51/PASS (bounds $2.56–$12.79 total). Gemini: 333k ≈ $0.14/PASS ($0.67–$3.99). Subscription arms cleared every suite at ≈$0 marginal cost — quota is the binding constraint. The idle-burn incident: a wedged planner loop drained ~$4 of metered credit with zero completed turns."},
-  {a:"What's left to measure: whether the planner notices a worker dying mid-task and reassigns the work, whether knowing each worker's speed makes its routing measurably smarter, and how the system handles long jobs where the steps depend on each other.",
-   b:"The failover runner is already written (`benchmark/run-failover.sh`): delegate an interpreter task, kill the assigned builder ~20s into its turn, and watch — within a 900s cap — whether the planner re-delegates. Routing-policy and long-horizon decomposition studies are designed but not yet scripted."}
+  {a:"We let the planner assign a task to a worker, then killed that worker partway through and watched for thirteen minutes. The planner never reassigned the work — not because it's careless, but because nothing told it the worker died. This system only acts when a message arrives, and a dead worker sends no message. Two earlier attempts misfired in instructive ways: killing an uninvolved worker changed nothing, and we caught the planner double-checking finished work on its own before accepting it.",
+   b:"Protocol (`benchmark/run-failover.sh`): delegate t5-taskq with explicit monitor/re-delegate responsibility, kill the assigned builder ~20s into its turn (strict role-field victim match — attempt 2's matcher hit the planner via an activity string), 900s cap. Clean trial: kill at +100s; sqlite autopsy of the planner's message store shows zero inbound messages afterward; DNF at cap. Mechanism: the Cotal protocol has no task lifecycle → presence loss emits no event → no Hermes turn. Mitigations are conventions: machine-checkable DONE-WHEN with asker-side polling (our runners), heartbeat crons, watchdog nudges. Bonus finding: on completed work the planner independently re-ran test.py and scanned for banned tokens before accepting."},
+  {a:"What's left to measure: whether knowing each worker's speed makes the planner's routing measurably smarter, and how the system handles long jobs where the steps depend on each other.",
+   b:"Routing-policy and long-horizon decomposition studies are designed but not yet scripted. The failover study graduated from this list to run 8."}
 ];
 const explainEl = document.getElementById("explain");
 function renderExplain(i){
@@ -1055,7 +1068,8 @@ const TOUR = [
   {cap:"9 trials · 3 stacks · **9 passes**", foc:".slider", fb:"start", run(){ slideTo(5); }, n:11, vis:null},
   {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ slideTo(6); }, n:13, vis:null},
   {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ slideTo(7); }, n:14, vis:null},
-  {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(8); }, n:16, vis:null},
+  {cap:"**Kill the worker** — the planner can't notice silence", foc:".slider", fb:"start", run(){ slideTo(8); }, n:18, vis:null},
+  {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(9); }, n:16, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
 ];

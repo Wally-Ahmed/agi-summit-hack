@@ -25,9 +25,35 @@ subscription-native arms. Both tasks validated virgin-fail/ref-pass before use._
   within ~30% of each other — consistent with runs 5/7. Worker choice remains about quota,
   gated-model access, latency, and cost, not capability.
 
-_Run 8 (failover & reclaim on the live mesh) is designed and scripted
-(`benchmark/run-failover.sh`) but pending: the OpenRouter balance that powers the planner
-brain was drained overnight (see run 10's idle-burn finding) — runs after a top-up._
+## Run 8 — failover & reclaim (live mesh): kill the assigned worker mid-task
+
+_2026-07-19. Protocol (`benchmark/run-failover.sh`): hand the planner one task it hasn't
+seen with explicit responsibility language ("monitor progress; if the assigned builder goes
+offline, re-delegate"), wait for the assigned builder to go `working`, kill it ~20s into
+its turn, watch for 900s. Planner brain: gpt-5.6 via the ChatGPT-subscription OAuth
+(hermes pooled credential) — note this differs from runs 3/6 (sonnet-4.6/OpenRouter)._
+
+| Attempt | What happened | Lesson |
+|---|---|---|
+| 1 | Victim mis-picked — killed a builder still *orienting*; the real assignee finished ✅ 94s | Bystander loss doesn't disturb an in-flight task. Bonus finding: the planner **independently verified** the result before accepting — re-ran test.py itself and scanned for banned tokens. |
+| 2 | Victim matcher hit the *planner* (its activity text contained "builder"); task still passed in 50s — the warm worker recreated the solution from conversation memory | Worker state persists across tasks; clean measurements need fresh conversations. Delegated work survives planner death. |
+| 3 | **Clean run**: assigned worker killed at +100s → **planner never re-delegated; DNF at the 900s cap** | **No autonomous reclaim.** Session autopsy: zero messages reached the planner after the kill. |
+
+### Read (run 8)
+
+- **The mechanism, confirmed from the planner's own message store:** Cotal has no task
+  lifecycle, so a worker dying produces **no event** — and Hermes is event-driven: no
+  message, no turn. The persona instruction "monitor progress" cannot execute without a
+  wake source. The planner sat in `waiting` for 13 minutes over a dead assignment.
+- **Resilience must come from the convention layer:** machine-checkable DONE-WHEN plus an
+  active poller (exactly what our runner does), planner heartbeat crons, or watchdog
+  nudges. This is the sibling of run 6's serial-queue fragility: *the planner acts only
+  when spoken to.*
+- The verification behavior in attempts 1–2 is the flip side: when messages DO arrive, the
+  planner supervises well — it re-ran tests itself before accepting a worker's "done".
+- Caveats: n=1 clean trial; the respawned planner inherited prior state (seeded home) —
+  including a fully-verified previous instance of the same protocol — and still did not
+  reclaim; single-box mesh.
 
 ## Run 10 — cost per verified task (analysis over the runs 1–4 token records)
 
