@@ -65,6 +65,12 @@ function have(bin) {
   return r.status === 0 ? (r.stdout || r.stderr).trim().split("\n")[0] : null;
 }
 
+// cotal has no --version subcommand; present = the binary resolves and emits its help.
+function haveCotal() {
+  const r = run("cotal", ["--help"]);
+  return !r.error && (r.stdout + r.stderr).length > 0;
+}
+
 function die(msg) {
   console.error(bad(`✗ ${msg}`));
   process.exit(1);
@@ -168,9 +174,8 @@ async function init(flags) {
   console.log(b("\nhermes-handoff — one front-door to your gated models\n"));
 
   // 1. Preflights that don't depend on the harness choice.
-  const cotalVer = have("cotal");
-  if (!cotalVer) die("Cotal CLI not found on PATH — install it first (https://cotal.ai), then re-run");
-  console.log(`  cotal        ${ok("✓")} ${dim(cotalVer)}`);
+  if (!haveCotal()) die("Cotal CLI not found on PATH — install it first (https://cotal.ai), then re-run");
+  console.log(`  cotal        ${ok("✓ detected")}`);
   const extList = stripAnsi(run("cotal", ["ext", "list"]).stdout || "");
   const hermesExt = extList.includes("connector-hermes");
   console.log(`  hermes conn  ${hermesExt ? ok("✓ installed") : bad("✗ missing")}`);
