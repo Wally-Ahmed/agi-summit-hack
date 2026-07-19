@@ -8,5 +8,6 @@ mkdir -p "$HERE/public"
 cp "$ROOT/overview.html" "$HERE/public/index.html"
 cp -R "$ROOT/walkthrough" "$HERE/public/walkthrough"
 find "$HERE/public" -name CLAUDE.local.md -delete 2>/dev/null || true
+git -C "$ROOT" archive --format=zip HEAD -o "$HERE/public/hermes-handoff-project.zip"
 du -sh "$HERE/public"
 echo "staged — deploy with: fly deploy --config $HERE/fly.toml"
