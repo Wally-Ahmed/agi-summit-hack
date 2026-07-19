@@ -1,4 +1,10 @@
-# Cotal upstream PR drafts (ready to submit — Wally approves & fires)
+# Cotal upstream PR drafts — SUBMITTED Jul 19 (Wally's go)
+
+**PR #254** (connector-codex): https://github.com/Cotal-AI/Cotal/pull/254
+**PR #255** (connector-agy): https://github.com/Cotal-AI/Cotal/pull/255
+CI pending maintainer workflow-approval (first-time contributor). Watch with
+`gh pr checks 254 --repo Cotal-AI/Cotal` / `... 255 ...`.
+
 
 Branches live on the fork, built + import-verified against in-tree `connector-core` 0.12.0:
 
