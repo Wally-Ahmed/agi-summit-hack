@@ -16,7 +16,7 @@ delegation with task verification.
 
 | Piece | What it is |
 |---|---|
-| `connectors/cotal-connector-codex/` | **Our Codex CLI mesh connector** — Node shim owning one MeshAgent; cotal tools served to Codex over local streamable-HTTP MCP; turn chain via `codex exec` / `exec resume <threadId>` |
+| `connectors/cotal-connector-codex/` | **Our Codex CLI mesh connector** — the autonomous-worker half Cotal doesn't have. (Cotal ships an experimental `@cotal-ai/connector-codex` 0.1.4: pull-only, it makes an *interactive* Codex session mesh-aware but inbound messages never wake Codex, and it targets connector-core 0.2.0 vs today's 0.12.0.) Ours: Node shim owning one MeshAgent; push delegation drives turns via `codex exec` / `exec resume <threadId>`; cotal tools over local streamable-HTTP MCP |
 | `connectors/cotal-connector-agy/` | **Our Antigravity CLI mesh connector** — pTTY-wrapped `agy -p` turn loop, `--conversation` resume discovered from state-dir inspection, global MCP-config merge/restore, `--add-dir` workspace grounding |
 | `benchmark/` | 7-task validated suite (easy + adversarial), hermetic runner (`run.sh`) for four harness arms + coordination benchmark (`run-coord.sh`), results + full methodology in [`benchmark/RESULTS.md`](benchmark/RESULTS.md) |
 | `.cotal/agents/` | Personas: Hermes planner (plans, delegates, never executes) + three builder workers |
