@@ -1,69 +1,78 @@
 # Live demo script (~5 minutes)
 
-Target: show a real cross-vendor handoff — planner receives a task, delegates to an official
-harness running on its owner's subscription, worker executes in place, test passes on disk.
+Story: **the model you want is locked behind one harness and its subscription —
+`hermes-handoff` makes Hermes the front door to the one you already pay for**, any task,
+no API credits. Then the receipts: 10 hermetic studies and two upstream PRs.
+
+Zero-setup fallback for judges: **https://hermes-handoff-overview.fly.dev/** — press
+**▶ Narrated walkthrough** (top right). 17 narrated scenes cover the product, the
+architecture, a live task simulation, every benchmark slide, and the two pull requests.
 
 ## 0. Preflight (before the audience arrives)
 
 ```bash
-gh codespace ssh -c <codespace>        # or any host with the repo + CLIs signed in
-cd /workspaces/agi-summit-hack
-export OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY /workspaces/openrouter-subagents/.env | cut -d= -f2-)
-export HERMES_MODEL=anthropic/claude-sonnet-4.6
-cotal up --detach && sleep 3 && cotal ps          # nats + delivery + manager up
-cotal spawn planner --agent hermes --detach
-cotal spawn worker  --agent claude --detach       # Claude Code (Max)
-cotal spawn worker3 --agent agy    --detach       # Antigravity (our connector)
-cotal endpoints                                    # all green
+gh codespace ssh -c <codespace>          # or any host with the CLIs signed in
+cd /workspaces/agi-summit-hack && git pull
+hermes auth status openai-codex          # planner brain: "logged in" (ChatGPT OAuth)
+node tools/hermes-handoff/bin/hermes-handoff.js status   # config + roster
+# if the space is down:  node tools/hermes-handoff/bin/hermes-handoff.js up
 ```
 
-Notes that bite: detached spawns inherit the MANAGER's env (export before `cotal up`, not
-after); the agy connector allows ONE agy worker per machine; Claude worker permissions come
-from `~/.claude/settings.json` (acceptEdits + allow list + `mcp__cotal`).
+Notes that bite: run `cotal` commands from the workspace dir the space was created in
+(`~/.hermes-handoff.json` → `dir`), not the repo. One agy worker per machine. Detached
+spawns inherit the MANAGER's env.
 
-## 1. The handoff (the money shot)
+## 1. The product (the money shot)
 
-Terminal A — watch the mesh live:
+Show the wizard's eye view first:
 
 ```bash
-cotal console --plain
+node tools/hermes-handoff/bin/hermes-handoff.js init --no-launch --dir /tmp/demo-ws
+# → detects claude/codex/agy, shows auth state and WHICH GATED MODELS each unlocks; pick one
 ```
 
-Terminal B — hand the mesh a task with a machine-checkable done condition:
+Then hand Hermes a task that is **not coding**:
 
 ```bash
-WORK=$(mktemp -d /tmp/demo-XXXX)
-cp -R benchmark/tasks/t1-lru/* "$WORK/"
-cotal send ask planner "TASK: complete the task in $WORK (paths relative to it). CONSTRAINT: delegate execution to a builder worker; do not execute yourself. DONE-WHEN: 'cd $WORK && python3 test.py' prints PASS. Report on #general when verified. TASK SPEC: $(cat $WORK/PROMPT.md)"
+hermes-handoff ask "Collect the newest three .md files under ~/notes into /tmp/demo-ws/digest.md with a one-line summary each"
+cotal console --plain        # narrate: Hermes restates TASK/CONTEXT/DONE-WHEN → DMs the worker → verifies
+cat /tmp/demo-ws/digest.md   # the deliverable, on disk, made under the operator's own subscription
 ```
 
-Narrate what scrolls in Terminal A: planner claims → plans → delegates to a builder → builder
-goes `working` → builder posts the verified result on `#general`. Then prove it on disk:
+Point out loud: the planner brain is running on the **ChatGPT subscription via OAuth**
+(`hermes auth`), the worker on **Claude Max** — nobody bought API credits.
+
+## 2. Scale-out (30 seconds)
 
 ```bash
-cd "$WORK" && python3 test.py     # PASS
+cotal spawn worker3 --agent agy --detach   # second builder, Google account, our connector
+cotal endpoints                            # heterogeneous pool, one roster
 ```
 
-## 2. The numbers (30 seconds each)
+One sentence: same wiring, N harnesses — fan-out beat serial 3/3-vs-DNF in run 6.
 
-Open [`benchmark/RESULTS.md`](benchmark/RESULTS.md):
+## 3. The receipts (a minute)
 
-- **Run 3:** mesh handoff beat direct MCP-subagent orchestration ~30% at equal quality.
-- **Run 4:** native harness beats foreign harness for Gemini (298s vs 521s, both 7/7).
-- **Run 5:** on native subscriptions the latency story inverts — backend+model dominates.
-- **Appendix:** the contamination story — why hermetic mode and the template tripwire exist.
+Open https://hermes-handoff-overview.fly.dev/ on the projector:
 
-## 3. Teardown
+- **② The Benchmarks** — arrow through the timeline; the explainer under each slide has
+  the plain-language and technical reads. Highlights: run 3 (harness-per-model beats
+  one-loop MCP ~30%), run 5 (subscription inversion), run 9 (**zero hallucinations**),
+  run 10 (≈$0 marginal vs $0.14–0.51 metered), run 8 (**no autonomous reclaim** — the
+  honest one, with the sqlite autopsy).
+- **③ The Pull Requests** — what we're contributing back: the Codex worker connector and
+  the first Antigravity connector, built in-tree against Cotal's current core.
+
+## 4. Teardown
 
 ```bash
-cotal stop --name worker3 && cotal stop --name worker && cotal stop --name planner
-cotal down
+hermes-handoff stop --down
 ```
 
 ## If something breaks
 
-- Worker won't spawn → `docs/hermes-mesh-runbook.md` (all six known spawn failures + fixes).
-- agy writes files elsewhere → the connector passes `--add-dir`; if testing agy raw, you must too.
-- Planner 402s → OpenRouter balance; top up, respawn planner.
-- Fallback: pre-recorded run in `benchmark/results/*.jsonl` + RESULTS.md tables tell the story
-  without a live mesh.
+- Planner unresponsive → `hermes auth status openai-codex` (OAuth), then respawn:
+  `cotal stop --name planner && cotal spawn planner --agent hermes --detach`.
+- Worker won't spawn → `docs/hermes-mesh-runbook.md` (six known failures + fixes); agy:
+  delete a stale `cotal` key in `~/.gemini/config/mcp_config.json`.
+- No live mesh at all → the fly.dev walkthrough IS the demo; RESULTS.md has every table.
