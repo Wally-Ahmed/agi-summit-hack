@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotal Mesh — Project Overview &amp; Benchmarks</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#12161f; --panel2:#171c28; --line:#2a3245;
+    --text:#dde3ef; --dim:#8b93a7; --accent:#5eead4; --accent2:#818cf8;
+    --claude:#e0975c; --codex:#74b9ff; --agy:#7bd88f; --hermes:#c792ea;
+    --win:#34d399; --lose:#64748b; --warn:#fbbf24; --fail:#f87171;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:15px/1.55 "SF Mono","JetBrains Mono",ui-monospace,Menlo,monospace;padding:40px 24px 80px}
+  .wrap{max-width:1060px;margin:0 auto}
+  h1{font-size:26px;letter-spacing:.5px}
+  h2{font-size:19px;margin:0 0 4px;color:var(--accent)}
+  h3{font-size:15px;margin:0 0 8px}
+  .tagline{color:var(--dim);margin:6px 0 14px}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px}
+  .badge{border:1px solid var(--line);border-radius:20px;padding:4px 14px;font-size:12.5px;color:var(--accent)}
+  .badge.alt{color:var(--accent2)}
+  section{margin-bottom:52px}
+  .sec-label{font-size:11px;letter-spacing:2.5px;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:22px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+
+  /* architecture */
+  .arch{display:grid;gap:14px}
+  .row{display:grid;gap:14px}
+  .r-user{grid-template-columns:1fr}
+  .r-plan{grid-template-columns:1fr 300px}
+  .r-workers{grid-template-columns:1fr 1fr 1fr}
+  .node{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;position:relative}
+  .node .who{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+  .node .name{font-weight:700;font-size:15.5px}
+  .node .sub{color:var(--dim);font-size:12.5px;margin-top:6px}
+  .node.hermes{border-left:3px solid var(--hermes)}
+  .node.claude{border-left:3px solid var(--claude)}
+  .node.codex{border-left:3px solid var(--codex)}
+  .node.agy{border-left:3px solid var(--agy)}
+  .node.pool{border-left:3px solid var(--accent2)}
+  .ours{position:absolute;top:10px;right:12px;font-size:10.5px;color:#0b0e14;background:var(--accent);border-radius:4px;padding:2px 7px;font-weight:700}
+  .bus{border:1px dashed var(--accent2);border-radius:10px;padding:10px 16px;text-align:center;color:var(--accent2);font-size:13px;letter-spacing:1px}
+  .flow{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;margin-top:20px}
+  .step{flex:1;min-width:150px;background:var(--panel2);border:1px solid var(--line);padding:12px 14px;position:relative}
+  .step:first-child{border-radius:10px 0 0 10px}
+  .step:last-child{border-radius:0 10px 10px 0}
+  .step .n{color:var(--accent);font-weight:700;font-size:12px}
+  .step .t{font-size:12.5px;margin-top:3px}
+  .step:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:var(--accent);z-index:2;font-size:18px;background:var(--bg);line-height:1;padding:2px 0}
+  .arrow-down{text-align:center;color:var(--dim);font-size:16px;line-height:1;margin:-4px 0}
+
+  /* component cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card .path{color:var(--accent);font-size:12.5px}
+  .card p{color:var(--dim);font-size:12.5px;margin-top:6px}
+
+  /* benchmarks */
+  .run{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px}
+  .run .q{color:var(--dim);font-size:13px;margin-bottom:14px}
+  .bars{display:grid;gap:8px;margin:10px 0 12px}
+  .barrow{display:grid;grid-template-columns:250px 1fr 120px;gap:12px;align-items:center;font-size:13px}
+  .barbg{background:#0e1118;border:1px solid var(--line);border-radius:5px;height:20px;overflow:hidden}
+  .bar{height:100%;border-radius:4px 0 0 4px}
+  .score{text-align:right;color:var(--dim);font-size:12.5px;white-space:nowrap}
+  .verdict{border-left:3px solid var(--win);background:var(--panel2);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px}
+  .verdict b{color:var(--win)}
+  .c-claude{background:var(--claude)} .c-codex{background:var(--codex)}
+  .c-agy{background:var(--agy)} .c-mesh{background:var(--accent)} .c-mcp{background:var(--accent2)}
+  .c-fail{background:var(--fail)}
+  .meth{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:18px}
+  .meth .card{border-left:3px solid var(--accent)}
+  .war{border:1px solid var(--warn);border-radius:12px;padding:18px 22px;margin-top:6px}
+  .war h3{color:var(--warn)}
+  .war p{color:var(--dim);font-size:13px;margin-top:8px}
+  .war b{color:var(--text)}
+  code{background:#0e1118;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:12.5px;color:var(--accent)}
+  .foot{color:var(--dim);font-size:12.5px;text-align:center;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Cotal Mesh: Official AI Harnesses as Coordinated Workers</h1>
+  <div class="tagline">AGI Summit 2026 Hackathon — one mesh, three frontier coding agents, each on its owner's real subscription.</div>
+  <div class="badges">
+    <span class="badge">3 connectors live-proven</span>
+    <span class="badge">2 connectors built by us</span>
+    <span class="badge alt">5 benchmark runs</span>
+    <span class="badge alt">42/43 hermetic tasks passed</span>
+    <span class="badge">mesh beats direct-MCP by ~30%</span>
+  </div>
+
+  <!-- ==================== PROJECT ==================== -->
+  <section>
+    <div class="sec-label">Part 1 — The Project</div>
+
+    <div class="panel arch">
+      <div class="row r-user">
+        <div class="node">
+          <div class="who">You (or a judge)</div>
+          <div class="name">cotal send ask planner "TASK … DONE-WHEN: test.py prints PASS"</div>
+          <div class="sub">Every task carries a machine-checkable done condition — the mesh's missing task-lifecycle, supplied by convention.</div>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="row r-plan">
+        <div class="node hermes">
+          <div class="who">Persistent planner</div>
+          <div class="name">Hermes (Nous Research hermes-agent)</div>
+          <div class="sub">Official Cotal connector · brain = sonnet-4.6 via OpenRouter · plans &amp; delegates, never executes · state lives ON the mesh</div>
+        </div>
+        <div class="node pool">
+          <div class="who">Subagent pool (MCP)</div>
+          <div class="name">openrouter-subagents · gpt-api</div>
+          <div class="sub">On-demand expert calls for any worker or the planner</div>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="bus">⇆ &nbsp;Cotal mesh — NATS + JetStream · presence · anycast claims · reply correlation&nbsp; ⇆</div>
+      <div class="arrow-down">▼</div>
+      <div class="row r-workers">
+        <div class="node claude">
+          <div class="who">worker · builder</div>
+          <div class="name">Claude Code</div>
+          <div class="sub">Claude Max subscription · Fable 5 xhigh · official connector · executes in place, verifies, reports</div>
+        </div>
+        <div class="node codex">
+          <div class="ours">OURS</div>
+          <div class="who">worker2 · builder</div>
+          <div class="name">Codex CLI</div>
+          <div class="sub">ChatGPT subscription (gpt-5.6-sol) · our shim: cotal tools over local streamable-HTTP MCP · turn chain via <code>codex exec resume</code></div>
+        </div>
+        <div class="node agy">
+          <div class="ours">OURS</div>
+          <div class="who">worker3 · builder</div>
+          <div class="name">Antigravity CLI</div>
+          <div class="sub">Google account · pTTY-wrapped <code>agy -p</code> · <code>--conversation</code> resume · global MCP-config merge/restore · <code>--add-dir</code> grounding</div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="step"><div class="n">1 · ASK</div><div class="t">task + DONE-WHEN anycast to planner</div></div>
+        <div class="step"><div class="n">2 · PLAN</div><div class="t">planner decomposes, picks a worker</div></div>
+        <div class="step"><div class="n">3 · HANDOFF</div><div class="t">delegation over the mesh, context attached</div></div>
+        <div class="step"><div class="n">4 · EXECUTE</div><div class="t">worker builds in place under its own auth</div></div>
+        <div class="step"><div class="n">5 · VERIFY</div><div class="t">worker runs the task's own test</div></div>
+        <div class="step"><div class="n">6 · REPORT</div><div class="t">verified result posted on #general</div></div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="path">connectors/cotal-connector-codex/</div><p>Our Codex mesh connector — Node shim owns one MeshAgent; MCP served locally; thread-resume turn chain.</p></div>
+      <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — built by a Claude subagent, live-tested: "AGY WORKER OK" on #general, clean teardown.</p></div>
+      <div class="card"><div class="path">benchmark/</div><p>7 validated tasks (easy + adversarial), hermetic runner for 4 harness arms, coordination benchmark, RESULTS.md.</p></div>
+      <div class="card"><div class="path">.cotal/agents/</div><p>Personas: planner (plan/delegate/never-execute) + three builders with execute-and-verify contracts.</p></div>
+      <div class="card"><div class="path">docs/ + HANDOFF.md</div><p>Wire-contract truths, mesh runbook (6 spawn fixes), connector plans, and the standing cross-session recovery file.</p></div>
+      <div class="card"><div class="path">Compliance framing</div><p>Every harness is the official CLI under its owner's legitimate auth. No token scraping, no reverse-engineering — the mesh only coordinates.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== BENCHMARKS ==================== -->
+  <section>
+    <div class="sec-label">Part 2 — The Benchmarks</div>
+
+    <div class="meth">
+      <div class="card"><b>Hermetic by default</b><p>Stock harness configs: no dev-env MCP servers, plugins, or memory layers. This alone changed a headline (see Run 2).</p></div>
+      <div class="card"><b>Validated tests</b><p>Every task judged only by its own test.py, validated against reference solutions before use.</p></div>
+      <div class="card"><b>Integrity tripwire</b><p>run.sh refuses to start if benchmark templates differ from git — earned the hard way (see incident below).</p></div>
+      <div class="card"><b>Max reasoning everywhere</b><p>xhigh (or the harness's maximum) on every arm; fresh workdir per task; sequential arms on one box.</p></div>
+    </div>
+
+    <!-- RUN 3 first: the core question -->
+    <div class="run">
+      <h2>Run 3 — Coordination: Cotal mesh vs direct MCP subagents <span style="color:var(--dim);font-size:13px">(the core question)</span></h2>
+      <div class="q">Same goal, two topologies: mesh (planner → handoff → worker executes in place) vs one orchestrator delegating content to an MCP subagent and transcribing its output.</div>
+      <div class="bars">
+        <div class="barrow"><span>Cotal mesh</span><div class="barbg"><div class="bar c-mesh" style="width:69%"></div></div><span class="score">3/3 · 95s</span></div>
+        <div class="barrow"><span>Direct MCP subagent</span><div class="barbg"><div class="bar c-mcp" style="width:100%"></div></div><span class="score">3/3 · 137s</span></div>
+      </div>
+      <div class="verdict"><b>Mesh wins ~30% at equal quality.</b> Executing in place beats generation-at-a-distance, and the handoff itself costs ≈ nothing: mesh end-to-end ≈ a bare <code>claude -p</code> on the same tasks.</div>
+    </div>
+
+    <div class="run">
+      <h2>Runs 1–2 — Same model, two harnesses: Opus 4.8 on Codex vs Claude Code</h2>
+      <div class="q">Identical model (claude-opus-4.8, xhigh) on both harnesses. Does the harness affect capability? Latency?</div>
+      <div class="bars">
+        <div class="barrow"><span>easy · Codex (OpenRouter)</span><div class="barbg"><div class="bar c-codex" style="width:19%"></div></div><span class="score">3/3 · 44s</span></div>
+        <div class="barrow"><span>easy · Claude Code (Max)</span><div class="barbg"><div class="bar c-claude" style="width:34%"></div></div><span class="score">3/3 · 79s</span></div>
+        <div class="barrow"><span>hard · Codex (OpenRouter)</span><div class="barbg"><div class="bar c-codex" style="width:45%"></div></div><span class="score">4/4 · 105s</span></div>
+        <div class="barrow"><span>hard · Claude Code (Max)</span><div class="barbg"><div class="bar c-claude" style="width:100%"></div></div><span class="score">4/4 · 234s</span></div>
+      </div>
+      <div class="verdict"><b>Capability is saturated — 7/7 both.</b> The honest latency gap is ~2×. (Pre-hermetic it looked like 5×: our own dev-env MCP servers booting on every <code>claude -p</code> inflated it. Hermetic mode halved Claude Code's hard-suite time, 524s → 234s.)</div>
+    </div>
+
+    <div class="run">
+      <h2>Run 4 — Cross-harness matrix: native vs foreign harness + 3-model shootout</h2>
+      <div class="q">Gemini 3.1 Pro on its native harness (Antigravity) vs through Codex+OpenRouter; then Antigravity's whole roster on the same suite.</div>
+      <div class="bars">
+        <div class="barrow"><span>Gemini · native agy</span><div class="barbg"><div class="bar c-agy" style="width:57%"></div></div><span class="score">7/7 · 298s</span></div>
+        <div class="barrow"><span>Gemini · via Codex</span><div class="barbg"><div class="bar c-codex" style="width:100%"></div></div><span class="score">7/7 · 521s</span></div>
+        <div class="barrow"><span>Opus 4.6 Thinking · agy</span><div class="barbg"><div class="bar c-agy" style="width:57%"></div></div><span class="score">7/7 · 295s</span></div>
+        <div class="barrow"><span>GPT-OSS 120B · agy</span><div class="barbg"><div class="bar c-fail" style="width:64%"></div></div><span class="score">6/7 · 333s</span></div>
+      </div>
+      <div class="verdict"><b>Native harness wins ~1.75× at equal correctness.</b> The 3-model shootout is a near-tie on speed — harness turn overhead dominates at this task size. GPT-OSS dropping the interpreter task was the <b>only genuine capability failure in all 43 hermetic tasks</b>.</div>
+    </div>
+
+    <div class="run">
+      <h2>Run 5 — Each harness on its OWN subscription <span style="color:var(--dim);font-size:13px">(the real-world mesh question)</span></h2>
+      <div class="q">The delegation targets a planner actually chooses between: Codex on the ChatGPT sub (native gpt-5.6-sol) vs Claude Code on Max (Opus 4.8). Different models by design.</div>
+      <div class="bars">
+        <div class="barrow"><span>Claude Code + Opus 4.8 (Max)</span><div class="barbg"><div class="bar c-claude" style="width:70%"></div></div><span class="score">7/7 · 313s</span></div>
+        <div class="barrow"><span>Codex + gpt-5.6-sol (ChatGPT)</span><div class="barbg"><div class="bar c-codex" style="width:100%"></div></div><span class="score">7/7 · 444s</span></div>
+      </div>
+      <div class="verdict"><b>The latency story inverts: Claude Code wins ~1.4×.</b> Codex's earlier 2× edge was the backend, not the harness. End-to-end latency is decided by the backend+model pair — exactly the per-task choice a Cotal planner can make.</div>
+    </div>
+
+    <div class="war">
+      <h3>⚠ The measurement war story (why the tripwire exists)</h3>
+      <p>In the first matrix, Antigravity — run without <code>--add-dir</code> — resolved relative paths against its own workspace and <b>wrote its solutions into the benchmark templates themselves</b>. Every later run copied pre-solved templates into its workdirs: a dead-on-arrival arm "passed" tasks in 10 seconds, and a spurious "native harness scores 3/7" headline nearly shipped. We caught it by autopsying impossible timings, restored templates from git, quarantined the evidence, added a template-integrity tripwire to the runner, and re-ran everything hermetically. <b>The invalidated numbers are preserved in the RESULTS appendix — the methodology story is part of the submission.</b></p>
+    </div>
+
+    <div class="foot">Full tables, token counts, caveats and repro commands: <code>benchmark/RESULTS.md</code> · Demo script: <code>DEMO.md</code></div>
+  </section>
+
+</div>
+</body>
+</html>
