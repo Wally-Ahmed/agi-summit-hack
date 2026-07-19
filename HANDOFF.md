@@ -96,11 +96,14 @@ DROPPED; Wally owns gpt-api updates — hands off his repo).
 
 ## Benchmarks (all in `benchmark/RESULTS.md`, runner `benchmark/run.sh` + `run-coord.sh`)
 
-- **Run 1** (easy suite t1-t3, Opus 4.8 xhigh): Codex 3/3 47s vs Claude Code 3/3 97s.
-- **Run 2** (hard suite t4-t7, validated vs reference solutions): Codex 4/4 106s (~319k tok)
-  vs Claude Code 4/4 524s. **Capability ties; latency separates (~5× on hard tasks).**
+- **Run 1 hermetic** (easy t1-t3, Opus 4.8 xhigh): Codex 3/3 44s vs Claude Code 3/3 79s.
+- **Run 2 hermetic** (hard t4-t7): Codex 4/4 105s (~343k tok) vs Claude Code 4/4 234s.
+  **Capability ties; honest latency gap ~2× (dev-env had inflated it to 5×).**
 - **Run 3** (CORE QUESTION — coordination): **Cotal mesh 3/3 95s BEATS direct MCP subagents
   3/3 137s (~30%)**; mesh overhead ≈ a bare claude -p.
+- **Run 4 hermetic** (matrix ×7): agy+Gemini 7/7 298s BEATS codex+Gemini 7/7 521s (native
+  harness ~1.75× faster, equal quality); agy+Opus4.6 7/7 295s; agy+GPT-OSS 6/7 333s (t4 =
+  the only real capability failure in the 43-task set).
 - **Run 4 IN FLIGHT**: matrix ×7 tasks: agy+Gemini-3.1-Pro-High, codex+google/gemini-3.1-pro-
   preview (xhigh), agy+Opus-4.6-Thinking, agy+GPT-OSS-120B. Snapshots:
   `benchmark/results/{agy-gemini31pro,codex-gemini31pro,agy-opus46,agy-gptoss}.jsonl`.
