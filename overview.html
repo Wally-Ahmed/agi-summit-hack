@@ -63,6 +63,8 @@ h1{font-family:var(--sans);font-size:30px;font-weight:700;letter-spacing:-.015em
 h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);letter-spacing:-.005em;line-height:1.3}
 .tagline{color:var(--dim);margin:10px 0 18px;font-size:14px;max-width:700px;line-height:1.55}
 
+#tourbtn{position:fixed;top:16px;right:20px;z-index:90;box-shadow:0 8px 24px -8px rgba(0,0,0,.6)}
+@media(max-width:760px){#tourbtn{top:10px;right:10px;padding:8px 12px;font-size:12px}}
 .badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
 .badge{
   border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:12px;color:var(--accent);
@@ -335,11 +337,12 @@ button.cta.stop:hover{box-shadow:0 8px 20px rgba(248,113,113,.4),0 1px 0 rgba(25
 .chip.new{background:linear-gradient(180deg,var(--win),#22c997);box-shadow:0 2px 8px rgba(52,211,153,.35),0 1px 0 rgba(255,255,255,.2) inset}
 
 /* slider / walkthrough */
-.slider{display:grid;grid-template-columns:48px 1fr 48px;gap:12px;align-items:stretch;margin-bottom:18px}
+.slider{margin-bottom:18px}
 .snav{
+  width:34px;height:34px;border-radius:50%;flex:0 0 auto;
   background:linear-gradient(180deg,var(--panel2),var(--panel));
-  border:1px solid var(--line);border-radius:12px;color:var(--dim);
-  font-family:var(--sans);font-size:24px;font-weight:500;cursor:pointer;
+  border:1px solid var(--line);border-radius:50%;color:var(--dim);
+  font-family:var(--sans);font-size:17px;font-weight:500;cursor:pointer;line-height:1;
   transition:color .2s,border-color .2s,background .2s,transform .15s;
 }
 .snav:hover{color:var(--accent);border-color:var(--accent);background:linear-gradient(180deg,var(--panel3),var(--panel2));transform:scale(1.03)}
@@ -355,7 +358,8 @@ button.cta.stop:hover{box-shadow:0 8px 20px rgba(248,113,113,.4),0 1px 0 rgba(25
 .slide .q{color:var(--dim);font-size:13.5px;margin:10px 0 20px;line-height:1.6}
 .slide .q b{color:var(--text)}
 
-.dots{display:flex;gap:10px;justify-content:center;margin-bottom:32px}
+.timeline{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:32px}
+.dots{display:flex;gap:10px;align-items:center}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--line2);cursor:pointer;transition:background .25s,transform .25s,box-shadow .25s}
 .dot:hover{background:var(--dim)}
 .dot.active{background:var(--accent);transform:scale(1.35);box-shadow:0 0 12px rgba(94,234,212,.6)}
@@ -441,7 +445,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   h1{font-size:24px}
   .panel{padding:20px}
   .slide{padding:22px;min-height:320px}
-  .slider{grid-template-columns:40px 1fr 40px}
+  .snav{width:30px;height:30px;font-size:15px}
   body{padding:30px 16px 80px}
   .tabbtn{padding:10px 16px;font-size:13px}
 }
@@ -449,16 +453,17 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 </style>
 </head>
 <body>
+<button class="cta alt" id="tourbtn">▶ Narrated walkthrough</button>
 <div class="wrap">
 
-  <h1>Cotal Mesh: Official AI Harnesses as Coordinated Workers</h1>
-  <div class="tagline">AGI Summit 2026 Hackathon — one mesh, three frontier coding agents, each on its owner's real subscription.</div>
+  <h1>Hermes Handoff — One Front-Door to Your Gated Models</h1>
+  <div class="tagline">AGI Summit 2026 Hackathon — frontier models are gated behind specific harnesses and subscriptions. Pick the ONE you already pay for; Hermes hands it any task. Cotal underneath.</div>
   <div class="badges">
-    <span class="badge">3 connectors live-proven</span>
     <span class="badge">2 connectors built by us</span>
-    <span class="badge alt">7 benchmark studies</span>
-    <span class="badge alt">51/52 hermetic tasks passed</span>
-    <span class="badge">mesh beats direct-MCP by ~30%</span>
+    <span class="badge">2 PRs upstream to Cotal</span>
+    <span class="badge alt">9 benchmark studies</span>
+    <span class="badge alt">57/58 hermetic tasks passed</span>
+    <span class="badge">no API credits needed</span>
   </div>
 
   <div class="tabs">
@@ -469,6 +474,27 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   <!-- ==================== TAB: PROJECT ==================== -->
   <section class="view active" id="view-project">
     <div class="hint"><b>▶ Narrated walkthrough</b> gives you the 2-minute guided tour · or <b>click</b> any component and <b>simulate</b> a task yourself</div>
+
+    <div class="panel arch" id="product">
+      <div class="row"><div class="node hermes" id="n-hh" data-k="wizard">
+        <div class="who">The product — tools/hermes-handoff</div>
+        <div class="name">$ hermes-handoff init</div>
+        <div class="sub">nobody runs three harnesses — you pay for ONE. A setup wizard fronts it with Hermes: any task, your own login, no API credits.</div>
+      </div></div>
+      <div class="flow" id="wizflow" style="grid-template-columns:repeat(4,1fr)">
+        <div class="step" data-k="w1"><div class="n">1 · DETECT</div><div class="t">installed harnesses + auth state</div></div>
+        <div class="step" data-k="w2"><div class="n">2 · PICK ONE</div><div class="t">the model your sub unlocks</div></div>
+        <div class="step" data-k="w3"><div class="n">3 · WIRE</div><div class="t">Hermes planner ⇆ your worker</div></div>
+        <div class="step" data-k="w4"><div class="n">4 · HANDOFF</div><div class="t">any task — not just code</div></div>
+      </div>
+      <div class="row r-workers gaps">
+        <div class="gap"><span class="g-label">model gating</span>Claude Opus 4.8 → only via <b>Claude Code + Max</b></div>
+        <div class="gap"><span class="g-label">model gating</span>gpt-5.6-sol → only via <b>Codex + ChatGPT</b></div>
+        <div class="gap"><span class="g-label">model gating</span>Gemini 3.1 Pro (High) → only via <b>Antigravity + Google</b></div>
+      </div>
+    </div>
+
+    <div class="hint">Under the hood — and scale-out mode: the same wiring runs a full mesh with <b>all three harnesses at once</b> ⤵</div>
 
     <div class="panel arch" id="arch">
       <div class="row"><div class="node" id="n-user" data-k="user">
@@ -513,8 +539,8 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 
       <div class="row r-workers gaps">
         <div class="gap"><span class="g-label">connector status</span>official Cotal connector — full worker, works out of the box</div>
-        <div class="gap ours-gap" data-k="codex"><span class="g-label">connector status</span>official = pull-only experiment: the mesh <b class="no">can't wake it</b> → <b>ours: autonomous worker, delegation pushes turns</b></div>
-        <div class="gap ours-gap" data-k="agy"><span class="g-label">connector status</span>official = <b class="no">none</b> → <b>ours: autonomous worker, built &amp; live-tested tonight</b></div>
+        <div class="gap ours-gap" data-k="codex"><span class="g-label">connector status</span>official = pull-only experiment: the mesh <b class="no">can't wake it</b> → <b>ours: autonomous worker — PR'd upstream to Cotal</b></div>
+        <div class="gap ours-gap" data-k="agy"><span class="g-label">connector status</span>official = <b class="no">none</b> → <b>ours: autonomous worker, live-tested — PR'd upstream to Cotal</b></div>
       </div>
 
       <div class="flow" id="flow">
@@ -527,7 +553,6 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
       </div>
 
       <div class="simbar">
-        <button class="cta alt" id="tourbtn">▶ Narrated walkthrough</button>
         <button class="cta" id="simbtn">▶ Simulate a task</button>
         <span class="simnote" id="simnote"></span>
       </div>
@@ -539,9 +564,11 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     </div>
 
     <div class="cards">
+      <div class="card"><div class="path">tools/hermes-handoff/</div><p>The product: a zero-dependency wizard CLI. Detects harnesses + auth, you pick one, it wires Hermes as the front door — planner brain via subscription OAuth (<code>hermes login</code>) or any provider key.</p></div>
+      <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core 0.12.0, and prepared as two pull requests to <code>Cotal-AI/Cotal</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-codex/</div><p>Our Codex mesh connector — Node shim owns one MeshAgent; cotal tools served over local streamable-HTTP MCP; turn chain via <code>codex exec resume</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — pTTY turn loop, conversation resume, MCP-config merge/restore. Live-tested: "AGY WORKER OK" on #general.</p></div>
-      <div class="card"><div class="path">benchmark/</div><p>7 validated tasks (easy + adversarial), hermetic runners for four harness arms plus coordination and throughput studies, full RESULTS.md.</p></div>
+      <div class="card"><div class="path">benchmark/</div><p>12 validated tasks (easy, adversarial, reasoning, grounding), hermetic runners for four harness arms, coordination + throughput + cost studies, full RESULTS.md.</p></div>
       <div class="card"><div class="path">.cotal/agents/</div><p>Personas: planner (plan/delegate/never-execute) + three builders with execute-and-verify contracts.</p></div>
       <div class="card"><div class="path">docs/</div><p>Cotal wire-contract notes, mesh operations runbook (six spawn failure modes + fixes), and both connector design plans.</p></div>
       <div class="card"><div class="path">Compliance framing</div><p>Every harness is the official CLI under its owner's legitimate auth. No token scraping, no reverse-engineering — the mesh only coordinates.</p></div>
@@ -553,7 +580,6 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     <div class="hint">Each study isolates <b>one variable</b>. <b>‹ › arrows</b>, dots, or arrow keys to move between studies · <b>hover a bar</b> for per-task detail.</div>
 
     <div class="slider">
-      <button class="snav" id="prevbtn" aria-label="previous study">‹</button>
       <div class="viewport"><div class="track" id="track">
 
         <article class="slide">
@@ -628,21 +654,47 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </article>
 
         <article class="slide">
+          <span class="chip new">Reasoning &amp; grounding · new</span>
+          <h2>Run 9 — Constraint satisfaction · hallucination resistance</h2>
+          <div class="q">Two non-coding dimensions: a constraint scheduler whose checker validates the <b>constraints themselves</b> (any valid answer passes), and a grounding probe — 8 questions about a small local library where <b>3 reference functions that don't exist</b>. The only right answer for those: <code>DOES_NOT_EXIST</code>.</div>
+          <div class="bars">
+            <div class="barrow"><span>Antigravity + Gemini 3.1 Pro</span><div class="barbg"><div class="bar c-agy" data-w="78"></div></div><span class="score">2/2 · 49s</span><span class="taskbreak">t12 reasoning 28s · t13 grounding 21s · 0 hallucinated traps</span></div>
+            <div class="barrow"><span>Claude Code + Opus 4.8 (Max)</span><div class="barbg"><div class="bar c-claude" data-w="81"></div></div><span class="score">2/2 · 51s</span><span class="taskbreak">t12 18s · t13 33s · 0 hallucinated traps</span></div>
+            <div class="barrow"><span>Codex + gpt-5.6-sol (ChatGPT)</span><div class="barbg"><div class="bar c-codex" data-w="100"></div></div><span class="score">2/2 · 63s</span><span class="taskbreak">t12 24s · t13 39s · 0 hallucinated traps</span></div>
+          </div>
+          <div class="verdict"><b>6/6 with zero hallucinations — every arm answered DOES_NOT_EXIST on every trap.</b> The mechanism matters: an agentic harness reads or executes the library instead of confabulating. Hallucination resistance is a <b>harness</b> property as much as a model property. First table Antigravity tops.</div>
+        </article>
+
+        <article class="slide">
+          <span class="chip new">Economics · new</span>
+          <h2>Run 10 — Cost per verified task</h2>
+          <div class="q">Same tasks, same harness — what does one <b>verified PASS</b> cost? Metered arms priced from measured token counts at list prices (90/10 in/out split); subscription arms ride flat monthly fees. <b>Variable isolated: how the model is paid for.</b></div>
+          <div class="bars">
+            <div class="barrow"><span>Codex + Opus 4.8 · metered API</span><div class="barbg"><div class="bar c-codex" data-w="100"></div></div><span class="score">~$0.51 / PASS</span><span class="taskbreak">511k tokens over 7 tasks (runs 1–2)</span></div>
+            <div class="barrow"><span>Codex + Gemini 3.1 Pro · metered API</span><div class="barbg"><div class="bar c-agy" data-w="27"></div></div><span class="score">~$0.14 / PASS</span><span class="taskbreak">333k tokens over 7 tasks (run 4) — 3.6× cheaper than Opus</span></div>
+            <div class="barrow"><span>Any harness on its own subscription</span><div class="barbg"><div class="bar c-mesh" data-w="3"></div></div><span class="score">≈ $0 marginal</span><span class="taskbreak">every suite cleared — the real constraint is quota, not dollars</span></div>
+          </div>
+          <div class="verdict"><b>Subscriptions invert the economics — and that's the product thesis.</b> You already pay the flat fee; the mesh just unlocks it. Field warning: a wedged planner loop burned ~$4 of metered credit overnight producing nothing — <b>orchestrator idle-burn is a first-class cost line</b>.</div>
+        </article>
+
+        <article class="slide">
           <span class="chip">Roadmap</span>
           <h2>What we test next</h2>
-          <div class="q">Four dimensions the current studies don't cover — each is a scripted runner away.</div>
+          <div class="q">Three dimensions the current studies don't cover — each is a scripted runner away.</div>
           <div class="next-grid">
-            <div class="card"><b>Failover &amp; reclaim</b><p>Kill a worker mid-task: does the planner detect the dropout and re-delegate? The mesh's resilience story.</p></div>
+            <div class="card"><b>Failover &amp; reclaim</b><p>Kill a worker mid-task: does the planner detect the dropout and re-delegate? Runner already written (<code>benchmark/run-failover.sh</code>) — awaiting a planner-brain window.</p></div>
             <div class="card"><b>Routing policy</b><p>Planner armed with run-4/5 latency data routes per-task vs random assignment — does informed routing measurably win?</p></div>
-            <div class="card"><b>Cost per verified task</b><p>Tokens and $ per PASS across arms — flat-rate subscriptions vs metered API under identical workloads.</p></div>
             <div class="card"><b>Long-horizon tasks</b><p>Multi-file refactors with dependencies between subtasks — where planner decomposition should matter most.</p></div>
           </div>
         </article>
 
       </div></div>
+    </div>
+    <div class="timeline">
+      <button class="snav" id="prevbtn" aria-label="previous study">‹</button>
+      <div class="dots" id="dots"></div>
       <button class="snav" id="nextbtn" aria-label="next study">›</button>
     </div>
-    <div class="dots" id="dots"></div>
 
     <div class="meth">
       <div class="card"><b>Hermetic by default</b><p>Every harness runs stock — exactly as its vendor ships it, nothing extra loaded. No arm gets outside context or added startup cost.</p></div>
@@ -724,13 +776,18 @@ function rich(target, text){
 
 /* ---------- inspector ---------- */
 const INFO = {
+  wizard:{t:"hermes-handoff — the product",p:"A zero-dependency wizard CLI (`hermes-handoff init`). It detects which official harnesses are installed and authed, you pick the **one** your subscription unlocks, and it wires Hermes as that harness's front door over an invisible Cotal space. The planner brain rides a first-party OAuth login (`hermes login` — Sign in with ChatGPT, Nous Portal, xAI) or any provider key — **no API credits required**. Then: `hermes-handoff ask \"…\"` for any task, not just code."},
+  w1:{t:"Wizard step 1 — DETECT",p:"Probes for `claude`, `codex`, and `agy` binaries, checks each one's auth state (credentials file / login), and shows **which gated models each unlocks** before you choose."},
+  w2:{t:"Wizard step 2 — PICK ONE",p:"The core insight: **models are gated to harnesses + subscriptions**. gpt-5.6-sol only exists behind Codex+ChatGPT; Gemini 3.1 Pro (High) behind Antigravity; Opus 4.8 behind Claude Code+Max. You pick the door your subscription already opens."},
+  w3:{t:"Wizard step 3 — WIRE",p:"Writes the planner + worker personas, applies the connector-hermes launcher fix, seeds the planner's auth, and launches: mesh up, Hermes planner spawned, your harness spawned as its single builder. Cotal runs underneath — you never touch it."},
+  w4:{t:"Wizard step 4 — HANDOFF",p:"`hermes-handoff ask \"organize ~/Downloads into dated folders\"` — Hermes restates the task with a DONE-WHEN, DMs your worker, verifies the reply, reports back. **Any task**: research, files, data, writing, code."},
   user:{t:"The ask",p:"Any mesh participant sends a task with a **machine-checkable DONE-WHEN** (e.g. \"test.py prints PASS\"). Cotal has no built-in task lifecycle — this convention supplies one, and it's what makes results verifiable rather than vibes."},
   planner:{t:"Hermes — persistent planner",p:"Nous Research's **hermes-agent**, already an official Cotal connector. It plans, decomposes, and delegates — **never executes**. Its working state lives on the mesh, so it survives worker churn."},
   pool:{t:"Subagent pool (MCP)",p:"Two MCP servers — **openrouter-subagents** (any OpenRouter model as an expert) and **gpt-api** — available to the planner or any worker for on-demand expert consultations mid-task."},
   bus:{t:"The Cotal mesh",p:"**NATS + JetStream** under the hood — not HTTP. Presence cards, anycast claims (first idle qualified worker takes the task), and reply correlation via contextId. Supervision is by channel-ACL convention."},
   claude:{t:"Claude Code — worker",p:"Anthropic's official CLI on a **Claude Max subscription**, spawned via the official Cotal connector. Executes in place, runs the task's own test, reports verified results. 7/7 across both suites; fastest native-subscription arm (run 5)."},
-  codex:{t:"Codex CLI — worker2 (our connector)",p:"OpenAI's official CLI on a **ChatGPT subscription**. Cotal ships only an experimental **pull-only** codex integration (an interactive session can see the mesh, but delegation never wakes it; built on connector-core 0.2.0 vs today's 0.12.0). Ours is the **autonomous worker**: push delegation drives turns via `codex exec resume <threadId>`, with cotal tools over a local streamable-HTTP MCP endpoint."},
-  agy:{t:"Antigravity CLI — worker3 (our connector)",p:"Google's agentic CLI on a **Google account**. We built this connector: pTTY-wrapped `agy -p` turns, `--conversation` resume discovered from state inspection, global MCP-config merge/restore with clean teardown, and `--add-dir` workspace grounding. Live-tested: \"AGY WORKER OK\" on #general."},
+  codex:{t:"Codex CLI — worker2 (our connector)",p:"OpenAI's official CLI on a **ChatGPT subscription**. Cotal ships only an experimental **pull-only** codex integration (an interactive session can see the mesh, but delegation never wakes it; built on connector-core 0.2.0 vs today's 0.12.0). Ours is the **autonomous worker**: push delegation drives turns via `codex exec resume <threadId>`, with cotal tools over a local streamable-HTTP MCP endpoint. **Now prepared as a PR to the Cotal monorepo** — built in-tree against connector-core 0.12.0."},
+  agy:{t:"Antigravity CLI — worker3 (our connector)",p:"Google's agentic CLI on a **Google account**. We built this connector: pTTY-wrapped `agy -p` turns, `--conversation` resume discovered from state inspection, global MCP-config merge/restore with clean teardown, and `--add-dir` workspace grounding. Live-tested: \"AGY WORKER OK\" on #general. **Now prepared as a PR to the Cotal monorepo** — the first Antigravity connector in the tree."},
   s1:{t:"Step 1 — ASK",p:"The task + DONE-WHEN is anycast to the planner. Nothing here is fire-and-forget: the done condition makes completion checkable by anyone."},
   s2:{t:"Step 2 — PLAN",p:"The planner decomposes the task and selects a worker from live presence — by availability, and (informed by our benchmarks) by which backend is fastest for the job."},
   s3:{t:"Step 3 — HANDOFF",p:"Delegation travels over the mesh with full context attached. Measured cost of this hop: ≈ nothing (run 3 — mesh end-to-end ≈ a bare local session)."},
@@ -757,7 +814,7 @@ const WORKERS = [
   {id:"n-codex",  label:"Codex CLI",    auth:"ChatGPT sub"},
   {id:"n-agy",    label:"Antigravity",  auth:"Google account"}
 ];
-const ALL_NODES = ["n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];
+const ALL_NODES = ["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];
 let simIdx = 0, running = false;
 const btn = document.getElementById("simbtn"), note = document.getElementById("simnote"),
       cons = document.getElementById("console"), steps = [...document.querySelectorAll(".step")];
@@ -873,17 +930,25 @@ const TOUR = [
   {cap:"**3 subscriptions** · 0 coordination", run(){ showTab("project"); spotlight([]);
      tlater(()=>spotlight(["n-claude"]),1500); tlater(()=>spotlight(["n-claude","n-codex"]),3000);
      tlater(()=>spotlight(["n-claude","n-codex","n-agy"]),4500); }, n:1},
+  {cap:"Pick **one** — Hermes fronts it · **any task**", run(){ showTab("project"); spotlight([]); window.scrollTo({top:0});
+     glow("n-hh",true);
+     const wsteps=[...document.querySelectorAll("#wizflow .step")];
+     wsteps.forEach(s=>s.classList.remove("live","done"));
+     wsteps.forEach((s,i)=>tlater(()=>{wsteps.forEach(x=>x.classList.remove("live"));s.classList.add("live");if(i>0)wsteps[i-1].classList.add("done");},3500+i*3800));
+     }, n:12, vis:null},
   {cap:"One mesh: **Cotal** — live messaging, not HTTP", run(){ spotlight(["n-bus"]); }, n:2},
   {cap:"The planner **never writes code**", run(){ spotlight(["n-planner"]); }, n:3},
-  {cap:"Two connectors **didn't exist — we built them**", run(){ spotlight(["n-codex","n-agy"]); }, n:4},
+  {cap:"Built by us → **PR'd back upstream to Cotal**", run(){ spotlight(["n-codex","n-agy"]); }, n:4},
   {cap:"Watch a **real task** travel", run(){ spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
   {cap:"Mesh beats subagents by **~30%**", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
   {cap:"Fan-out **finishes** · serial **stalls**", run(){ slideTo(1); }, n:10, vis:null},
   {cap:"**Native harness** wins ~1.75×", run(){ slideTo(3); }, n:9, vis:null},
   {cap:"**The backend decides** — choose per task", run(){ slideTo(2); tlater(()=>slideTo(4),7000); }, n:7, vis:null},
   {cap:"9 trials · 3 stacks · **9 passes**", run(){ slideTo(5); }, n:11, vis:null},
-  {cap:"Reproducible · live · **yours to run**", run(){ showTab("project"); spotlight([]);
-     tlater(()=>{ARR=["n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
+  {cap:"**Zero hallucinations** — the harness checks reality", run(){ slideTo(6); }, n:13, vis:null},
+  {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", run(){ slideTo(7); }, n:14, vis:null},
+  {cap:"One wizard · one harness · **any task**", run(){ showTab("project"); spotlight([]); window.scrollTo({top:0});
+     tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
 ];
 let ARR;
 async function tour(){
@@ -905,6 +970,8 @@ function stopTour(){
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
   tourTimers.forEach(clearTimeout); tourTimers = [];
   caption(null); sceneVis(null); spotlight([]); clearGlow(); arch.classList.remove("dimmed");
+  document.querySelectorAll("#wizflow .step").forEach(s=>s.classList.remove("live","done"));
+  glow("n-hh",false);
   tourbtn.textContent = "▶ Narrated walkthrough"; tourbtn.classList.remove("stop");
 }
 tourbtn.addEventListener("click", tour);
