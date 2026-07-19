@@ -156,7 +156,7 @@
       <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — built by a Claude subagent, live-tested: "AGY WORKER OK" on #general, clean teardown.</p></div>
       <div class="card"><div class="path">benchmark/</div><p>7 validated tasks (easy + adversarial), hermetic runner for 4 harness arms, coordination benchmark, RESULTS.md.</p></div>
       <div class="card"><div class="path">.cotal/agents/</div><p>Personas: planner (plan/delegate/never-execute) + three builders with execute-and-verify contracts.</p></div>
-      <div class="card"><div class="path">docs/ + HANDOFF.md</div><p>Wire-contract truths, mesh runbook (6 spawn fixes), connector plans, and the standing cross-session recovery file.</p></div>
+      <div class="card"><div class="path">docs/</div><p>Cotal wire-contract notes, mesh operations runbook (six spawn failure modes + fixes), and both connector design plans.</p></div>
       <div class="card"><div class="path">Compliance framing</div><p>Every harness is the official CLI under its owner's legitimate auth. No token scraping, no reverse-engineering — the mesh only coordinates.</p></div>
     </div>
   </section>
@@ -166,7 +166,7 @@
     <div class="sec-label">Part 2 — The Benchmarks</div>
 
     <div class="meth">
-      <div class="card"><b>Hermetic by default</b><p>Stock harness configs: no dev-env MCP servers, plugins, or memory layers. This alone changed a headline (see Run 2).</p></div>
+      <div class="card"><b>Hermetic by default</b><p>Every harness runs stock — exactly as its vendor ships it, nothing extra loaded. No arm gets outside context or added startup cost.</p></div>
       <div class="card"><b>Validated tests</b><p>Every task judged only by its own test.py, validated against reference solutions before use.</p></div>
       <div class="card"><b>Integrity tripwire</b><p>run.sh refuses to start if benchmark templates differ from git — earned the hard way (see incident below).</p></div>
       <div class="card"><b>Max reasoning everywhere</b><p>xhigh (or the harness's maximum) on every arm; fresh workdir per task; sequential arms on one box.</p></div>
@@ -192,7 +192,7 @@
         <div class="barrow"><span>hard · Codex (OpenRouter)</span><div class="barbg"><div class="bar c-codex" style="width:45%"></div></div><span class="score">4/4 · 105s</span></div>
         <div class="barrow"><span>hard · Claude Code (Max)</span><div class="barbg"><div class="bar c-claude" style="width:100%"></div></div><span class="score">4/4 · 234s</span></div>
       </div>
-      <div class="verdict"><b>Capability is saturated — 7/7 both.</b> The honest latency gap is ~2×. (Pre-hermetic it looked like 5×: our own dev-env MCP servers booting on every <code>claude -p</code> inflated it. Hermetic mode halved Claude Code's hard-suite time, 524s → 234s.)</div>
+      <div class="verdict"><b>Capability is saturated — 7/7 both.</b> Opus 4.8 at max reasoning clears even the adversarial tasks one-shot on either harness; what separates them is a ~2× wall-clock gap from the harness turn loop, and it widens with task difficulty.</div>
     </div>
 
     <div class="run">
