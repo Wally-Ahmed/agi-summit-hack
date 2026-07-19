@@ -242,6 +242,11 @@ async function main() {
       "--dangerously-skip-permissions",
       "--print-timeout",
       shq(PRINT_TIMEOUT),
+      // LOAD-BEARING (benchmark autopsy 2026-07-18): without --add-dir, agy treats
+      // ~/.gemini/antigravity-cli/scratch/ (or $HOME) as its workspace and NEW files land
+      // there instead of the working directory.
+      "--add-dir",
+      shq(workRoot),
       "--log-file",
       shq(logFile),
     ];

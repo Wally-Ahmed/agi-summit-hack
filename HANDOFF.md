@@ -4,24 +4,36 @@
 > crash, `/compact`, or fresh session: this is the single source of truth. Read it once, then act.
 > Verify claims against `git log --oneline -5` and `cotal ps` before trusting them.
 
-_Last updated: 2026-07-19 ~00:45 UTC — SESSION PAUSED CLEANLY; resume checklist at top_
+_Last updated: 2026-07-19 ~00:55 UTC — agy connector committed (live test pending); session paused_
 
 ## ⚠️ Read first — SESSION PAUSED CLEANLY (Jul 19 ~00:45 UTC), resume checklist below
 
 **Wally paused work mid-stream. State is fully persisted. Resume order:**
 
-1. **Antigravity connector — BUILT but NOT tested/committed.** The build agent died with the
-   session (never re-spawn it; its artifacts persist on the Codespace):
-   `/workspaces/cotal-connector-agy` (complete, `dist/` bundled), extension REGISTERED
-   (`cotal ext list` → cotal-connector-agy@0.1.0 connector:agy), personas salvaged into git
-   (`.cotal/agents/worker3.md`, `default.md`). To finish: (a) copy its `src/`+`package.json`
-   into `connectors/cotal-connector-agy/` and commit (reconcile with the stale
-   `.tmp-cotal-connector-agy/` draft already in git — prefer the Codespace copy); (b) **PATCH
-   `--add-dir <workdir>` into its agy launch invocation** (same scratch-dir bug that poisoned
-   the first matrix — grep src for `agy` args); (c) live test: mesh up →
-   `cotal spawn worker3 --agent agy --detach` → `cotal endpoints` → DM it → confirm reply on
-   #general via `cotal console --plain` → `cotal stop worker3`; its shim merges a cotal entry
-   into `~/.gemini/config/mcp_config.json` and restores after — verify restore.
+1. **Antigravity connector — BUILT + COMMITTED; live test still PENDING.** (Close-out
+   2026-07-19 ~00:55 UTC; artifacts persist on the Codespace.) DONE: source lives in
+   `connectors/cotal-connector-agy/` (the stale `.tmp-cotal-connector-agy/` draft was git-rm'd
+   — Codespace copy preferred, per prior note); **`--add-dir <workRoot>` IS folded into the
+   agy turn command** (serve.js `agyCommand`), dist rebuilt after the patch, extension
+   re-registered (`cotal ext list` → cotal-connector-agy@0.1.0 connector:agy, smoke-import
+   OK); standalone repo `/workspaces/cotal-connector-agy` git-init'd, single commit `055e041`,
+   no remote. Conversation-continuity design shipped: per-turn `--log-file` → capture
+   `Created conversation <uuid>` from the agy log → later turns pass `--conversation <id>`;
+   fail-loud if a resume turn CREATES a new conversation; `COTAL_AGY_STATELESS=1` env =
+   rolling-digest fallback (persona + last 12 in/out entries per turn). v1 fail-loud limits:
+   ONE agy worker per machine (merges a "cotal" `serverUrl` entry into the GLOBAL
+   `~/.gemini/config/mcp_config.json`, throws if one exists, removes it on shutdown AND
+   process-exit); `supportsModelVariant: false` (level baked into model display name);
+   launchOptions/resume/transcript all throw. Default model "Gemini 3.1 Pro (High)" via
+   COTAL_MODEL passthrough.
+   REMAINING (was gated on the hermetic benchmark, still running at pause): the live test —
+   mesh up → `cotal spawn worker3 --agent agy --detach` → verify in `cotal endpoints` →
+   `cotal send dm worker3 "reply with: AGY WORKER OK"` (accept the reply on #general — CLI
+   DMs aren't roster-resolvable) → confirm via `cotal console --plain` → `cotal stop --name
+   worker3` → **verify the "cotal" entry is gone from mcp_config.json**; budget ~4 debug
+   cycles. Empirically UNVERIFIED (first debug targets if the live test fails): (a) headless
+   `agy -p … --conversation <id>` resume actually continues the conversation; (b) agy accepts
+   a streamable-HTTP MCP `serverUrl` (vs SSE) for the cotal server.
 2. **codex-sub benchmark arms — blocked on Wally's login (deliberate).** He REFUSED reusing
    the Mac OAuth token (rotation would log his Mac out) — rule in memory. The copied token was
    DELETED from Codespace + bench home. Resume: run `nohup codex login --device-auth
