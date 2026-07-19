@@ -63,19 +63,23 @@ EOF
     codex)
       # Clean CODEX_HOME: config.toml minus all [mcp_servers.*] sections. Auth is via
       # env OPENROUTER_API_KEY (env_key in the provider block), so no auth.json needed.
+      # Effort forced to "max" — the true ceiling (backend enum: none…xhigh,max); runs
+      # 1-10 predate this and ran xhigh on every arm.
       CXH=/tmp/bench-codex-home
       mkdir -p "$CXH"
-      awk '/^\[mcp_servers/{skip=1;next} /^\[/{skip=0} !skip' "$HOME/.codex/config.toml" > "$CXH/config.toml"
+      awk '/^\[mcp_servers/{skip=1;next} /^\[/{skip=0} !skip' "$HOME/.codex/config.toml" \
+        | sed 's/^model_reasoning_effort.*/model_reasoning_effort = "max"/' > "$CXH/config.toml"
       CODEX_ENV=(env CODEX_HOME="$CXH")
       ;;
     codex-sub)
       # Codex on Wally's ChatGPT subscription (native OpenAI model): clean home with the
       # OAuth auth.json and a minimal config — no provider override, no MCP. Model is
-      # codex's own default unless BENCH_CODEX_SUB_MODEL is set; effort pinned xhigh.
+      # codex's own default unless BENCH_CODEX_SUB_MODEL is set; effort pinned to max
+      # (gpt-5.6 supports it; xhigh is NOT the ceiling).
       CXS=/tmp/bench-codex-sub-home
       mkdir -p "$CXS"
       cp "$HOME/.codex/auth.json" "$CXS/"
-      printf 'model_reasoning_effort = "xhigh"\npreferred_auth_method = "chatgpt"\n' > "$CXS/config.toml"
+      printf 'model_reasoning_effort = "max"\npreferred_auth_method = "chatgpt"\n' > "$CXS/config.toml"
       CODEX_ENV=(env CODEX_HOME="$CXS")
       ;;
     agy)
@@ -111,8 +115,10 @@ for t in "${TASKS[@]}"; do
         "${SUBARGS[@]}" --dangerously-bypass-approvals-and-sandbox "$PROMPT" </dev/null >"$WORK/harness.log" 2>&1)
       ;;
     claude)
+      # --effort max: Claude Code's true ceiling is session-only (settings.json caps at
+      # xhigh and silently downgrades anything else). Verified working headless.
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CLAUDE_ENV[@]}" claude -p --model "$CLAUDE_MODEL" \
-        --strict-mcp-config "$PROMPT" >"$WORK/harness.log" 2>&1)
+        --effort max --strict-mcp-config "$PROMPT" >"$WORK/harness.log" 2>&1)
       ;;
     agy)
       # script(1) pseudo-TTY wrapper is load-bearing: agy -p under a non-TTY drops its

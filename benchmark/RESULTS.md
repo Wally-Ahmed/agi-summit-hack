@@ -102,9 +102,14 @@ _All headline numbers below are from the **hermetic re-run** (2026-07-19 ~00:00 
 `--strict-mcp-config`, clean `CODEX_HOME` without MCP servers, agy with its global MCP config
 stashed and `--add-dir "$PWD"` so files land in the workdir. Templates verified clean against
 git by the run.sh tripwire. Sequential arms, per-task fresh workdirs, pass judged only by each
-task's own `test.py` (tests validated against reference solutions). All reasoning at
-xhigh/harness-maximum. Earlier same-day numbers (dev-env, and a template-contamination
-incident) are preserved in the appendix — they are footnotes, not findings._
+task's own `test.py` (tests validated against reference solutions). All arms ran at
+**xhigh** — the highest setting shared across harnesses when these studies ran (agy's
+ceiling is baked into its model display names, e.g. "Gemini 3.1 Pro (High)"). Correction
+(Jul 19): xhigh is NOT the true ceiling — both codex (backend enum ends at `max`) and
+Claude Code (`--effort max`, session-only) go one tier higher; the runner now pins `max`
+on both arms for future runs. Runs 1–10 are internally consistent (same xhigh everywhere)
+but understate both harnesses' maximum. Earlier same-day numbers (dev-env, and a
+template-contamination incident) are preserved in the appendix — footnotes, not findings._
 
 ## Run 4 — cross-harness matrix (hermetic): native vs foreign harness, 3-model shootout
 
