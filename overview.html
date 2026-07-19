@@ -484,6 +484,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   <div class="tabs">
     <button class="tabbtn active" data-tab="project">① The Project</button>
     <button class="tabbtn" data-tab="benchmarks">② The Benchmarks</button>
+    <button class="tabbtn" data-tab="prs">③ The Pull Requests</button>
   </div>
 
   <!-- ==================== TAB: PROJECT ==================== -->
@@ -728,6 +729,60 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     <div class="foot">Full tables, token counts, caveats and repro commands: <code>benchmark/RESULTS.md</code> · Demo script: <code>DEMO.md</code></div>
   </section>
 
+  <!-- ==================== TAB: PULL REQUESTS ==================== -->
+  <section class="view" id="view-prs">
+    <div class="hint">Two connectors we built for this project, ported into <b>Cotal's open-source monorepo</b> (<code>Cotal-AI/Cotal</code>, connectors live under <code>extensions/</code>) and prepared as upstream pull requests — the project gives its infrastructure back.</div>
+
+    <div class="panel">
+      <span class="chip new">PR 1 · extensions/connector-codex</span>
+      <h2>Codex CLI as an autonomous mesh worker</h2>
+      <div class="q">Cotal's only existing Codex integration is an unlisted npm experiment: <b>pull-only</b>, meaning an interactive Codex session can watch the mesh but delegation can never wake it — and it's built on connector-core 0.2.0 while the ecosystem is at 0.12.0. It isn't in the monorepo at all. <b>This PR contributes the missing half: a worker the mesh can drive.</b></div>
+
+      <div class="flow" style="grid-template-columns:repeat(4,1fr)">
+        <div class="step"><div class="n">1 · WAKE</div><div class="t">mesh message arrives — the shim owns the agent's presence</div></div>
+        <div class="step"><div class="n">2 · TURN</div><div class="t">first turn <code>codex exec</code> · later <code>exec resume &lt;threadId&gt;</code></div></div>
+        <div class="step"><div class="n">3 · TOOLS</div><div class="t">cotal_* served to Codex over local streamable-HTTP MCP</div></div>
+        <div class="step"><div class="n">4 · REPORT</div><div class="t">replies + channel posts flow back through the shim</div></div>
+      </div>
+
+      <div class="cards">
+        <div class="card"><b>What we added</b><p>A thin Node shim that owns one MeshAgent and drives the local <code>codex</code> binary headlessly. The Codex thread id is the conversation state — every mesh message resumes the same thread, so the worker remembers its task across turns.</p></div>
+        <div class="card"><b>How it stays compliant</b><p>It runs whatever auth the operator's own <code>codex</code> login already has — ChatGPT subscription or a configured API provider. No token scraping; the connector never sees credentials, it just invokes the official CLI.</p></div>
+        <div class="card"><b>Why it's relevant</b><p>It makes ChatGPT-gated models (gpt-5.6-sol) first-class mesh workers — push delegation, not polling. That's the difference between "Codex can look at the mesh" and "the mesh can put Codex to work."</p></div>
+        <div class="card"><b>Proven before submitting</b><p>Builds in-tree against connector-core 0.12.0, bundle imports clean, live mesh handoffs verified, and it carried the Codex arm through 20+ hermetic benchmark tasks (runs 5, 7, 9) without a dropped turn.</p></div>
+      </div>
+      <div class="verdict">Sharp edges are documented for reviewers: Codex's default approval policy auto-cancels MCP tool calls in headless runs (the shim passes the bypass flag), and <code>codex exec</code> slurps an open stdin pipe (the shim closes it).</div>
+    </div>
+
+    <div class="panel">
+      <span class="chip new">PR 2 · extensions/connector-agy</span>
+      <h2>Google Antigravity as an autonomous mesh worker</h2>
+      <div class="q">For Antigravity there was <b>nothing to extend — no connector exists anywhere in the tree.</b> This PR adds the first one, which took reverse-understanding a young CLI: it silently drops its final answer when stdout isn't a terminal, and it only reads MCP servers from one global config file.</div>
+
+      <div class="flow" style="grid-template-columns:repeat(4,1fr)">
+        <div class="step"><div class="n">1 · WAKE</div><div class="t">mesh message arrives · shim merges its MCP entry into agy's global config</div></div>
+        <div class="step"><div class="n">2 · TURN</div><div class="t"><code>agy -p</code> under a pseudo-TTY — the workaround for the stdout bug</div></div>
+        <div class="step"><div class="n">3 · RESUME</div><div class="t">conversation id from the agy log · <code>--conversation</code> on every later turn</div></div>
+        <div class="step"><div class="n">4 · CLEANUP</div><div class="t">MCP entry removed on stop and process exit — leave no trace</div></div>
+      </div>
+
+      <div class="cards">
+        <div class="card"><b>What we added</b><p>A Node shim that runs each turn as a pseudo-TTY <code>agy -p</code> call, captures the conversation id from the run log, and resumes it — with <code>--add-dir</code> grounding every file write in the task's workdir instead of agy's own scratch space.</p></div>
+        <div class="card"><b>Deliberate v1 limits</b><p>Everything fails loudly instead of degrading: one agy worker per machine (agy reads a single global MCP config), refusal to start over a stale entry, and a hard error if a resume ever forks a fresh conversation.</p></div>
+        <div class="card"><b>Why it's relevant</b><p>It unlocks Google-account models — Gemini 3.1 Pro (High), Opus 4.6 Thinking, GPT-OSS 120B — as mesh workers. Run 4 showed the native harness runs Gemini ~1.75× faster than a foreign one; this connector is how the mesh gets that speed.</p></div>
+        <div class="card"><b>Proven before submitting</b><p>Builds in-tree, imports clean, live-tested end-to-end (spawn → delegation → "AGY WORKER OK" on #general → clean stop), and posted the fastest total on the run-9 reasoning/grounding sweep.</p></div>
+      </div>
+      <div class="verdict">The <code>--add-dir</code> grounding isn't a nicety — running agy without it is what caused the template-contamination incident in the benchmarks tab's war story. The connector ships the lesson.</div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="path">Wally-Ahmed/Cotal:add-connector-codex</div><p>Branch pushed, built, import-verified. PR body drafted with the pull-only relationship addressed head-on (supersede or coexist — maintainers' call).</p></div>
+      <div class="card"><div class="path">Wally-Ahmed/Cotal:add-connector-agy</div><p>Branch pushed, built, import-verified. PR body documents the v1 fail-loud limits as design choices with their reasons.</p></div>
+      <div class="card"><div class="path">docs/cotal-pr-drafts.md</div><p>Both PR bodies in full plus the exact <code>gh pr create</code> commands — review and fire.</p></div>
+    </div>
+    <div class="foot">Why give the connectors away? Because the product (<code>hermes-handoff</code>) is better when the ecosystem ships them — and a benchmark-backed contribution is the strongest possible sponsor pitch.</div>
+  </section>
+
 </div>
 
 <div class="caption" id="caption"></div>
@@ -807,6 +862,7 @@ function animateBars(scope){
   });
 }
 if(location.hash==="#benchmarks") showTab("benchmarks");
+if(location.hash==="#prs") showTab("prs");
 
 /* ---------- safe rich-text ---------- */
 function rich(target, text){
@@ -988,7 +1044,9 @@ const TOUR = [
   {cap:"One mesh: **Cotal** — live messaging, not HTTP", foc:"#n-bus", run(){ spotlight(["n-bus"]); }, n:2},
   {cap:"The planner **never writes code**", foc:"#n-planner", run(){ spotlight(["n-planner"]); }, n:3},
   {cap:"Built by us → **PR'd back upstream to Cotal**", foc:"#arch .gaps", run(){ spotlight(["n-codex","n-agy"]); }, n:4},
-  {cap:"Watch a **real task** travel", foc:"#console", run(){ spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
+  {cap:"Two pull requests — **the worker half Codex was missing** · **the first agy connector**", foc:"#view-prs .panel", fb:"start", run(){ showTab("prs");
+     tlater(()=>{const p=document.querySelectorAll("#view-prs .panel")[1]; if(p) p.scrollIntoView({behavior:"smooth",block:"start"});},13000); }, n:17, vis:null},
+  {cap:"Watch a **real task** travel", foc:"#console", run(){ showTab("project"); spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
   {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
   {cap:"Fan-out **finishes** · serial **stalls**", foc:".slider", fb:"start", run(){ slideTo(1); }, n:10, vis:null},
   {cap:"Same model, two harnesses — **~2× wall-clock**", foc:".slider", fb:"start", run(){ slideTo(2); }, n:7, vis:null},
