@@ -24,3 +24,12 @@ Cotal facts that shape the design: NATS/JetStream transport (not HTTP); NO task 
 protocol (see repo `docs/cotal-wire-contract.md`); supervision is channel-ACL convention.
 Dev happens on the cloud Codespace ([[cloud-model-preference]]). **Full current state lives in
 [[standing-handoff]] → HANDOFF.md at repo root — read that first.**
+
+**PIVOT (Wally, 2026-07-19):** the mesh demo felt like a Cotal proof-of-concept, not a
+standalone project — realistically you use ONE harness, not three. New product direction: an
+installable **Hermes tool** with a setup wizard that picks ONE harness (Claude Code / Codex /
+Antigravity / Claude Cowork) and wires a workflow where Hermes hands over ANY task (not just
+coding). Value prop = **model gating**: frontier models are gated to specific harnesses +
+subscriptions (gpt-5.6-sol→Codex, Gemini 3.1 Pro High→Antigravity, Opus→Claude Code); this is
+the legitimate front-door around it. Cowork has NO headless API — only `claude://cowork/new`
+deep links with a mandatory human-confirm dialog → attended tier only.
