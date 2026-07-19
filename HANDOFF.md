@@ -4,7 +4,7 @@
 > crash, `/compact`, or fresh session: this is the single source of truth. Read it once, then act.
 > Verify claims against `git log --oneline -5` and `cotal ps` before trusting them.
 
-_Last updated: 2026-07-19 ~00:55 UTC — agy connector committed (live test pending); session paused_
+_Last updated: 2026-07-19 ~04:10 UTC — agy connector LIVE-TESTED ✓; codex-sub arms pending login_
 
 ## ⚠️ Read first — SESSION PAUSED CLEANLY (Jul 19 ~00:45 UTC), resume checklist below
 
@@ -26,14 +26,14 @@ _Last updated: 2026-07-19 ~00:55 UTC — agy connector committed (live test pend
    process-exit); `supportsModelVariant: false` (level baked into model display name);
    launchOptions/resume/transcript all throw. Default model "Gemini 3.1 Pro (High)" via
    COTAL_MODEL passthrough.
-   REMAINING (was gated on the hermetic benchmark, still running at pause): the live test —
-   mesh up → `cotal spawn worker3 --agent agy --detach` → verify in `cotal endpoints` →
-   `cotal send dm worker3 "reply with: AGY WORKER OK"` (accept the reply on #general — CLI
-   DMs aren't roster-resolvable) → confirm via `cotal console --plain` → `cotal stop --name
-   worker3` → **verify the "cotal" entry is gone from mcp_config.json**; budget ~4 debug
-   cycles. Empirically UNVERIFIED (first debug targets if the live test fails): (a) headless
-   `agy -p … --conversation <id>` resume actually continues the conversation; (b) agy accepts
-   a streamable-HTTP MCP `serverUrl` (vs SSE) for the cotal server.
+   **LIVE TEST PASSED (2026-07-19 ~04:07 UTC, session resume) — connector fully verified:**
+   spawn joined mesh (`worker3/builder agy·pty`), cotal entry merged into mcp_config alongside
+   the preserved subagent entries, DM round-trip produced `worker3 → #general: AGY WORKER OK`
+   (captured live in `cotal console --plain` — which DOES stream channel messages, contrary
+   to the earlier membership-only note), multi-turn resume held context (no fail-loud), stop
+   → worker offline + cotal entry removed cleanly. Both open assumptions verified: headless
+   `--conversation` resume works; agy accepts streamable-HTTP `serverUrl`. THREE connectors
+   now proven: hermes (planner), codex (worker2), agy (worker3).
 2. **codex-sub benchmark arms — blocked on Wally's login (deliberate).** He REFUSED reusing
    the Mac OAuth token (rotation would log his Mac out) — rule in memory. The copied token was
    DELETED from Codespace + bench home. Resume: run `nohup codex login --device-auth
