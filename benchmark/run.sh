@@ -99,14 +99,16 @@ for t in "${TASKS[@]}"; do
   START=$(date +%s)
   case "$HARNESS" in
     codex)
+      # </dev/null: codex exec slurps stdin when it's an open pipe ("Reading additional
+      # input from stdin...") and hangs until EOF.
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CODEX_ENV[@]}" codex exec --skip-git-repo-check \
         --model "$CODEX_MODEL" \
-        --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
+        --dangerously-bypass-approvals-and-sandbox "$PROMPT" </dev/null >"$WORK/harness.log" 2>&1)
       ;;
     codex-sub)
       SUBARGS=(); [ -n "${BENCH_CODEX_SUB_MODEL:-}" ] && SUBARGS=(--model "$BENCH_CODEX_SUB_MODEL")
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CODEX_ENV[@]}" codex exec --skip-git-repo-check \
-        "${SUBARGS[@]}" --dangerously-bypass-approvals-and-sandbox "$PROMPT" >"$WORK/harness.log" 2>&1)
+        "${SUBARGS[@]}" --dangerously-bypass-approvals-and-sandbox "$PROMPT" </dev/null >"$WORK/harness.log" 2>&1)
       ;;
     claude)
       (cd "$WORK" && timeout "$HARNESS_TIMEOUT" "${CLAUDE_ENV[@]}" claude -p --model "$CLAUDE_MODEL" \

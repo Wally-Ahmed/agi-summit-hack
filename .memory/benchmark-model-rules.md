@@ -20,6 +20,12 @@ his daily-driver harness model on subscription.
 Opus 4.8; only override for the Gemini/GPT matrix on the [[project-definition]] antigravity
 branch, never to Fable-via-OpenRouter.
 
+**Third rule (Wally, 2026-07-19):** codex benchmark arms should use **his ChatGPT subscription**
+("i would rather use my subscription for consistency" — both harnesses flat-rate, no 402s).
+run.sh harness `codex-sub`: hermetic home + his OAuth auth.json (copied Mac→Codespace), native
+default model, xhigh. OpenRouter codex remains ONLY for cross-model arms (gemini) and the
+same-model-Opus-4.8 control. Note: ChatGPT auth can only serve OpenAI models.
+
 **Second rule (Wally, 2026-07-19):** harness-vs-harness benchmarks must run WITHOUT the memory
 layers / additions of our dev environment — stock harnesses only. run.sh has hermetic mode
 (default ON, BENCH_HERMETIC=0 to disable): claude gets a clean CLAUDE_CONFIG_DIR (credentials +
