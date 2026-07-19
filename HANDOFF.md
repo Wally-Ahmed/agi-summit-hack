@@ -23,7 +23,12 @@ _Last updated: 2026-07-18 ~23:50 EDT (session 1, post-compact era — benchmark 
       /tmp/template-quarantine (incl. first aborted hermetic attempt `b5a67sacc`, killed by
       a 402 + this discovery). **Runs 1–3 all finished ≤22:57 → still VALID.** run.sh now has
       a template-integrity tripwire (aborts if benchmark/tasks dirty vs git) @ cde2fbd.
-   b. **HERMETIC QUEUE IN FLIGHT (bg task `buubjaoq8`, sentinel `HERMETIC-DONE`)**: runs 1–2
+   b. **HERMETIC QUEUE COMPLETED (~00:20 UTC Jul 19) — RESULTS PUBLISHED.** 42/43 tasks passed
+      (only genuine fail: GPT-OSS 120B on t4-interp). Headlines now in benchmark/RESULTS.md:
+      Gemini native-agy 298s BEATS codex+OpenRouter 521s at equal 7/7; Codex-vs-Claude honest
+      gap is ~2× (not 5× — dev-env MCP boot inflated it: claude hard 524s→234s hermetic);
+      agy 3-model shootout near-tie. Remaining: codex-sub arms (awaiting Wally's device-auth
+      login), connector agent live test + its report. Original queue spec (for reference): runs 1–2
       re-run (codex+claude, easy+hard, Opus 4.8) then run-4 matrix (agy+Gemini31ProHigh,
       codex+gemini-3.1-pro-preview, agy+"Claude Opus 4.6 (Thinking)", agy+"GPT-OSS 120B
       (Medium)"), each arm snapshotted to `benchmark/results/hermetic-*.jsonl`. All arms
