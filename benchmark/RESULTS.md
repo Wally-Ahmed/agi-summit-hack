@@ -1,5 +1,26 @@
 # Benchmark results
 
+## Run 7 — capability dimensions (suite v3): agentic depth · knowledge precision · self-verification
+
+_2026-07-19. Three new validated tasks, each isolating a capability rather than raw
+correctness: **t8-agentic** (multi-file bug discovery, no location hint — must run tests,
+read tracebacks, navigate), **t9-omniscience** (RFC 4648 Base32 from memory, stdlib codec
+banned; stdlib used as the test oracle), **t10-selfcheck** (thin prompt; the test IS the
+spec; naive guesses fail). Hermetic; the three subscription-native arms._
+
+| Arm | t8-agentic | t9-omniscience | t10-selfcheck | Total |
+|---|---|---|---|---|
+| Claude Code · Opus 4.8 (Max) | ✅ 37s | ✅ 32s | ✅ 42s | **3/3 · 111s** |
+| Codex · gpt-5.6-sol (ChatGPT) | ✅ 36s | ✅ 72s | ✅ 39s | **3/3 · 147s** |
+| Antigravity · Gemini 3.1 Pro (High) | ✅ 61s | ✅ 49s | ✅ 51s | **3/3 · 161s** |
+
+- **9/9 — capability is saturated on every dimension we could isolate**, not just code
+  generation: exploration-driven debugging, spec recall without references, and
+  treat-the-test-as-truth discipline all pass everywhere.
+- Ordering is consistent with run 5: Claude Code fastest on every task; the RFC-recall task
+  produced the widest spread (32s vs 72s) — deep-recall cost differs more than coding cost.
+- Implication for the mesh: worker choice is about **latency, quota, and cost — not skill.**
+
 ## Run 6 — mesh throughput: parallel fan-out vs serial through one worker (live mesh)
 
 _2026-07-19. Same planner (Hermes), same 3 easy tasks, two scheduling shapes. Makespan =
