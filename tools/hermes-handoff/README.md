@@ -4,7 +4,10 @@
 
 Frontier models are gated behind specific harnesses and their subscriptions: gpt-5.6-sol
 only exists behind Codex CLI + ChatGPT, Gemini 3.1 Pro (High) behind Antigravity, Claude
-Opus behind Claude Code + Max. You don't run three harnesses — you pay for one.
+Opus behind Claude Code + Max. You don't run three harnesses — you pay for one. And you
+shouldn't have to buy API credits on top of a subscription you already have: the planner
+brain can ride a first-party OAuth login (`hermes login` — Sign in with ChatGPT, or a Nous
+Portal account) instead of a metered key.
 
 `hermes-handoff` is a setup wizard + workflow: it detects which official harnesses are
 installed and authed on your machine, you pick **one**, and it wires

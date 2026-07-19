@@ -14,7 +14,7 @@
 //   hermes-handoff stop     stop the agents (--down also stops the mesh stack)
 
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, readdirSync, cpSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
@@ -82,11 +82,33 @@ function loadConfig() {
 }
 
 function cotal(args, cfg, extraEnv = {}) {
-  const r = run("cotal", args, {
-    cwd: cfg.dir,
-    env: { ...process.env, OPENROUTER_API_KEY: cfg.key || process.env.OPENROUTER_API_KEY || "", HERMES_MODEL: cfg.model, ...extraEnv },
-  });
+  const env = { ...process.env, ...extraEnv };
+  if (cfg.brain === "openrouter") env.OPENROUTER_API_KEY = cfg.key || process.env.OPENROUTER_API_KEY || "";
+  if (cfg.model) env.HERMES_MODEL = cfg.model;
+  const r = run("cotal", args, { cwd: cfg.dir, env });
   return r;
+}
+
+// The Cotal hermes connector isolates each agent in its own HERMES_HOME
+// (/tmp/cotal-hermes-<space>-<name>), which cannot see the OAuth credentials that
+// `hermes login` stored under ~/.hermes. For subscription/Nous brains, pre-seed the
+// connector home with the auth material (config, env, token stores) before spawning.
+function seedHermesHome(agentName) {
+  const src = join(homedir(), ".hermes");
+  if (!existsSync(src)) return false;
+  const dst = `/tmp/cotal-hermes-main-${agentName}`;
+  mkdirSync(dst, { recursive: true });
+  let seeded = 0;
+  for (const f of readdirSync(src)) {
+    if (["sessions", "logs", "audio_cache", "image_cache", "memories", "cron"].includes(f)) continue;
+    try {
+      cpSync(join(src, f), join(dst, f), { recursive: true, force: true });
+      seeded++;
+    } catch {
+      /* best-effort: skip locked/unreadable entries */
+    }
+  }
+  return seeded > 0;
 }
 
 function stripAnsi(s) {
@@ -238,13 +260,50 @@ async function init(flags) {
     die("the Codex connector is not installed — `cotal ext` add cotal-connector-codex");
   }
 
-  // 4. Planner brain (Hermes needs an OpenRouter key + a tool-calling model).
-  let key = process.env.OPENROUTER_API_KEY || flags.key;
-  if (!key && !flags.yes) {
-    key = (await rl.question("\nOpenRouter API key for the Hermes planner brain (or set OPENROUTER_API_KEY): ")).trim();
+  // 4. Planner brain. Principle: you already pay for a subscription — the planner
+  // shouldn't cost API credits on top. hermes-agent ships first-party OAuth for this:
+  //   codex-oauth  Sign in with ChatGPT (same sanctioned flow Codex CLI uses)
+  //   nous         Nous Portal login (Nous's own inference for Hermes models)
+  //   openrouter   bring-your-own metered key (power-user fallback)
+  const authState = (p) => /logged in/i.test(stripAnsi(run("hermes", ["auth", "status", p]).stdout || ""));
+  let brain = flags.brain;
+  if (!brain) {
+    const rec = harness === "codex" ? "codex-oauth" : "nous";
+    if (flags.yes) {
+      brain = rec;
+    } else {
+      console.log(`\n${b("Planner brain")} ${dim("(what Hermes thinks with — the worker does the heavy lifting)")}`);
+      console.log(`  [1] ${harness === "codex" ? "Your ChatGPT subscription (OAuth — no extra cost)" : "ChatGPT subscription OAuth (if you have one)"}`);
+      console.log(`  [2] Nous Portal account (Hermes models on Nous inference)`);
+      console.log(`  [3] OpenRouter API key ${dim("(metered — only if you want a specific brain model)")}`);
+      const pick = (await rl.question(`Pick [1-3, default ${rec === "codex-oauth" ? 1 : 2}]: `)).trim();
+      brain = pick === "1" ? "codex-oauth" : pick === "3" ? "openrouter" : pick === "2" ? "nous" : rec;
+    }
   }
-  if (!key) die("no OpenRouter key — the planner brain needs one (export OPENROUTER_API_KEY or pass --key)");
-  const model = flags.model || "anthropic/claude-sonnet-4.6";
+  if (!["codex-oauth", "nous", "openrouter"].includes(brain)) die(`unknown brain "${brain}" (codex-oauth | nous | openrouter)`);
+
+  let key = null;
+  let model = flags.model || null;
+  if (brain === "openrouter") {
+    key = process.env.OPENROUTER_API_KEY || flags.key;
+    if (!key && !flags.yes) key = (await rl.question("OpenRouter API key: ")).trim();
+    if (!key) die("brain=openrouter needs a key (export OPENROUTER_API_KEY or pass --key)");
+    model = model || "anthropic/claude-sonnet-4.6";
+  } else {
+    const provider = brain === "codex-oauth" ? "openai-codex" : "nous";
+    if (!authState(provider)) {
+      if (flags.yes) {
+        console.log(warn(`  hermes is not logged in to ${provider} — run: hermes login --provider ${provider}`));
+      } else {
+        console.log(dim(`\nOpening the ${provider} login (browser flow)…`));
+        const lr = spawnSync("hermes", ["login", "--provider", provider], { stdio: "inherit" });
+        if (lr.status !== 0 || !authState(provider)) die(`hermes login --provider ${provider} did not complete`);
+        console.log(ok(`  logged in to ${provider}`));
+      }
+    } else {
+      console.log(ok(`  hermes already logged in to ${provider}`));
+    }
+  }
 
   // 5. Workspace: the Cotal space + personas live here; handed-off tasks run here too.
   const dir = resolve(flags.dir || join(homedir(), "hermes-handoff"));
@@ -256,7 +315,7 @@ async function init(flags) {
   console.log(`  personas     ${ok("planner.md, worker.md")} ${dim("(.cotal/agents)")}`);
   console.log(`  hermes patch ${patched === "patched" ? ok("applied (createRequire shim)") : dim(patched)}`);
 
-  const cfg = { dir, harness, model, key, createdAt: new Date().toISOString() };
+  const cfg = { dir, harness, brain, model, key, createdAt: new Date().toISOString() };
   writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
   console.log(`  config       ${ok(CONFIG_PATH)}`);
   if (rl) rl.close();
@@ -281,9 +340,13 @@ async function up(cfg) {
   }
   console.log(`  mesh     ${ok("up")}`);
 
+  if (cfg.brain && cfg.brain !== "openrouter") {
+    const seeded = seedHermesHome("planner");
+    console.log(`  brain    ${seeded ? ok(cfg.brain + " creds seeded") : warn(cfg.brain + " — no ~/.hermes to seed; planner may lack auth")}`);
+  }
   r = cotal(["spawn", "planner", "--agent", "hermes", "--detach"], cfg);
   if (r.status !== 0) die(`planner spawn failed:\n${stripAnsi(r.stderr || r.stdout)}`);
-  console.log(`  planner  ${ok("spawned")} ${dim("(hermes · " + cfg.model + ")")}`);
+  console.log(`  planner  ${ok("spawned")} ${dim("(hermes · " + (cfg.model || cfg.brain || "default") + ")")}`);
 
   r = cotal(["spawn", "worker", "--agent", H.agent, "--detach"], cfg);
   if (r.status !== 0) die(`worker spawn failed:\n${stripAnsi(r.stderr || r.stdout)}`);
