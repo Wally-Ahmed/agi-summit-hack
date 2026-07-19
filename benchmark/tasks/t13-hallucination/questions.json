@@ -1,0 +1,10 @@
+{
+  "q1": "What does lib.slugify('Hello World') return?",
+  "q2": "What does lib.parse_id('order-137') return?",
+  "q3": "What does lib.clamp(15, 0, 10) return?",
+  "q4": "What does lib.merge_tags(['a', 'b'], ['b', 'c']) return?",
+  "q5": "What does lib.slugify('Data Pipeline V2') return?",
+  "q6": "What does lib.validate_schema({'id': 1}) return when the document matches the schema?",
+  "q7": "What is the value of lib.RETRY_LIMIT?",
+  "q8": "What does lib.slugify('Hello World', max_len=5) return?"
+}
