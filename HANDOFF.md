@@ -28,9 +28,15 @@ _Last updated: 2026-07-18 ~23:50 EDT (session 1, post-compact era — benchmark 
       codex+gemini-3.1-pro-preview, agy+"Claude Opus 4.6 (Thinking)", agy+"GPT-OSS 120B
       (Medium)"), each arm snapshotted to `benchmark/results/hermetic-*.jsonl`. All arms
       stock + agy `--add-dir $PWD` + tripwire; clean templates; OpenRouter topped up (~$11).
-      ETA ~2–2.5h. On completion: write RESULTS.md runs 1/2/4 from hermetic numbers (checking
-      codex arms for 402s first), commit+push. Early (contaminated-but-indicative) hermetic
-      claude-easy was 77s vs 97s dev-env — our MCP boot overhead on claude -p is real (~7s/task).
+      ETA ~2–2.5h. On completion: (i) `git pull` on the Codespace, (ii) run the NEW `codex-sub`
+      arms (Codex on Wally's ChatGPT subscription — his directive Jul 19 "use my subscription
+      for consistency"): `bash benchmark/run.sh codex-sub t1-lru t2-bugfix t3-cli` then hard
+      suite, snapshot to hermetic-codexsub-{easy,hard}.jsonl (auth.json copied Mac→Codespace,
+      smoke-tested OK; native default model @ xhigh — read the real model id from harness.log),
+      (iii) write RESULTS.md runs 1/2/4 from hermetic numbers (check codex arms for 402s),
+      commit+push. Early (contaminated-but-indicative) hermetic claude-easy was 77s vs 97s
+      dev-env — our MCP boot overhead on claude -p is real (~7s/task). Subscription-codex is
+      the PRIMARY codex framing now; OpenRouter codex = same-model-Opus control + gemini arm.
    c. **cotal-connector-agy build agent** (`a387fb0c0ce4fa218`): gated on MATRIX-DONE, its
       poller had not fired yet at queue launch. It commits+pushes to `antigravity` itself — on
       its notification: read report, `git pull`, verify, relay. Its live test merges a cotal
