@@ -1,0 +1,22 @@
+{
+  "name": "hermes-handoff",
+  "version": "0.1.0",
+  "description": "One front-door to your gated models: a setup wizard that wires Nous Hermes to hand any task to the ONE official harness you already pay for (Claude Code, Codex CLI, or Antigravity CLI), over a Cotal space.",
+  "type": "module",
+  "bin": {
+    "hermes-handoff": "./bin/hermes-handoff.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "hermes",
+    "cotal",
+    "claude-code",
+    "codex",
+    "antigravity",
+    "agent",
+    "harness"
+  ],
+  "license": "MIT"
+}
