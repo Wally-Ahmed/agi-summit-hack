@@ -22,8 +22,9 @@ if git -C "$BENCH_DIR/.." rev-parse >/dev/null 2>&1; then
   fi
 fi
 
+TASK="${BENCH_FAILOVER_TASK:-t4-interp}"
 WORK=$(mktemp -d /tmp/bench-failover-XXXX)
-cp -R "$BENCH_DIR/tasks/t4-interp/"* "$WORK/"
+cp -R "$BENCH_DIR/tasks/$TASK/"* "$WORK/"
 rm -f "$WORK/CLAUDE.local.md" "$WORK/CLAUDE.md"
 find "$WORK" -name CLAUDE.local.md -delete 2>/dev/null
 say "workdir: $WORK"
@@ -31,8 +32,11 @@ say "workdir: $WORK"
 # Wait until NO builder is busy before sending: a freshly spawned worker shows
 # "working (orienting)" and would be mistaken for the assignee (attempt-1 lesson —
 # we killed an orienting bystander while the real delegate worked undisturbed).
+# $2=="builder" matches the NAME/ROLE field only — attempt 2 matched the word
+# "builder" inside the planner's activity text and killed the planner.
+busy_builders() { cotal endpoints 2>/dev/null | strip | awk -F'[ /]' '$2=="builder" && /working/ {print $1}'; }
 for _ in $(seq 1 36); do
-  BUSY=$(cotal endpoints 2>/dev/null | strip | awk -F'[ /]' '/builder/ && /working/ {print $1}')
+  BUSY=$(busy_builders)
   [ -z "$BUSY" ] && break
   say "waiting for busy builders to settle: $BUSY"
   sleep 5
@@ -45,7 +49,7 @@ say "task sent to planner"
 # Wait for a builder to go working, then kill it ~20s into its turn.
 VICTIM=""
 for _ in $(seq 1 60); do
-  VICTIM=$(cotal endpoints 2>/dev/null | strip | awk -F'[ /]' '/builder/ && /working/ {print $1; exit}')
+  VICTIM=$(busy_builders | head -1)
   [ -n "$VICTIM" ] && break
   sleep 5
 done
