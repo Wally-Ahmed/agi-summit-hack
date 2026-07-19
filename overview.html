@@ -63,8 +63,9 @@ h1{font-family:var(--sans);font-size:30px;font-weight:700;letter-spacing:-.015em
 h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);letter-spacing:-.005em;line-height:1.3}
 .tagline{color:var(--dim);margin:10px 0 18px;font-size:14px;max-width:700px;line-height:1.55}
 
-#tourbtn{position:fixed;top:16px;right:20px;z-index:90;box-shadow:0 8px 24px -8px rgba(0,0,0,.6)}
-@media(max-width:760px){#tourbtn{top:10px;right:10px;padding:8px 12px;font-size:12px}}
+.wrap{position:relative}
+#tourbtn{position:absolute;top:2px;right:0;z-index:40}
+@media(max-width:760px){#tourbtn{position:static;margin-bottom:12px}}
 .badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
 .badge{
   border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:12px;color:var(--accent);
@@ -358,8 +359,22 @@ button.cta.stop:hover{box-shadow:0 8px 20px rgba(248,113,113,.4),0 1px 0 rgba(25
 .slide .q{color:var(--dim);font-size:13.5px;margin:10px 0 20px;line-height:1.6}
 .slide .q b{color:var(--text)}
 
-.timeline{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:32px}
+.timeline{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:22px}
 .dots{display:flex;gap:10px;align-items:center}
+.explain{
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:32px;
+  animation:explainIn .35s ease;
+}
+@keyframes explainIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.explain h4{
+  font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 8px;font-weight:600;
+}
+.explain h4+p{margin-top:0}
+.explain h4:nth-of-type(2){color:var(--accent2);margin-top:18px}
+.explain p{color:var(--dim);font-size:13.5px;line-height:1.7;margin:0 0 4px}
+.explain p b{color:var(--text)}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--line2);cursor:pointer;transition:background .25s,transform .25s,box-shadow .25s}
 .dot:hover{background:var(--dim)}
 .dot.active{background:var(--accent);transform:scale(1.35);box-shadow:0 0 12px rgba(94,234,212,.6)}
@@ -453,8 +468,8 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 </style>
 </head>
 <body>
-<button class="cta alt" id="tourbtn">▶ Narrated walkthrough</button>
 <div class="wrap">
+<button class="cta alt" id="tourbtn">▶ Narrated walkthrough</button>
 
   <h1>Hermes Handoff — One Front-Door to Your Gated Models</h1>
   <div class="tagline">AGI Summit 2026 Hackathon — frontier models are gated behind specific harnesses and subscriptions. Pick the ONE you already pay for; Hermes hands it any task. Cotal underneath.</div>
@@ -479,7 +494,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
       <div class="row"><div class="node hermes" id="n-hh" data-k="wizard">
         <div class="who">The product — tools/hermes-handoff</div>
         <div class="name">$ hermes-handoff init</div>
-        <div class="sub">nobody runs three harnesses — you pay for ONE. A setup wizard fronts it with Hermes: any task, your own login, no API credits.</div>
+        <div class="sub">the model you want is locked to a specific harness and its subscription. The wizard wires Hermes to the one you pay for: any task, your own login, no API credits.</div>
       </div></div>
       <div class="flow" id="wizflow" style="grid-template-columns:repeat(4,1fr)">
         <div class="step" data-k="w1"><div class="n">1 · DETECT</div><div class="t">installed harnesses + auth state</div></div>
@@ -509,9 +524,9 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="sub">plans &amp; delegates · never executes · state lives on the mesh</div>
         </div>
         <div class="node pool" id="n-pool" data-k="pool">
-          <div class="who">Subagent pool (MCP)</div>
-          <div class="name">openrouter-subagents · gpt-api</div>
-          <div class="sub">on-demand expert calls for any agent</div>
+          <div class="who">The baseline we benchmark against</div>
+          <div class="name">MCP subagents — many models, one loop</div>
+          <div class="sub">one harness calls different models mid-loop · the contrast to Cotal's harness-per-model setup (run 3)</div>
         </div>
       </div>
       <div class="arrow-down">▼</div>
@@ -696,6 +711,8 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
       <button class="snav" id="nextbtn" aria-label="next study">›</button>
     </div>
 
+    <div class="explain" id="explain"></div>
+
     <div class="meth">
       <div class="card"><b>Hermetic by default</b><p>Every harness runs stock — exactly as its vendor ships it, nothing extra loaded. No arm gets outside context or added startup cost.</p></div>
       <div class="card"><b>Validated tests</b><p>Every task judged only by its own test.py, validated against reference solutions before use.</p></div>
@@ -736,11 +753,43 @@ slides.forEach((_,i)=>{
   d.addEventListener("click",()=>slideTo(i)); dotsBox.appendChild(d);
 });
 const dots = [...dotsBox.children];
+/* per-slide explainer — one read for everyone, one for the technically curious */
+const EXPLAIN = [
+  {a:"We gave the same three programming tasks to two setups. In the first, a planner hands each task to a worker agent that does the job right where the files live. In the second, a single agent asks a helper model for the code and copies the answer into place. Both got everything right — but the first finished about a third faster. Doing the work in place beats asking for an answer and transcribing it, and the handoff between agents costs essentially nothing.",
+   b:"Both arms share one environment by design; the isolated variable is coordination topology. Mesh arm (Hermes planner → Cotal handoff → worker executes in place): 3/3 in 95s. Direct-MCP arm (orchestrate → generate → transcribe → test): 3/3 in 137s. Mesh end-to-end ≈ a bare `claude -p` on the same tasks, so the mesh hop is noise. Caveats: n=3, worker models differ by arm by design, 10s poll granularity."},
+  {a:"Three tasks arrived at once. Spread across three workers, everything finished in about three and a half minutes — you only wait for the slowest task. Pushed one-by-one through a single worker, the first task passed and then the planner quietly dropped the rest of the list: two tasks never even started. Teams of workers are dependable today; a long to-do list handed to one worker is where things still break.",
+   b:"Same planner (Hermes), same 3 easy tasks, two scheduling shapes. Parallel fan-out: 3/3, makespan 203s, bounded by the slowest worker (fastest finished in 36s). Sequential through `worker`: 1/3 DNF at the 1504s cap — t1 passed in 27s, then t2/t3 were never dispatched (workdir autopsy: untouched template, empty dir). This is a coordination-reliability finding: it argues for one machine-checkable DONE-WHEN per task rather than batched serial asks, and it motivates the failover study."},
+  {a:"Here the same AI model ran inside two different tools — one engine, two cars. Every task passed in both. The only difference was time: the lighter tool finished about twice as fast, and the gap grew as tasks got harder. The wrapper around a model changes how long you wait, not whether the work gets done.",
+   b:"claude-opus-4.8 at maximum reasoning on both harnesses, hermetic homes (clean config dirs, no MCP servers, no plugins), fresh workdir per task. Codex: 7/7, 44s easy / 105s hard. Claude Code: 7/7, 79s / 234s. An earlier ~5× gap measured pre-hermetically was mostly our own dev environment booting global MCP servers into every `claude -p` — more than half of Claude Code's apparent deficit vanished under hermetic conditions. The honest number is ~2×, driven by the harness turn loop."},
+  {a:"Google's Gemini model can be driven from its own tool or through someone else's. Same model, same tasks: at home it ran nearly twice as fast, with identical results. We then raced three different models inside that home tool and they finished within seconds of each other — the only real difference was one open-weight model failing a single hard task. Models mostly match each other now; where you run them is what you feel.",
+   b:"Gemini 3.1 Pro (High) native on Antigravity: 7/7 in 298s vs 7/7 in 521s through Codex+OpenRouter (~1.75×). Roster shootout on Antigravity: Opus 4.6 Thinking 295s, Gemini 298s, GPT-OSS 120B 333s at 6/7 — its t4-interp miss is the only genuine capability failure across the 43-task hermetic set. The foreign-harness arm burns a ~13k-token fixed prompt per task before productive work starts."},
+  {a:"This comparison mirrors real life: each tool running the model its own subscription provides — the actual choice you face when you pay for one service. Both cleared every task, but the speed ordering flipped from the earlier study: Claude Code finished about forty percent sooner here. What decides your wait is the model and the service behind it, not the tool's brand. Choose per job.",
+   b:"Codex + its native gpt-5.6-sol (ChatGPT subscription, xhigh): 7/7 in 444s. Claude Code + Opus 4.8 (Max): 7/7 in 313s. This inverts runs 1–2, where Codex was ~2× faster with the identical model — end-to-end latency is dominated by the backend+model pair, with harness overhead second-order. Note: token counters aren't comparable across wires (~10–21k/task on the subscription wire vs ~56–142k via OpenRouter for the same suite)."},
+  {a:"We stopped asking whether these systems can write code and tested three separate skills: hunting down a hidden bug with no hints about where it lives, writing a precise internet standard purely from memory, and trusting a failing test over instinct when the instructions are deliberately thin. All three systems aced all three skills. At this level ability is a given — the real choice between them is speed, cost, and which models you can reach.",
+   b:"t8: a planted escape-ordering bug in a multi-file package, no location hint — requires running tests and navigating tracebacks. t9: RFC 4648 Base32 from memory with base64/binascii/codecs banned in source; the stdlib is the oracle. t10: a thin prompt where test.py is the authoritative spec. 9/9 across the three subscription-native arms; the widest spread was deep recall (t9: 32s Claude vs 72s Codex). Capability saturation holds off the code-generation axis."},
+  {a:"Two newer questions: can they reason, and do they make things up? The reasoning test is a scheduling puzzle where five rules must hold at once — every system solved it. The honesty test is a trap: eight questions about a small code library, three of which reference functions that simply don't exist. The right answer is to say so. Every system answered exactly that, on every trap. These agents read the actual code before answering — that's what keeps them honest.",
+   b:"t12: constraint scheduler (machine capacity, co-location, and exclusion constraints); test.py validates the constraints themselves, so any valid assignment passes — no canonical answer to pattern-match. t13: answers.json must map 3 nonexistence traps to the literal string DOES_NOT_EXIST while 5 real questions are computed from lib/ at test time. Result: 6/6, zero hallucinated traps across all arms (verified per-workdir). Hallucination resistance here is substantially a harness property: agentic loops ground themselves by reading or executing the library."},
+  {a:"What does one finished, verified task actually cost? Paying per use through an API: between fourteen and fifty-one cents depending on the model. On a subscription you already own: effectively nothing extra — your limit is a monthly usage cap, not a bill. That's the core argument of this whole project. And a warning from experience: an orchestrator stuck in a broken loop burned four dollars overnight while producing nothing. Automated spenders need supervision.",
+   b:"Priced from measured token totals at list rates (Opus 4.8 $5/$25 per M in/out; Gemini 3.1 Pro $2/$12) under a 90/10 input/output split typical of agentic loops. Opus: 511k tokens over 7 tasks ≈ $0.51/PASS (bounds $2.56–$12.79 total). Gemini: 333k ≈ $0.14/PASS ($0.67–$3.99). Subscription arms cleared every suite at ≈$0 marginal cost — quota is the binding constraint. The idle-burn incident: a wedged planner loop drained ~$4 of metered credit with zero completed turns."},
+  {a:"What's left to measure: whether the planner notices a worker dying mid-task and reassigns the work, whether knowing each worker's speed makes its routing measurably smarter, and how the system handles long jobs where the steps depend on each other.",
+   b:"The failover runner is already written (`benchmark/run-failover.sh`): delegate an interpreter task, kill the assigned builder ~20s into its turn, and watch — within a 900s cap — whether the planner re-delegates. Routing-policy and long-horizon decomposition studies are designed but not yet scripted."}
+];
+const explainEl = document.getElementById("explain");
+function renderExplain(i){
+  const e = EXPLAIN[i]; if(!e){ explainEl.replaceChildren(); return; }
+  const h1 = document.createElement("h4"); h1.textContent = "What this shows";
+  const p1 = document.createElement("p"); rich(p1, e.a);
+  const h2 = document.createElement("h4"); h2.textContent = "Technical notes";
+  const p2 = document.createElement("p"); rich(p2, e.b);
+  explainEl.replaceChildren(h1, p1, h2, p2);
+  explainEl.style.animation = "none"; void explainEl.offsetWidth; explainEl.style.animation = "";
+}
 function slideTo(i){
   cur = (i+slides.length)%slides.length;
   track.style.transform = "translateX(-"+(cur*100)+"%)";
   dots.forEach((d,j)=>d.classList.toggle("active", j===cur));
   animateBars(slides[cur]);
+  renderExplain(cur);
 }
 document.getElementById("prevbtn").addEventListener("click",()=>slideTo(cur-1));
 document.getElementById("nextbtn").addEventListener("click",()=>slideTo(cur+1));
@@ -783,7 +832,7 @@ const INFO = {
   w4:{t:"Wizard step 4 — HANDOFF",p:"`hermes-handoff ask \"organize ~/Downloads into dated folders\"` — Hermes restates the task with a DONE-WHEN, DMs your worker, verifies the reply, reports back. **Any task**: research, files, data, writing, code."},
   user:{t:"The ask",p:"Any mesh participant sends a task with a **machine-checkable DONE-WHEN** (e.g. \"test.py prints PASS\"). Cotal has no built-in task lifecycle — this convention supplies one, and it's what makes results verifiable rather than vibes."},
   planner:{t:"Hermes — persistent planner",p:"Nous Research's **hermes-agent**, already an official Cotal connector. It plans, decomposes, and delegates — **never executes**. Its working state lives on the mesh, so it survives worker churn."},
-  pool:{t:"Subagent pool (MCP)",p:"Two MCP servers — **openrouter-subagents** (any OpenRouter model as an expert) and **gpt-api** — available to the planner or any worker for on-demand expert consultations mid-task."},
+  pool:{t:"MCP subagents — the comparison baseline",p:"The architecture Cotal's setup is measured **against**: a single harness loop that calls different models as MCP subagents (openrouter-subagents, gpt-api) and transcribes their answers into place. Run 3 puts the two head-to-head — **multiple harnesses, each invoked for its own associated model** vs one loop juggling many models — and the harness-per-model setup wins ~30% at equal quality."},
   bus:{t:"The Cotal mesh",p:"**NATS + JetStream** under the hood — not HTTP. Presence cards, anycast claims (first idle qualified worker takes the task), and reply correlation via contextId. Supervision is by channel-ACL convention."},
   claude:{t:"Claude Code — worker",p:"Anthropic's official CLI on a **Claude Max subscription**, spawned via the official Cotal connector. Executes in place, runs the task's own test, reports verified results. 7/7 across both suites; fastest native-subscription arm (run 5)."},
   codex:{t:"Codex CLI — worker2 (our connector)",p:"OpenAI's official CLI on a **ChatGPT subscription**. Cotal ships only an experimental **pull-only** codex integration (an interactive session can see the mesh, but delegation never wakes it; built on connector-core 0.2.0 vs today's 0.12.0). Ours is the **autonomous worker**: push delegation drives turns via `codex exec resume <threadId>`, with cotal tools over a local streamable-HTTP MCP endpoint. **Now prepared as a PR to the Cotal monorepo** — built in-tree against connector-core 0.12.0."},
@@ -927,27 +976,29 @@ function playScene(n){
   });
 }
 const TOUR = [
-  {cap:"**3 subscriptions** · 0 coordination", run(){ showTab("project"); spotlight([]);
+  {cap:"**3 subscriptions** · 0 coordination", foc:"#arch .r-workers", run(){ showTab("project"); spotlight([]);
      tlater(()=>spotlight(["n-claude"]),1500); tlater(()=>spotlight(["n-claude","n-codex"]),3000);
      tlater(()=>spotlight(["n-claude","n-codex","n-agy"]),4500); }, n:1},
-  {cap:"Pick **one** — Hermes fronts it · **any task**", run(){ showTab("project"); spotlight([]); window.scrollTo({top:0});
+  {cap:"Pick **one** — Hermes fronts it · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      glow("n-hh",true);
      const wsteps=[...document.querySelectorAll("#wizflow .step")];
      wsteps.forEach(s=>s.classList.remove("live","done"));
      wsteps.forEach((s,i)=>tlater(()=>{wsteps.forEach(x=>x.classList.remove("live"));s.classList.add("live");if(i>0)wsteps[i-1].classList.add("done");},3500+i*3800));
      }, n:12, vis:null},
-  {cap:"One mesh: **Cotal** — live messaging, not HTTP", run(){ spotlight(["n-bus"]); }, n:2},
-  {cap:"The planner **never writes code**", run(){ spotlight(["n-planner"]); }, n:3},
-  {cap:"Built by us → **PR'd back upstream to Cotal**", run(){ spotlight(["n-codex","n-agy"]); }, n:4},
-  {cap:"Watch a **real task** travel", run(){ spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
-  {cap:"Mesh beats subagents by **~30%**", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
-  {cap:"Fan-out **finishes** · serial **stalls**", run(){ slideTo(1); }, n:10, vis:null},
-  {cap:"**Native harness** wins ~1.75×", run(){ slideTo(3); }, n:9, vis:null},
-  {cap:"**The backend decides** — choose per task", run(){ slideTo(2); tlater(()=>slideTo(4),7000); }, n:7, vis:null},
-  {cap:"9 trials · 3 stacks · **9 passes**", run(){ slideTo(5); }, n:11, vis:null},
-  {cap:"**Zero hallucinations** — the harness checks reality", run(){ slideTo(6); }, n:13, vis:null},
-  {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", run(){ slideTo(7); }, n:14, vis:null},
-  {cap:"One wizard · one harness · **any task**", run(){ showTab("project"); spotlight([]); window.scrollTo({top:0});
+  {cap:"One mesh: **Cotal** — live messaging, not HTTP", foc:"#n-bus", run(){ spotlight(["n-bus"]); }, n:2},
+  {cap:"The planner **never writes code**", foc:"#n-planner", run(){ spotlight(["n-planner"]); }, n:3},
+  {cap:"Built by us → **PR'd back upstream to Cotal**", foc:"#arch .gaps", run(){ spotlight(["n-codex","n-agy"]); }, n:4},
+  {cap:"Watch a **real task** travel", foc:"#console", run(){ spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
+  {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
+  {cap:"Fan-out **finishes** · serial **stalls**", foc:".slider", fb:"start", run(){ slideTo(1); }, n:10, vis:null},
+  {cap:"Same model, two harnesses — **~2× wall-clock**", foc:".slider", fb:"start", run(){ slideTo(2); }, n:7, vis:null},
+  {cap:"**Native harness** wins ~1.75×", foc:".slider", fb:"start", run(){ slideTo(3); }, n:9, vis:null},
+  {cap:"On real subscriptions the story **inverts**", foc:".slider", fb:"start", run(){ slideTo(4); }, n:15, vis:null},
+  {cap:"9 trials · 3 stacks · **9 passes**", foc:".slider", fb:"start", run(){ slideTo(5); }, n:11, vis:null},
+  {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ slideTo(6); }, n:13, vis:null},
+  {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ slideTo(7); }, n:14, vis:null},
+  {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(8); }, n:16, vis:null},
+  {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
 ];
 let ARR;
@@ -959,6 +1010,11 @@ async function tour(){
     caption(scene.cap);
     sceneVis(scene.vis === undefined ? scene.n : scene.vis);
     scene.run();
+    /* keep the section being narrated on screen */
+    if(scene.foc) tlater(()=>{
+      const el = document.querySelector(scene.foc);
+      if(el) el.scrollIntoView({behavior:"smooth", block:scene.fb||"center"});
+    }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
     if(!tourOn) return;
