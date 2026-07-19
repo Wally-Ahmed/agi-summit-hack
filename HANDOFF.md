@@ -4,9 +4,9 @@
 > crash, `/compact`, or fresh session: this is the single source of truth. Read it once, then act.
 > Verify claims against `git log --oneline -5` and `cotal ps` before trusting them.
 
-_Last updated: 2026-07-19 ~04:30 UTC — ALL benchmarks done (runs 1-5); both connectors live-tested; next: merge + packaging_
+_Last updated: 2026-07-19 ~04:45 UTC — MERGED to main + packaged (README, DEMO); submission-ready_
 
-## ⚠️ Read first — SESSION PAUSED CLEANLY (Jul 19 ~00:45 UTC), resume checklist below
+## ⚠️ Read first — PROJECT SUBMISSION-READY; active branch is now MAIN
 
 **Wally paused work mid-stream. State is fully persisted. Resume order:**
 
