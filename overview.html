@@ -668,12 +668,13 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         <article class="slide">
           <span class="chip">Subscription reality</span>
           <h2>Run 5 — Each harness on its OWN subscription</h2>
-          <div class="q">The delegation targets a planner actually chooses between: Codex on the ChatGPT sub (native gpt-5.6-sol) vs Claude Code on Max (Opus 4.8). <b>Variable isolated: the full backend+model pairing users actually run.</b></div>
+          <div class="q">The delegation targets a planner actually chooses between — each harness under its own flat-rate login, running its native subscription model: Antigravity (Gemini 3.1 Pro High, Google), Claude Code (Opus 4.8, Max), Codex (gpt-5.6-sol, ChatGPT). <b>Variable isolated: the full backend+model pairing users actually run.</b></div>
           <div class="bars">
+            <div class="barrow"><span>Antigravity + Gemini 3.1 Pro (Google)</span><div class="barbg"><div class="bar c-agy" data-w="67"></div></div><span class="score">7/7 · 298s</span><span class="taskbreak">easy 90s (24·34·32) · hard 208s (88·48·48·24) — the run-4 native arm, same suite &amp; protocol</span></div>
             <div class="barrow"><span>Claude Code + Opus 4.8 (Max)</span><div class="barbg"><div class="bar c-claude" data-w="70"></div></div><span class="score">7/7 · 313s</span><span class="taskbreak">easy 79s (22·28·29) · hard 234s (105·43·55·31)</span></div>
             <div class="barrow"><span>Codex + gpt-5.6-sol (ChatGPT)</span><div class="barbg"><div class="bar c-codex" data-w="100"></div></div><span class="score">7/7 · 444s</span><span class="taskbreak">easy 100s (43·30·27) · hard 344s (135·89·71·49)</span></div>
           </div>
-          <div class="verdict"><b>The latency story inverts: Claude Code wins ~1.4×.</b> End-to-end latency is decided by the backend+model pair — exactly the per-task choice a Cotal planner can make.</div>
+          <div class="verdict"><b>The latency story inverts: Antigravity and Claude Code finish neck-and-neck (~5% apart), both ~1.4–1.5× ahead of Codex.</b> End-to-end latency is decided by the backend+model pair — exactly the per-task choice a Cotal planner can make.</div>
         </article>
 
         <article class="slide">
@@ -846,8 +847,8 @@ const EXPLAIN = [
    b:"Same planner (Hermes), same 3 easy tasks, two scheduling shapes. Parallel fan-out: 3/3, makespan 203s, bounded by the slowest worker (fastest finished in 36s). Sequential through `worker`: 1/3 DNF at the 1504s cap — t1 passed in 27s, then t2/t3 were never dispatched (workdir autopsy: untouched template, empty dir). This is a coordination-reliability finding: it argues for one machine-checkable DONE-WHEN per task rather than batched serial asks, and it motivates the failover study."},
   {a:"One test suite, six combinations of model and tool, one big comparison. First: the same AI model inside two different tools — one engine, two cars. Every task passed in both; the only difference was time, with the lighter tool about twice as fast, and the gap grew as tasks got harder. Second: Google's Gemini model driven from its own tool versus through someone else's — at home it ran nearly twice as fast, with identical results. And racing three different models inside that home tool, they finished within seconds of each other; the only real difference was one open-weight model failing a single hard task. The wrapper around a model changes how long you wait, not whether the work gets done — and where you run a model is what you feel.",
    b:"One hermetic suite (t1–t7, same templates, same test.py judges, xhigh) across six harness×model arms — originally published as runs 1–2 and 4, combined because the benchmark is identical. Same model, two harnesses: claude-opus-4.8 — Codex 7/7 in 149s vs Claude Code 7/7 in 313s. An earlier ~5× gap measured pre-hermetically was mostly our own dev environment booting global MCP servers into every `claude -p`; the honest number is ~2×, driven by the harness turn loop. Native vs foreign: Gemini 3.1 Pro (High) on Antigravity 7/7 in 298s vs 7/7 in 521s through Codex+OpenRouter (~1.75×); the foreign arm burns a ~13k-token fixed prompt per task before productive work starts. Roster shootout on Antigravity: Opus 4.6 Thinking 295s, Gemini 298s, GPT-OSS 120B 333s at 6/7 — its t4-interp miss is the only genuine capability failure across the 43-task hermetic set."},
-  {a:"This comparison mirrors real life: each tool running the model its own subscription provides — the actual choice you face when you pay for one service. Both cleared every task, but the speed ordering flipped from the earlier study: Claude Code finished about forty percent sooner here. What decides your wait is the model and the service behind it, not the tool's brand. Choose per job.",
-   b:"Codex + its native gpt-5.6-sol (ChatGPT subscription, xhigh): 7/7 in 444s. Claude Code + Opus 4.8 (Max): 7/7 in 313s. This inverts runs 1–2, where Codex was ~2× faster with the identical model — end-to-end latency is dominated by the backend+model pair, with harness overhead second-order. Note: token counters aren't comparable across wires (~10–21k/task on the subscription wire vs ~56–142k via OpenRouter for the same suite)."},
+  {a:"This comparison mirrors real life: each tool running the model its own subscription provides — the actual choice you face when you pay for one service. All three cleared every task, but the speed ordering flipped from the earlier study: Antigravity and Claude Code finished neck and neck, both roughly forty percent ahead of Codex. What decides your wait is the model and the service behind it, not the tool's brand. Choose per job.",
+   b:"Antigravity + Gemini 3.1 Pro (High) on the Google subscription: 7/7 in 298s — the run-4 native arm restated (same t1–t7 suite, same hermetic protocol, same Codespace). Claude Code + Opus 4.8 (Max): 7/7 in 313s. Codex + its native gpt-5.6-sol (ChatGPT subscription, xhigh): 7/7 in 444s. This inverts runs 1–2, where Codex was ~2× faster with the identical model — end-to-end latency is dominated by the backend+model pair, with harness overhead second-order. Note: token counters aren't comparable across wires (~10–21k/task on the subscription wire vs ~56–142k via OpenRouter for the same suite)."},
   {a:"We stopped asking whether these systems can write code and tested three separate skills: hunting down a hidden bug with no hints about where it lives, writing a precise internet standard purely from memory, and trusting a failing test over instinct when the instructions are deliberately thin. All three systems aced all three skills. At this level ability is a given — the real choice between them is speed, cost, and which models you can reach.",
    b:"t8: a planted escape-ordering bug in a multi-file package, no location hint — requires running tests and navigating tracebacks. t9: RFC 4648 Base32 from memory with base64/binascii/codecs banned in source; the stdlib is the oracle. t10: a thin prompt where test.py is the authoritative spec. 9/9 across the three subscription-native arms; the widest spread was deep recall (t9: 32s Claude vs 72s Codex). Capability saturation holds off the code-generation axis."},
   {a:"Two newer questions: can they reason, and do they make things up? The reasoning test is a scheduling puzzle where five rules must hold at once — every system solved it. The honesty test is a trap: eight questions about a small code library, three of which reference functions that simply don't exist. The right answer is to say so. Every system answered exactly that, on every trap. These agents read the actual code before answering — that's what keeps them honest.",
@@ -1124,13 +1125,15 @@ async function tour(start){
     if(scene.foc) tlater(()=>{
       const el = document.querySelector(scene.foc);
       if(!el) return;
-      /* leave clearance for the sticky media strip so it never pins over the focused section */
+      /* leave clearance for the sticky media strip: anchor on the union of the focused
+         element AND the spotlighted (.live) nodes, so neither ends up under the strip */
       const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
       const clear = hasVis ? 64 + Math.min(Math.max(innerHeight*.3,200),320) + 14 : 0;
       if(!clear){ el.scrollIntoView({behavior:"smooth", block:scene.fb||"center"}); return; }
-      const r = el.getBoundingClientRect();
-      const targetY = scene.fb === "start" ? clear : Math.max((innerHeight - r.height)/2, clear);
-      window.scrollTo({top: Math.max(0, r.top + window.scrollY - targetY), behavior:"smooth"});
+      const rects = [el, ...document.querySelectorAll("#arch .live")].map(c=>c.getBoundingClientRect());
+      const uTop = Math.min(...rects.map(r=>r.top)), uH = Math.max(...rects.map(r=>r.bottom)) - uTop;
+      const targetY = scene.fb === "start" ? clear : Math.max((innerHeight - uH)/2, clear);
+      window.scrollTo({top: Math.max(0, uTop + window.scrollY - targetY), behavior:"smooth"});
     }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
