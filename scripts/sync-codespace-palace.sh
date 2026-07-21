@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Sync the Codespace's MemPalace store (~/.mempalace) into backups/codespace-mempalace.
-# RUN ON THE CODESPACE, ideally from an interactive terminal (headless `gh codespace ssh`
-# sessions have stale git auth — the commit still lands locally and pushes next time).
-# Part of the milestone routine alongside scripts/sync-memory.sh (see HANDOFF.md).
+# Runs AUTOMATICALLY on the Codespace via the repo's Claude Code SessionEnd hook
+# (.claude/settings.json, gated on $CODESPACES); manual runs remain fine. Headless
+# `gh codespace ssh` sessions have stale git auth — commits then land locally and are
+# flushed by the next run that has auth (interactive session).
 set -eu
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 D=backups/codespace-mempalace
@@ -13,6 +14,10 @@ cp -a "$HOME/.mempalace/palace" "$D/palace"
 cp -a "$HOME/.mempalace/hallways.json" "$D/hallways.json" 2>/dev/null || true
 git add "$D"
 if git diff --cached --quiet -- "$D"; then
+  # Nothing new — but flush any earlier local commits stranded by stale auth.
+  if [ -n "$(git log --oneline @{u}..HEAD 2>/dev/null)" ]; then
+    git push -q origin main 2>/dev/null || true
+  fi
   echo "palace unchanged — nothing to sync"
   exit 0
 fi

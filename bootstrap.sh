@@ -28,10 +28,18 @@ step "mempalace"
 command -v mempalace >/dev/null 2>&1 || uv tool install mempalace -q
 mempalace --version || FAIL=1
 
-step "re-mine MemPalace vector DB (machine-local, rebuilt from repo)"
+step "MemPalace palace (restore committed snapshot, else re-mine)"
 # Palace location varies by version: <=3.4 uses ./.mempalace, >=3.6 uses ~/.mempalace/palace
 if [ ! -d .mempalace ] && [ ! -d "$HOME/.mempalace" ]; then
-  yes | mempalace mine . || FAIL=1
+  if [ -d backups/codespace-mempalace/palace ]; then
+    # Prefer the committed snapshot: instant, and keeps drawer writes a re-mine can't rebuild.
+    mkdir -p "$HOME/.mempalace"
+    cp -a backups/codespace-mempalace/palace "$HOME/.mempalace/palace"
+    cp -a backups/codespace-mempalace/hallways.json "$HOME/.mempalace/hallways.json" 2>/dev/null || true
+    echo "restored palace from backups/codespace-mempalace"
+  else
+    yes | mempalace mine . || FAIL=1
+  fi
 else
   echo "palace exists — skipping (run 'yes | mempalace mine .' to refresh)"
 fi
