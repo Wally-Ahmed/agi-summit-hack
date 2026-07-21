@@ -436,6 +436,31 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 .caption.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .caption .k{color:var(--accent)}
 
+/* walkthrough transport — scene timeline + pause/play, visible only mid-tour */
+.tourbar{
+  position:fixed;left:50%;bottom:74px;transform:translateX(-50%) translateY(20px);
+  display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;
+  background:rgba(10,14,22,.92);border:1px solid rgba(94,234,212,.35);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  z-index:60;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;
+  width:min(92vw,720px);
+}
+.tourbar.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.tourbar .pp{
+  width:30px;height:30px;border-radius:50%;border:1px solid var(--accent);flex:0 0 auto;
+  background:rgba(94,234,212,.12);color:var(--accent);font-size:11px;cursor:pointer;line-height:1;
+  transition:background .2s;
+}
+.tourbar .pp:hover{background:rgba(94,234,212,.28)}
+.tourbar .tsegs{display:flex;gap:4px;flex:1;min-width:0}
+.tseg{
+  height:14px;flex:1 1 10px;min-width:6px;border-radius:3px;cursor:pointer;border:none;padding:0;
+  background:rgba(148,163,184,.28);transition:background .25s,transform .15s;
+}
+.tseg:hover{transform:scaleY(1.45);background:rgba(94,234,212,.55)}
+.tseg.done{background:rgba(94,234,212,.38)}
+.tseg.active{background:var(--accent);box-shadow:0 0 8px rgba(94,234,212,.8)}
+
 /* walkthrough media strip — docked INSIDE the diagram panel, aiding the live
    choreography below it, never covering it. Hidden for scenes where the page
    itself (simulation, benchmark charts) is the visual. */
@@ -480,6 +505,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     <span class="badge alt">10 benchmark runs · 8 studies</span>
     <span class="badge alt">57/58 hermetic tasks passed</span>
     <span class="badge">no API credits needed</span>
+    <a class="badge" href="https://github.com/Wally-Ahmed" target="_blank" rel="noopener">github.com/Wally-Ahmed</a>
     <a class="badge alt" href="hermes-handoff-project.zip" download>⬇ download the project</a>
   </div>
 
@@ -584,6 +610,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     <div class="cards">
       <div class="card"><div class="path">tools/hermes-handoff/</div><p>The product: a zero-dependency wizard CLI. Detects harnesses + auth, you pick one, it wires Hermes as the front door — planner brain via subscription OAuth (<code>hermes login</code>) or any provider key.</p></div>
       <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core 0.12.0, and submitted as pull requests <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> to <code>Cotal-AI/Cotal</code>.</p></div>
+      <div class="card"><div class="path">Our open-source MCP servers — <a href="https://github.com/Wally-Ahmed" target="_blank" rel="noopener">github.com/Wally-Ahmed</a></div><p>The subagent backends behind the benchmarks are ours, published standalone: <a href="https://github.com/Wally-Ahmed/openrouter-subagents" target="_blank" rel="noopener">openrouter-subagents</a> — delegate to any OpenRouter model with full unified reasoning control — and <a href="https://github.com/Wally-Ahmed/gpt-subagents-subscription" target="_blank" rel="noopener">gpt-subagents-subscription</a> — expert GPT subagents on the ChatGPT plan you already pay for. Both drop into any MCP-capable agent.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-codex/</div><p>Our Codex mesh connector — Node shim owns one MeshAgent; cotal tools served over local streamable-HTTP MCP; turn chain via <code>codex exec resume</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — pTTY turn loop, conversation resume, MCP-config merge/restore. Live-tested: "AGY WORKER OK" on #general.</p></div>
       <div class="card"><div class="path">benchmark/</div><p>12 validated tasks (easy, adversarial, reasoning, grounding), hermetic runners for four harness arms, coordination + throughput + cost studies, full RESULTS.md.</p></div>
@@ -1010,7 +1037,7 @@ function sceneVis(n){
   back.onerror = ()=>{};
   back.src = "walkthrough/img/scene"+n+".png";
 }
-let tourOn = false, tourTimers = [], tourAudio = null;
+let tourOn = false, tourTimers = [], tourAudio = null, tourResolve = null, tourIdx = 0, tourJumped = false, tourPaused = false;
 function caption(txt){
   if(txt===null){ captionEl.classList.remove("show"); return; }
   captionEl.textContent = "";
@@ -1025,9 +1052,10 @@ function spotlight(ids){
 function tlater(fn, ms){ tourTimers.push(setTimeout(fn, ms)); }
 function playScene(n){
   return new Promise(resolve=>{
-    tourAudio = new Audio("walkthrough/scene"+n+".mp3");
     let settled = false;
-    const done = ()=>{ if(!settled){ settled = true; resolve(); } };
+    const done = ()=>{ if(!settled){ settled = true; if(tourResolve===done) tourResolve = null; resolve(); } };
+    tourResolve = done;
+    tourAudio = new Audio("walkthrough/scene"+n+".mp3");
     tourAudio.addEventListener("ended", done);
     tourAudio.addEventListener("error", ()=>tourTimers.push(setTimeout(done, 9000)));
     tourAudio.play().catch(()=>tourTimers.push(setTimeout(done, 9000)));
@@ -1064,11 +1092,29 @@ const TOUR = [
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
 ];
 let ARR;
-async function tour(){
+/* transport bar: per-scene timeline + pause/play */
+const tourbar = document.createElement("div"); tourbar.className = "tourbar";
+const ppBtn = document.createElement("button"); ppBtn.className = "pp"; ppBtn.textContent = "❚❚"; ppBtn.title = "Pause / resume narration";
+const segsBox = document.createElement("div"); segsBox.className = "tsegs";
+tourbar.appendChild(ppBtn); tourbar.appendChild(segsBox);
+document.body.appendChild(tourbar);
+const tsegs = TOUR.map((s,i)=>{
+  const b = document.createElement("button"); b.className = "tseg"; b.type = "button";
+  b.title = (i+1)+" / "+TOUR.length+" — "+s.cap.replace(/\*\*/g,"");
+  b.addEventListener("click", ()=>jumpTo(i));
+  segsBox.appendChild(b); return b;
+});
+function markSeg(i){ tsegs.forEach((s,j)=>{ s.classList.toggle("active", j===i); s.classList.toggle("done", i>=0 && j<i); }); }
+async function tour(start){
   if(tourOn){ stopTour(); return; }
-  tourOn = true; tourbtn.textContent = "■ Stop walkthrough"; tourbtn.classList.add("stop");
-  for(const scene of TOUR){
-    if(!tourOn) return;
+  tourOn = true; tourPaused = false; ppBtn.textContent = "❚❚";
+  tourbtn.textContent = "■ Stop walkthrough"; tourbtn.classList.add("stop");
+  tourbar.classList.add("show");
+  tourIdx = Number.isInteger(start) ? start : 0;   /* tourbtn click passes a MouseEvent */
+  while(tourOn && tourIdx < TOUR.length){
+    const i = tourIdx, scene = TOUR[i];
+    tourJumped = false;
+    markSeg(i);
     caption(scene.cap);
     sceneVis(scene.vis === undefined ? scene.n : scene.vis);
     scene.run();
@@ -1079,13 +1125,30 @@ async function tour(){
     }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
-    if(!tourOn) return;
+    if(!tourJumped) tourIdx = i + 1;
   }
-  stopTour();
+  if(tourOn) stopTour();
 }
+function jumpTo(i){
+  if(!tourOn){ tour(i); return; }
+  tourJumped = true; tourIdx = i;
+  tourPaused = false; ppBtn.textContent = "❚❚";
+  if(tourAudio){ tourAudio.pause(); tourAudio = null; }
+  tourTimers.forEach(clearTimeout); tourTimers = [];
+  if(tourResolve) tourResolve();
+}
+function togglePause(){
+  if(!tourOn || !tourAudio) return;
+  tourPaused = !tourPaused;
+  if(tourPaused){ tourAudio.pause(); ppBtn.textContent = "▶"; }
+  else { tourAudio.play().catch(()=>{}); ppBtn.textContent = "❚❚"; }
+}
+ppBtn.addEventListener("click", togglePause);
 function stopTour(){
   tourOn = false;
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
+  if(tourResolve) tourResolve(); tourResolve = null;
+  tourbar.classList.remove("show"); markSeg(-1); tourPaused = false; ppBtn.textContent = "❚❚";
   tourTimers.forEach(clearTimeout); tourTimers = [];
   caption(null); sceneVis(null); spotlight([]); clearGlow(); arch.classList.remove("dimmed");
   document.querySelectorAll("#wizflow .step").forEach(s=>s.classList.remove("live","done"));
