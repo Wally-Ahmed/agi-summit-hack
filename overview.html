@@ -1132,12 +1132,20 @@ async function tour(start){
       /* leave clearance for the sticky media strip: anchor on the union of the focused
          element AND the spotlighted (.live) nodes, so neither ends up under the strip */
       const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
-      /* 64px sticky tab bar always overlays the top; the media strip stacks under it on vis scenes */
-      const clear = 64 + (hasVis ? Math.min(Math.max(innerHeight*.3,200),320) + 14 : 14);
+      /* the sticky tab bar overlays the top (measure it — height varies with viewport);
+         the media strip pins at top:64px on vis scenes, so its bottom is the occluder there */
+      const barH = document.querySelector(".tabs")?.offsetHeight || 64;
+      const clear = (hasVis ? 64 + Math.min(Math.max(innerHeight*.3,200),320) : barH) + 14;
       const rects = [el, ...document.querySelectorAll("#arch .live")].map(c=>c.getBoundingClientRect());
       const uTop = Math.min(...rects.map(r=>r.top)), uH = Math.max(...rects.map(r=>r.bottom)) - uTop;
       const targetY = scene.fb === "start" ? clear : Math.max((innerHeight - uH)/2, clear);
-      window.scrollTo({top: Math.max(0, uTop + window.scrollY - targetY), behavior:"smooth"});
+      let top = uTop + window.scrollY - targetY;
+      if(scene.fb === "start"){
+        /* tuck the previous sibling fully behind the bar/strip so its tail can't peek into the gap */
+        const prev = el.previousElementSibling;
+        if(prev) top = Math.max(top, prev.getBoundingClientRect().bottom + window.scrollY - (clear - 14));
+      }
+      window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
     }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
