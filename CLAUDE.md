@@ -63,6 +63,21 @@ For design tasks (This whole pattern applies for all subagents too):
 2. Use MemPalace for past decisions only if relevant.
 3. Keep the answer concise and action-oriented.
 
+## Orchestrator Mode (standing directive — Wally, 2026-07-21)
+
+For EVERY assignment: act as the orchestrator, not the implementer.
+
+1. Break the assignment down into individual parts.
+2. Hand each part off to subagents (background/parallel where possible; give each a
+   self-contained prompt with exact specs and a required report format).
+3. Keep only the glue: integrate the subagents' outputs, resolve conflicts between them,
+   and do the final wiring.
+4. Verify everything works end-to-end yourself before reporting done — run the checks,
+   curl the deploys, read the diffs; never relay a subagent's "done" unverified.
+
+Do a part yourself only when it is trivially small (one-file edit, single command), when
+it IS the glue/verification, or when Wally explicitly says to do it yourself.
+
 ## Project Rule
 
 Optimize for low-token, high-signal work. Prefer precise context retrieval over loading large files or repeating architecture summaries.

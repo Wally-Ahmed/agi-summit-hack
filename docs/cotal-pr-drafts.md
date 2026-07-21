@@ -5,6 +5,14 @@
 CI pending maintainer workflow-approval (first-time contributor). Watch with
 `gh pr checks 254 --repo Cotal-AI/Cotal` / `... 255 ...`.
 
+**Amended 2026-07-21:** both live PR bodies gained a **Prior art** section (codex: the
+pull-only npm 0.1.x experiment → removed 5b3eb21e, the host-mode revival PR #97, ours as
+the third architecture — push-by-respawn; agy: why every existing live-session delivery
+path is unavailable on the closed `agy` binary). Canonical text lives in
+`docs/pr-body-codex.md` / `docs/pr-body-agy.md` (already synced to the live PRs via
+`gh pr edit --body-file`); the embedded copies further down are the as-submitted Jul-19
+originals kept for the record.
+
 
 Branches live on the fork, built + import-verified against in-tree `connector-core` 0.12.0:
 
