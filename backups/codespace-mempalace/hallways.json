@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "hallways": [
+    {
+      "id": "hallway_agi_summit_hack_Cohesion_MemPalace_3b67d2a5",
+      "wing": "agi_summit_hack",
+      "entity_a": "Cohesion",
+      "entity_b": "MemPalace",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Cohesion ↔ MemPalace (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Cohesion_Nodes_c19396a0",
+      "wing": "agi_summit_hack",
+      "entity_a": "Cohesion",
+      "entity_b": "Nodes",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Cohesion ↔ Nodes (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_Graphify_c9104f18",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "Graphify",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ Graphify (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_Mapping_1c4c76a1",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "Mapping",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ Mapping (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_MemPalace_957791ea",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "MemPalace",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ MemPalace (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_Propagation_ee97ced1",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "Propagation",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ Propagation (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_Repo_735b6108",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "Repo",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ Repo (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Economy_Token_e2b9fbe3",
+      "wing": "agi_summit_hack",
+      "entity_a": "Economy",
+      "entity_b": "Token",
+      "co_occurrence_count": 3,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Economy ↔ Token (co-occur in 3 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Graphify_MemPalace_41d1a2fb",
+      "wing": "agi_summit_hack",
+      "entity_a": "Graphify",
+      "entity_b": "MemPalace",
+      "co_occurrence_count": 8,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Graphify ↔ MemPalace (co-occur in 8 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Graphify_Token_817c7708",
+      "wing": "agi_summit_hack",
+      "entity_a": "Graphify",
+      "entity_b": "Token",
+      "co_occurrence_count": 4,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Graphify ↔ Token (co-occur in 4 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Mapping_Repo_e61b5713",
+      "wing": "agi_summit_hack",
+      "entity_a": "Mapping",
+      "entity_b": "Repo",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Mapping ↔ Repo (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Mapping_Token_2d72b460",
+      "wing": "agi_summit_hack",
+      "entity_a": "Mapping",
+      "entity_b": "Token",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Mapping ↔ Token (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_MemPalace_Nodes_0d11206d",
+      "wing": "agi_summit_hack",
+      "entity_a": "MemPalace",
+      "entity_b": "Nodes",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "MemPalace ↔ Nodes (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_MemPalace_Revive_ef20658a",
+      "wing": "agi_summit_hack",
+      "entity_a": "MemPalace",
+      "entity_b": "Revive",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "MemPalace ↔ Revive (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_MemPalace_Token_0316310e",
+      "wing": "agi_summit_hack",
+      "entity_a": "MemPalace",
+      "entity_b": "Token",
+      "co_occurrence_count": 4,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "MemPalace ↔ Token (co-occur in 4 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Propagation_Subagent_cfce7bfe",
+      "wing": "agi_summit_hack",
+      "entity_a": "Propagation",
+      "entity_b": "Subagent",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Propagation ↔ Subagent (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Propagation_Token_89cd8473",
+      "wing": "agi_summit_hack",
+      "entity_a": "Propagation",
+      "entity_b": "Token",
+      "co_occurrence_count": 3,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Propagation ↔ Token (co-occur in 3 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Repo_Token_c5cd367c",
+      "wing": "agi_summit_hack",
+      "entity_a": "Repo",
+      "entity_b": "Token",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Repo ↔ Token (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Style_Working_3e09a079",
+      "wing": "agi_summit_hack",
+      "entity_a": "Style",
+      "entity_b": "Working",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Style ↔ Working (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    },
+    {
+      "id": "hallway_agi_summit_hack_Subagent_Token_3a986065",
+      "wing": "agi_summit_hack",
+      "entity_a": "Subagent",
+      "entity_b": "Token",
+      "co_occurrence_count": 2,
+      "rooms": [
+        "graphify_out"
+      ],
+      "label": "Subagent ↔ Token (co-occur in 2 drawers across 1 room: graphify_out)",
+      "created_at": "2026-07-18T20:07:44.645134+00:00",
+      "created_by": "auto",
+      "strength": 1.0,
+      "stability": 1.0,
+      "last_activated": "2026-07-18T20:07:44.645134+00:00",
+      "access_count": 0
+    }
+  ]
+}
