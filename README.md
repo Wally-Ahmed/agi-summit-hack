@@ -68,7 +68,10 @@ OAuth credential) → Claude Code worker → deliverable on disk, exactly as spe
    no event, and an event-driven planner can't react to silence. Resilience must live in
    the conventions (machine-checkable DONE-WHEN + polling, heartbeats). The flip side,
    caught on tape: the planner *independently re-runs your tests* before accepting
-   results.
+   results. **Upstream impact:** within 24 hours of these findings going public, the
+   Cotal team merged [#258](https://github.com/Cotal-AI/Cotal/pull/258) — the v0.4
+   control surface and agent lifecycle: work pools with crash redelivery, restart
+   supervision — per the Cotal team, a direct response to these benchmarks.
 6. **Methodology matters; we paid for the lesson.** Dev-env tooling quietly inflated one
    harness's numbers ~2×, and an ungrounded harness once wrote answers into the benchmark
    templates. Both caught, fixed (hermetic mode + integrity tripwire), and documented in

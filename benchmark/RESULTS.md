@@ -51,6 +51,14 @@ its turn, watch for 900s. Planner brain: gpt-5.6 via the ChatGPT-subscription OA
   when spoken to.*
 - The verification behavior in attempts 1–2 is the flip side: when messages DO arrive, the
   planner supervises well — it re-ran tests itself before accepting a worker's "done".
+- **Upstream impact:** within 24 hours of these findings (and our PRs #254/#255) going
+  public, the Cotal team merged [PR #258](https://github.com/Cotal-AI/Cotal/pull/258) —
+  "the v0.4 control surface and agent lifecycle" (100 files): claim-based work pools where
+  a crashed worker's unacked work **redelivers to another instance**, restart-intensity
+  supervision, and a timer plane — the exact machinery this run showed missing. The Cotal
+  team confirmed it was a direct response to these benchmarks. It ships dormant in
+  `@cotal-ai/core` (not yet wired to the chat plane agents use), so the convention-layer
+  mitigations above remain the working fix today.
 - Caveats: n=1 clean trial; the respawned planner inherited prior state (seeded home) —
   including a fully-verified previous instance of the same protocol — and still did not
   reclaim; single-box mesh.
