@@ -5,4 +5,4 @@
 - [Cloud model preference](cloud-model-preference.md) — Codespace Claude Code runs Fable 5 @ xhigh (settings: model + effortLevel), different account than the Mac
 - [Benchmark model rules](benchmark-model-rules.md) — OpenRouter benchmark arms: Opus 4.8 ONLY, never Fable via OpenRouter
 - [Visual style preference](visual-style-preference.md) — diagram-like schematics, never ethereal; visuals must mirror the narration beat
-- [Codespace claude-mem](codespace-claude-mem.md) — claude-mem installed on Codespace (v13.11.0, Bun runtime); no retroactive transcript backfill exists
+- [Codespace claude-mem](codespace-claude-mem.md) — claude-mem installed on Codespace (v13.11.0); 7 pre-install mesh-worker sessions backfilled via custom transcript schema (14 obs + 7 summaries)
