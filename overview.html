@@ -74,6 +74,7 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
 }
 .badge:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(94,234,212,.4)}
 .badge.alt{color:var(--accent2);background:linear-gradient(180deg,rgba(129,140,248,.08),rgba(129,140,248,.02))}
+.badge.win{color:#fbbf24;background:linear-gradient(180deg,rgba(251,191,36,.12),rgba(251,191,36,.02))}
 .badge.alt:hover{border-color:var(--accent2);box-shadow:0 6px 16px -8px rgba(129,140,248,.4)}
 a.badge{text-decoration:none;cursor:pointer}
 
@@ -501,6 +502,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   <h1>Hermes Handoff — One Front-Door to Your Gated Models</h1>
   <div class="tagline">AGI Summit 2026 Hackathon — frontier models are gated behind specific harnesses and subscriptions. Pick the ONE you already pay for; Hermes hands it any task. Cotal underneath.</div>
   <div class="badges">
+    <span class="badge win">🥇 1st place — Cotal sponsor track · AGI Summit 2026</span>
     <span class="badge">2 connectors built by us</span>
     <span class="badge">2 PRs upstream to Cotal</span>
     <span class="badge alt">10 benchmark runs · 8 studies</span>
@@ -1092,7 +1094,9 @@ const TOUR = [
   {cap:"**Kill the worker** — the planner can't notice silence", foc:".slider", fb:"start", run(){ slideTo(7); }, n:18, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(8); }, n:16, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
-     tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
+     tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8},
+  {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
+  {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
 /* transport bar: per-scene timeline + pause/play */
