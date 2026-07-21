@@ -137,20 +137,39 @@ on both arms for future runs. Runs 1–10 are internally consistent (same xhigh 
 but understate both harnesses' maximum. Earlier same-day numbers (dev-env, and a
 template-contamination incident) are preserved in the appendix — footnotes, not findings._
 
-## Run 4 — cross-harness matrix (hermetic): native vs foreign harness, 3-model shootout
+## Runs 1–2 & 4 — one hermetic suite, six harness × model arms (combined)
 
-| Task | agy · Gemini 3.1 Pro (High) | codex · Gemini 3.1 Pro (xhigh, OpenRouter) | agy · Claude Opus 4.6 (Thinking) | agy · GPT-OSS 120B (Medium) |
-|---|---|---|---|---|
-| t1-lru | ✅ 24s | ✅ 14s · 13,416 tok | ✅ 25s | ✅ 39s |
-| t2-bugfix | ✅ 34s | ✅ 52s · 37,101 tok | ✅ 25s | ✅ 16s |
-| t3-cli | ✅ 32s | ✅ 28s · 17,483 tok | ✅ 23s | ✅ 18s |
-| t4-interp | ✅ 88s | ✅ 76s · 35,054 tok | ✅ 87s | ❌ 151s |
-| t5-taskq | ✅ 48s | ✅ 121s · 106,502 tok | ✅ 63s | ✅ 70s |
-| t6-diff | ✅ 48s | ✅ 149s · 86,003 tok | ✅ 43s | ✅ 21s |
-| t7-ratelimit | ✅ 24s | ✅ 81s · 37,237 tok | ✅ 29s | ✅ 18s |
-| **Total** | **7/7 · 298s** | **7/7 · 521s · ~333k tok** | **7/7 · 295s** | **6/7 · 333s** |
+_Originally published as three tables: runs 1–2 (Opus 4.8 on Codex vs Claude Code, easy/hard
+split) and run 4 (native-vs-foreign harness + the Antigravity 3-model shootout). All six arms
+ran the IDENTICAL hermetic suite — same t1–t7 templates, same per-task `test.py` judges, same
+Codespace, xhigh everywhere — so they are one benchmark and are presented as one matrix.
+Historical run numbers are kept as aliases; cross-references elsewhere (runs 5 and 10, the
+narrated walkthrough) remain valid._
 
-### Read (run 4)
+| Task | Codex · Opus 4.8 (OpenRouter) | Claude Code · Opus 4.8 (Max) | agy · Gemini 3.1 Pro (High) | Codex · Gemini 3.1 Pro (OpenRouter) | agy · Opus 4.6 (Thinking) | agy · GPT-OSS 120B (Medium) |
+|---|---|---|---|---|---|---|
+| t1-lru | ✅ 15s · 56,181 tok | ✅ 22s | ✅ 24s | ✅ 14s · 13,416 tok | ✅ 25s | ✅ 39s |
+| t2-bugfix | ✅ 14s · 55,757 tok | ✅ 28s | ✅ 34s | ✅ 52s · 37,101 tok | ✅ 25s | ✅ 16s |
+| t3-cli | ✅ 15s · 56,144 tok | ✅ 29s | ✅ 32s | ✅ 28s · 17,483 tok | ✅ 23s | ✅ 18s |
+| t4-interp | ✅ 33s · 84,291 tok | ✅ 105s | ✅ 88s | ✅ 76s · 35,054 tok | ✅ 87s | ❌ 151s |
+| t5-taskq | ✅ 37s · 142,452 tok | ✅ 43s | ✅ 48s | ✅ 121s · 106,502 tok | ✅ 63s | ✅ 70s |
+| t6-diff | ✅ 21s · 58,979 tok | ✅ 55s | ✅ 48s | ✅ 149s · 86,003 tok | ✅ 43s | ✅ 21s |
+| t7-ratelimit | ✅ 14s · 57,617 tok | ✅ 31s | ✅ 24s | ✅ 81s · 37,237 tok | ✅ 29s | ✅ 18s |
+| **Total** | **7/7 · 149s · ~511k tok** | **7/7 · 313s** | **7/7 · 298s** | **7/7 · 521s · ~333k tok** | **7/7 · 295s** | **6/7 · 333s** |
+
+### Read (runs 1–2 · harness overhead, same model)
+
+- **Correctness cannot separate the harnesses: 7/7 each, one-shot.** Opus 4.8 at
+  xhigh clears adversarial tests (minimality proofs, boundary-exact semantics, planted-bug
+  taxonomies) on either harness.
+- **The honest latency gap is ~2× (44 vs 79s easy; 105 vs 234s hard) — NOT the ~5× we measured
+  in the dev environment.** More than half of Claude Code's apparent hard-suite deficit
+  (524s → 234s) was our own dev-env MCP servers booting per `claude -p` plus machine load, not
+  the harness. Codex's lean exec loop is still consistently faster; it's just a 2× story, not 5×.
+- For a mesh planner choosing a delegation target: latency and cost structure differentiate
+  harnesses; capability (at this task size, same model) does not.
+
+### Read (run 4 · native vs foreign harness, 3-model shootout)
 
 - **Gemini on its NATIVE harness beats Gemini on a foreign one: 298s vs 521s (~1.75×), equal
   correctness (7/7 both).** The earlier "3/7 native" result was a harness artifact (see
@@ -189,37 +208,6 @@ flat-rate auth (no 402s, no per-token billing)._
   across providers.
 - For the mesh: pick delegation targets by *backend latency and quota*, not harness brand —
   exactly the decision a Cotal planner can make per-task.
-
-## Run 2 — hard suite (hermetic): Claude Opus 4.8 on Codex vs Claude Code, xhigh both
-
-| Task | Codex (Opus 4.8 via OpenRouter) | Claude Code (Opus 4.8 on Max) |
-|---|---|---|
-| t4-interp | ✅ 33s · 84,291 tok | ✅ 105s |
-| t5-taskq | ✅ 37s · 142,452 tok | ✅ 43s |
-| t6-diff | ✅ 21s · 58,979 tok | ✅ 55s |
-| t7-ratelimit | ✅ 14s · 57,617 tok | ✅ 31s |
-| **Total** | **4/4 · 105s · ~343k tok** | **4/4 · 234s** |
-
-## Run 1 — easy suite (hermetic): same comparison
-
-| Task | Codex (Opus 4.8 via OpenRouter) | Claude Code (Opus 4.8 on Max) |
-|---|---|---|
-| t1-lru | ✅ 15s · 56,181 tok | ✅ 22s |
-| t2-bugfix | ✅ 14s · 55,757 tok | ✅ 28s |
-| t3-cli | ✅ 15s · 56,144 tok | ✅ 29s |
-| **Total** | **3/3 · 44s** | **3/3 · 79s** |
-
-### Read (runs 1–2)
-
-- **Correctness cannot separate the harnesses: 7/7 each, both suites, one-shot.** Opus 4.8 at
-  xhigh clears adversarial tests (minimality proofs, boundary-exact semantics, planted-bug
-  taxonomies) on either harness.
-- **The honest latency gap is ~2× (44 vs 79s easy; 105 vs 234s hard) — NOT the ~5× we measured
-  in the dev environment.** More than half of Claude Code's apparent hard-suite deficit
-  (524s → 234s) was our own dev-env MCP servers booting per `claude -p` plus machine load, not
-  the harness. Codex's lean exec loop is still consistently faster; it's just a 2× story, not 5×.
-- For a mesh planner choosing a delegation target: latency and cost structure differentiate
-  harnesses; capability (at this task size, same model) does not.
 
 ## Run 3 — coordination: Cotal mesh vs direct MCP subagents (unchanged, still valid)
 

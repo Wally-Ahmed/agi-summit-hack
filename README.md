@@ -42,10 +42,10 @@ OAuth credential) → Claude Code worker → deliverable on disk, exactly as spe
 | `connectors/cotal-connector-codex/` | **Our Codex CLI mesh connector** — the autonomous-worker half Cotal doesn't ship (their npm 0.1.4 experiment is pull-only on connector-core 0.2.0). Push delegation via `codex exec` / `exec resume <threadId>`, cotal tools over local streamable-HTTP MCP |
 | `connectors/cotal-connector-agy/` | **Our Antigravity mesh connector** — the first anywhere: pTTY-wrapped `agy -p` turns, `--conversation` resume, global MCP-config merge/restore, `--add-dir` grounding |
 | **Two upstream PRs** | Both connectors ported to the Cotal monorepo's TypeScript standards and submitted: [Cotal-AI/Cotal#254](https://github.com/Cotal-AI/Cotal/pull/254) (codex) + [Cotal-AI/Cotal#255](https://github.com/Cotal-AI/Cotal/pull/255) (agy) — bodies in [`docs/cotal-pr-drafts.md`](docs/cotal-pr-drafts.md) |
-| `benchmark/` | 12-task validated suite (coding, agentic, recall, reasoning, hallucination-resistance) + runners for harness, coordination, throughput, failover, and cost studies — **10 published studies** in [`benchmark/RESULTS.md`](benchmark/RESULTS.md) |
+| `benchmark/` | 12-task validated suite (coding, agentic, recall, reasoning, hallucination-resistance) + runners for harness, coordination, throughput, failover, and cost studies — **10 runs published as 8 studies** (runs 1–2 & 4 ran one identical suite and are presented as a single six-arm matrix) in [`benchmark/RESULTS.md`](benchmark/RESULTS.md) |
 | `overview.html` | The interactive submission page — 3 tabs, clickable inspector, task simulation, 18-scene narrated walkthrough with per-slide explainers — deployed at the link above |
 
-## The findings (10 hermetic studies)
+## The findings (10 hermetic runs, 8 studies)
 
 1. **Capability is saturated everywhere — including honesty.** 57/58 hermetic tasks passed
    across every arm. The hallucination probe (3 questions about functions that don't

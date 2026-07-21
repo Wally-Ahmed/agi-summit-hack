@@ -477,7 +477,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   <div class="badges">
     <span class="badge">2 connectors built by us</span>
     <span class="badge">2 PRs upstream to Cotal</span>
-    <span class="badge alt">10 benchmark studies</span>
+    <span class="badge alt">10 benchmark runs · 8 studies</span>
     <span class="badge alt">57/58 hermetic tasks passed</span>
     <span class="badge">no API credits needed</span>
     <a class="badge alt" href="hermes-handoff-project.zip" download>⬇ download the project</a>
@@ -623,29 +623,18 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </article>
 
         <article class="slide">
-          <span class="chip">Harness overhead · same model</span>
-          <h2>Runs 1–2 — Opus 4.8 on Codex vs Claude Code</h2>
-          <div class="q">Identical model (claude-opus-4.8, xhigh reasoning) on both harnesses. <b>Variable isolated: the harness itself.</b></div>
+          <span class="chip">One suite · six arms</span>
+          <h2>Runs 1–2 &amp; 4 — one hermetic suite, six harness × model arms</h2>
+          <div class="q">The identical 7-task suite (t1–t7) across every harness × model pairing we could drive — one matrix, two variables isolated: <b>the harness itself</b> (the same Opus 4.8 on Codex vs Claude Code) and <b>whether the harness is the model's home</b> (Gemini native on Antigravity vs through Codex, plus Antigravity's whole roster).</div>
           <div class="bars">
-            <div class="barrow"><span>easy · Codex</span><div class="barbg"><div class="bar c-codex" data-w="19"></div></div><span class="score">3/3 · 44s</span><span class="taskbreak">t1 15s · t2 14s · t3 15s</span></div>
-            <div class="barrow"><span>easy · Claude Code</span><div class="barbg"><div class="bar c-claude" data-w="34"></div></div><span class="score">3/3 · 79s</span><span class="taskbreak">t1 22s · t2 28s · t3 29s</span></div>
-            <div class="barrow"><span>hard · Codex</span><div class="barbg"><div class="bar c-codex" data-w="45"></div></div><span class="score">4/4 · 105s</span><span class="taskbreak">t4-interp 33s · t5-taskq 37s · t6-diff 21s · t7-ratelimit 14s</span></div>
-            <div class="barrow"><span>hard · Claude Code</span><div class="barbg"><div class="bar c-claude" data-w="100"></div></div><span class="score">4/4 · 234s</span><span class="taskbreak">t4-interp 105s · t5-taskq 43s · t6-diff 55s · t7-ratelimit 31s</span></div>
-          </div>
-          <div class="verdict"><b>Capability is saturated — 7/7 both.</b> What separates them is a ~2× wall-clock gap from the harness turn loop, and it widens with task difficulty.</div>
-        </article>
-
-        <article class="slide">
-          <span class="chip">Harness nativeness</span>
-          <h2>Run 4 — Native vs foreign harness + 3-model shootout</h2>
-          <div class="q">Gemini 3.1 Pro on its native harness (Antigravity) vs through Codex; then Antigravity's whole roster on the same suite. <b>Variable isolated: whether the harness is the model's home.</b></div>
-          <div class="bars">
-            <div class="barrow"><span>Gemini · native Antigravity</span><div class="barbg"><div class="bar c-agy" data-w="57"></div></div><span class="score">7/7 · 298s</span><span class="taskbreak">24 · 34 · 32 · 88 · 48 · 48 · 24 (t1→t7)</span></div>
-            <div class="barrow"><span>Gemini · via Codex</span><div class="barbg"><div class="bar c-codex" data-w="100"></div></div><span class="score">7/7 · 521s</span><span class="taskbreak">14 · 52 · 28 · 76 · 121 · 149 · 81 (t1→t7)</span></div>
+            <div class="barrow"><span>Opus 4.8 · Codex (OpenRouter)</span><div class="barbg"><div class="bar c-codex" data-w="29"></div></div><span class="score">7/7 · 149s</span><span class="taskbreak">easy 44s (15·14·15) · hard 105s (33·37·21·14)</span></div>
+            <div class="barrow"><span>Opus 4.8 · Claude Code (Max)</span><div class="barbg"><div class="bar c-claude" data-w="60"></div></div><span class="score">7/7 · 313s</span><span class="taskbreak">easy 79s (22·28·29) · hard 234s (105·43·55·31)</span></div>
+            <div class="barrow"><span>Gemini 3.1 Pro · native Antigravity</span><div class="barbg"><div class="bar c-agy" data-w="57"></div></div><span class="score">7/7 · 298s</span><span class="taskbreak">24 · 34 · 32 · 88 · 48 · 48 · 24 (t1→t7)</span></div>
+            <div class="barrow"><span>Gemini 3.1 Pro · via Codex</span><div class="barbg"><div class="bar c-codex" data-w="100"></div></div><span class="score">7/7 · 521s</span><span class="taskbreak">14 · 52 · 28 · 76 · 121 · 149 · 81 (t1→t7)</span></div>
             <div class="barrow"><span>Opus 4.6 Thinking · Antigravity</span><div class="barbg"><div class="bar c-agy" data-w="57"></div></div><span class="score">7/7 · 295s</span><span class="taskbreak">25 · 25 · 23 · 87 · 63 · 43 · 29 (t1→t7)</span></div>
             <div class="barrow"><span>GPT-OSS 120B · Antigravity</span><div class="barbg"><div class="bar c-fail" data-w="64"></div></div><span class="score">6/7 · 333s</span><span class="taskbreak">39 · 16 · 18 · <span class="x">151 ✗ t4-interp</span> · 70 · 21 · 18</span></div>
           </div>
-          <div class="verdict"><b>Native harness wins ~1.75× at equal correctness.</b> The 3-model shootout is a near-tie on speed. GPT-OSS dropping the interpreter task was the <b>only genuine capability failure in all 43 hermetic tasks</b>.</div>
+          <div class="verdict"><b>One suite, six arms, one genuine failure.</b> Same model, two harnesses: a ~2× wall-clock gap at 7/7 both. Same model, native vs foreign home: native wins ~1.75× at equal correctness. The roster shootout is a near-tie — GPT-OSS dropping the interpreter task is the <b>only genuine capability failure in all 43 hermetic tasks</b>.</div>
         </article>
 
         <article class="slide">
@@ -827,10 +816,8 @@ const EXPLAIN = [
    b:"Both arms share one environment by design; the isolated variable is coordination topology. Mesh arm (Hermes planner → Cotal handoff → worker executes in place): 3/3 in 95s. Direct-MCP arm (orchestrate → generate → transcribe → test): 3/3 in 137s. Mesh end-to-end ≈ a bare `claude -p` on the same tasks, so the mesh hop is noise. Caveats: n=3, worker models differ by arm by design, 10s poll granularity."},
   {a:"Three tasks arrived at once. Spread across three workers, everything finished in about three and a half minutes — you only wait for the slowest task. Pushed one-by-one through a single worker, the first task passed and then the planner quietly dropped the rest of the list: two tasks never even started. Teams of workers are dependable today; a long to-do list handed to one worker is where things still break.",
    b:"Same planner (Hermes), same 3 easy tasks, two scheduling shapes. Parallel fan-out: 3/3, makespan 203s, bounded by the slowest worker (fastest finished in 36s). Sequential through `worker`: 1/3 DNF at the 1504s cap — t1 passed in 27s, then t2/t3 were never dispatched (workdir autopsy: untouched template, empty dir). This is a coordination-reliability finding: it argues for one machine-checkable DONE-WHEN per task rather than batched serial asks, and it motivates the failover study."},
-  {a:"Here the same AI model ran inside two different tools — one engine, two cars. Every task passed in both. The only difference was time: the lighter tool finished about twice as fast, and the gap grew as tasks got harder. The wrapper around a model changes how long you wait, not whether the work gets done.",
-   b:"claude-opus-4.8 at xhigh reasoning on both harnesses, hermetic homes (clean config dirs, no MCP servers, no plugins), fresh workdir per task. Codex: 7/7, 44s easy / 105s hard. Claude Code: 7/7, 79s / 234s. An earlier ~5× gap measured pre-hermetically was mostly our own dev environment booting global MCP servers into every `claude -p` — more than half of Claude Code's apparent deficit vanished under hermetic conditions. The honest number is ~2×, driven by the harness turn loop."},
-  {a:"Google's Gemini model can be driven from its own tool or through someone else's. Same model, same tasks: at home it ran nearly twice as fast, with identical results. We then raced three different models inside that home tool and they finished within seconds of each other — the only real difference was one open-weight model failing a single hard task. Models mostly match each other now; where you run them is what you feel.",
-   b:"Gemini 3.1 Pro (High) native on Antigravity: 7/7 in 298s vs 7/7 in 521s through Codex+OpenRouter (~1.75×). Roster shootout on Antigravity: Opus 4.6 Thinking 295s, Gemini 298s, GPT-OSS 120B 333s at 6/7 — its t4-interp miss is the only genuine capability failure across the 43-task hermetic set. The foreign-harness arm burns a ~13k-token fixed prompt per task before productive work starts."},
+  {a:"One test suite, six combinations of model and tool, one big comparison. First: the same AI model inside two different tools — one engine, two cars. Every task passed in both; the only difference was time, with the lighter tool about twice as fast, and the gap grew as tasks got harder. Second: Google's Gemini model driven from its own tool versus through someone else's — at home it ran nearly twice as fast, with identical results. And racing three different models inside that home tool, they finished within seconds of each other; the only real difference was one open-weight model failing a single hard task. The wrapper around a model changes how long you wait, not whether the work gets done — and where you run a model is what you feel.",
+   b:"One hermetic suite (t1–t7, same templates, same test.py judges, xhigh) across six harness×model arms — originally published as runs 1–2 and 4, combined because the benchmark is identical. Same model, two harnesses: claude-opus-4.8 — Codex 7/7 in 149s vs Claude Code 7/7 in 313s. An earlier ~5× gap measured pre-hermetically was mostly our own dev environment booting global MCP servers into every `claude -p`; the honest number is ~2×, driven by the harness turn loop. Native vs foreign: Gemini 3.1 Pro (High) on Antigravity 7/7 in 298s vs 7/7 in 521s through Codex+OpenRouter (~1.75×); the foreign arm burns a ~13k-token fixed prompt per task before productive work starts. Roster shootout on Antigravity: Opus 4.6 Thinking 295s, Gemini 298s, GPT-OSS 120B 333s at 6/7 — its t4-interp miss is the only genuine capability failure across the 43-task hermetic set."},
   {a:"This comparison mirrors real life: each tool running the model its own subscription provides — the actual choice you face when you pay for one service. Both cleared every task, but the speed ordering flipped from the earlier study: Claude Code finished about forty percent sooner here. What decides your wait is the model and the service behind it, not the tool's brand. Choose per job.",
    b:"Codex + its native gpt-5.6-sol (ChatGPT subscription, xhigh): 7/7 in 444s. Claude Code + Opus 4.8 (Max): 7/7 in 313s. This inverts runs 1–2, where Codex was ~2× faster with the identical model — end-to-end latency is dominated by the backend+model pair, with harness overhead second-order. Note: token counters aren't comparable across wires (~10–21k/task on the subscription wire vs ~56–142k via OpenRouter for the same suite)."},
   {a:"We stopped asking whether these systems can write code and tested three separate skills: hunting down a hidden bug with no hints about where it lives, writing a precise internet standard purely from memory, and trusting a failing test over instinct when the instructions are deliberately thin. All three systems aced all three skills. At this level ability is a given — the real choice between them is speed, cost, and which models you can reach.",
@@ -1065,13 +1052,13 @@ const TOUR = [
   {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
   {cap:"Fan-out **finishes** · serial **stalls**", foc:".slider", fb:"start", run(){ slideTo(1); }, n:10, vis:null},
   {cap:"Same model, two harnesses — **~2× wall-clock**", foc:".slider", fb:"start", run(){ slideTo(2); }, n:7, vis:null},
-  {cap:"**Native harness** wins ~1.75×", foc:".slider", fb:"start", run(){ slideTo(3); }, n:9, vis:null},
-  {cap:"On real subscriptions the story **inverts**", foc:".slider", fb:"start", run(){ slideTo(4); }, n:15, vis:null},
-  {cap:"9 trials · 3 stacks · **9 passes**", foc:".slider", fb:"start", run(){ slideTo(5); }, n:11, vis:null},
-  {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ slideTo(6); }, n:13, vis:null},
-  {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ slideTo(7); }, n:14, vis:null},
-  {cap:"**Kill the worker** — the planner can't notice silence", foc:".slider", fb:"start", run(){ slideTo(8); }, n:18, vis:null},
-  {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(9); }, n:16, vis:null},
+  {cap:"**Native harness** wins ~1.75×", foc:".slider", fb:"start", run(){ slideTo(2); }, n:9, vis:null},
+  {cap:"On real subscriptions the story **inverts**", foc:".slider", fb:"start", run(){ slideTo(3); }, n:15, vis:null},
+  {cap:"9 trials · 3 stacks · **9 passes**", foc:".slider", fb:"start", run(){ slideTo(4); }, n:11, vis:null},
+  {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ slideTo(5); }, n:13, vis:null},
+  {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ slideTo(6); }, n:14, vis:null},
+  {cap:"**Kill the worker** — the planner can't notice silence", foc:".slider", fb:"start", run(){ slideTo(7); }, n:18, vis:null},
+  {cap:"What we test **next**", foc:".slider", fb:"start", run(){ slideTo(8); }, n:16, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8}
 ];
