@@ -462,8 +462,9 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 .tseg.active{background:var(--accent);box-shadow:0 0 8px rgba(94,234,212,.8)}
 
 /* walkthrough media strip — docked INSIDE the diagram panel, aiding the live
-   choreography below it, never covering it. Hidden for scenes where the page
-   itself (simulation, benchmark charts) is the visual. */
+   choreography below it. The tour's auto-scroll leaves clearance for it so it
+   never pins over the focused section. Hidden for scenes where the page itself
+   (simulation, benchmark charts) is the visual. */
 .scenevis{
   position:relative;width:100%;height:clamp(200px,30vh,320px);
   border:1px solid rgba(94,234,212,.5);border-radius:14px;overflow:hidden;background:#07090e;
@@ -1122,7 +1123,14 @@ async function tour(start){
     /* keep the section being narrated on screen */
     if(scene.foc) tlater(()=>{
       const el = document.querySelector(scene.foc);
-      if(el) el.scrollIntoView({behavior:"smooth", block:scene.fb||"center"});
+      if(!el) return;
+      /* leave clearance for the sticky media strip so it never pins over the focused section */
+      const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
+      const clear = hasVis ? 64 + Math.min(Math.max(innerHeight*.3,200),320) + 14 : 0;
+      if(!clear){ el.scrollIntoView({behavior:"smooth", block:scene.fb||"center"}); return; }
+      const r = el.getBoundingClientRect();
+      const targetY = scene.fb === "start" ? clear : Math.max((innerHeight - r.height)/2, clear);
+      window.scrollTo({top: Math.max(0, r.top + window.scrollY - targetY), behavior:"smooth"});
     }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
