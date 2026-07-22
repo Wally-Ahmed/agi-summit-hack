@@ -35,9 +35,11 @@ pulses 1–2 belonged to workerb's lease — while `fencingToken` is the lease o
   roster status reading "test.py PASS") is durable, queryable state: exactly the custody
   model Run 8 showed missing. Run 8 stands as the pre-v0.4 baseline, and its
   convention-layer advice still applies to chat-plane-only meshes.
-- **The machinery is real, but somebody must own it.** v0.4 work pools ship dormant for
-  chat-plane agents — pools are endpoint-owned and agent creds carry no work-pool grants —
-  so ~110 lines of supervisor is what the missing owner role costs. Their machinery, their
+- **The machinery is real, but somebody must own it.** v0.4 work pools ship *dormant* for
+  chat-plane agents — dormant meaning the code is in the released package but switched
+  off: pools are endpoint-owned (no owner exists on a chat-plane mesh), no CLI verb
+  creates one, and agent creds carry no work-pool grants. Not a bug — a rollout staged a
+  layer below the agents. ~110 lines of supervisor is what the missing owner role costs. Their machinery, their
   published package, our process in the owner's seat. First consumer, to our knowledge.
 - **The chat plane reinforced Run 8's thesis twice while we stood this up.** (1) The
   mesh's daemon creds expire in 24h; after the Codespace slept through a rotation the
@@ -117,8 +119,9 @@ its turn, watch for 900s. Planner brain: gpt-5.6 via the ChatGPT-subscription OA
   a crashed worker's unacked work **redelivers to another instance**, restart-intensity
   supervision, and a timer plane — the exact machinery this run showed missing. The Cotal
   team confirmed it was a direct response to these benchmarks. It ships dormant in
-  `@cotal-ai/core` (not yet wired to the chat plane agents use), so the convention-layer
-  mitigations above remain the working fix for a stock mesh — and **Run 11 (above) closes
+  `@cotal-ai/core` — in the release but switched off (not yet wired to the chat plane
+  agents use) — so the convention-layer mitigations above remain the working fix for a
+  stock mesh — and **Run 11 (above) closes
   the loop**: we adopted the machinery as its first consumer and the same protocol heals
   in 122s.
 - Caveats: n=1 clean trial; the respawned planner inherited prior state (seeded home) —
