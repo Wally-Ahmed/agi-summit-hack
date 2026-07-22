@@ -65,9 +65,11 @@ RECLAIM_SPACE="${RECLAIM_SPACE:-reclaim}" \
 SUP=$!
 say "supervisor started (pid $SUP)"
 
-# Kill the assigned builder ~20s into its turn — identical to Run 8.
+# Kill the assigned builder ~20s into its turn — identical to Run 8. The wait window
+# is generous by default: a cold claude builder can take minutes from DM to "working"
+# (observed on the Codespace), and an expired window here kills the supervisor mid-run.
 VICTIM=""
-for _ in $(seq 1 60); do
+for _ in $(seq 1 "${BENCH_VICTIM_POLLS:-120}"); do
   VICTIM=$(busy_builders | head -1)
   [ -n "$VICTIM" ] && break
   sleep 5

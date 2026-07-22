@@ -1,5 +1,59 @@
 # Benchmark results
 
+## Run 11 — failover revisited on v0.4 (PR #258 adopted): the mesh heals
+
+_2026-07-22. Same kill protocol as Run 8, new dispatch path (`benchmark/run-reclaim.sh` +
+`benchmark/reclaim/supervisor.mjs`): the task rides a real Cotal v0.4 **work pool**
+(published `@cotal-ai/core` 0.13.2) owned by our supervisor — the endpoint role a
+chat-plane mesh has nobody to play. Everything else is Run 8's world unchanged: same
+Codespace mesh, same `cotal-ai` 0.12.0 chat plane, real Claude Code builders, `test.py`
+the only judge. The pool rides its own throwaway open-mode broker (the mesh's auth broker
+is untouched); the supervisor owns the pool's single AckExplicit pull consumer, leases the
+item to a builder, DMs it the task over the ordinary chat plane, and **never acks until
+the item is settled** — so a dead builder surfaces as broker redelivery, not silence._
+
+| t | Event |
+|---|---|
+| +1s | `LEASED attempt=1 fencingToken=1 → workerb` |
+| +2s → +11s | DM'd → workerb `working` (9s pickup) |
+| ~+31s | **workerb killed** ~20s into its turn (script `kill_at=34s`) |
+| +32s | next 15s ack_wait pulse: `assignee workerb is OFFLINE` |
+| +33s | `RE-LEASED attempt=3 fencingToken=2 → workerc` — **~2s after the kill completed** |
+| +47s | workerc `working` |
+| +122s | task passes → `COMMITTED won=true` → terminal fact published |
+
+**RESULT pass=true total=122s reassignments=1 finisher=workerc** (`supervisor_rc=0`; full
+artifact `benchmark/results/reclaim.log`; `attempt=3` is the broker's deliveryCount —
+pulses 1–2 belonged to workerb's lease — while `fencingToken` is the lease ordinal).
+
+### Read (run 11)
+
+- **Run 8's verdict is superseded.** The identical protocol that ended in a 900s DNF now
+  completes autonomously in 122s: ack_wait turns worker death into an *event*
+  (redelivery), the owner re-leases with a bumped fencing token, and the terminal fact
+  (`disposition:"committed"`, attempt 3, token 2, worker workerc — with the builder's own
+  roster status reading "test.py PASS") is durable, queryable state: exactly the custody
+  model Run 8 showed missing. Run 8 stands as the pre-v0.4 baseline, and its
+  convention-layer advice still applies to chat-plane-only meshes.
+- **The machinery is real, but somebody must own it.** v0.4 work pools ship dormant for
+  chat-plane agents — pools are endpoint-owned and agent creds carry no work-pool grants —
+  so ~110 lines of supervisor is what the missing owner role costs. Their machinery, their
+  published package, our process in the owner's seat. First consumer, to our knowledge.
+- **The chat plane reinforced Run 8's thesis twice while we stood this up.** (1) The
+  mesh's daemon creds expire in 24h; after the Codespace slept through a rotation the
+  delivery daemon booted with `membership: failed to start (Authorization Violation)` —
+  sends kept returning exit 0 while being silently dropped (`cotal doctor auth --fix`
+  heals it). (2) `send ask <name>` is role-anycast: ask a *name* and the message enqueues
+  to a role queue nobody subscribes — exit 0, message gone (Run 8's planner asks only
+  worked because "planner" is both name and role; the DM verb is `send dm <agent>`). Both
+  failures are invisible to the sender — send-and-pray. The pool is the antidote: an
+  unsettled lease *cannot* fail silently; it redelivers.
+- Caveats: n=1 clean trial (two earlier attempts died to the chat-plane issues above, not
+  the pool — the pool behaved correctly in every attempt, including re-leasing away from a
+  builder that never picked up its task); single-box mesh; the supervisor is our harness,
+  not shipped Cotal UX — the distance between "merged upstream" and "default-on" is
+  precisely the finding.
+
 ## Run 9 — reasoning & grounding (suite v4): constraint satisfaction · hallucination resistance
 
 _2026-07-19. Two new validated tasks isolating non-coding dimensions: **t12-reasoning**
@@ -26,6 +80,12 @@ subscription-native arms. Both tasks validated virgin-fail/ref-pass before use._
   gated-model access, latency, and cost, not capability.
 
 ## Run 8 — failover & reclaim (live mesh): kill the assigned worker mid-task
+
+> **Superseded 2026-07-22 by Run 11 (above).** Cotal v0.4 (PR #258) plus our pool-owner
+> supervisor now heals this exact protocol: same kill, autonomous re-lease ~2s later, task
+> committed by the second builder in 122s. Run 8 remains valid as the **pre-v0.4
+> baseline** — the behavior of the bare chat plane, and of any mesh that hasn't adopted
+> the work-pool layer.
 
 _2026-07-19. Protocol (`benchmark/run-failover.sh`): hand the planner one task it hasn't
 seen with explicit responsibility language ("monitor progress; if the assigned builder goes
@@ -58,7 +118,9 @@ its turn, watch for 900s. Planner brain: gpt-5.6 via the ChatGPT-subscription OA
   supervision, and a timer plane — the exact machinery this run showed missing. The Cotal
   team confirmed it was a direct response to these benchmarks. It ships dormant in
   `@cotal-ai/core` (not yet wired to the chat plane agents use), so the convention-layer
-  mitigations above remain the working fix today.
+  mitigations above remain the working fix for a stock mesh — and **Run 11 (above) closes
+  the loop**: we adopted the machinery as its first consumer and the same protocol heals
+  in 122s.
 - Caveats: n=1 clean trial; the respawned planner inherited prior state (seeded home) —
   including a fully-verified previous instance of the same protocol — and still did not
   reclaim; single-box mesh.

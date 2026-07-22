@@ -42,11 +42,11 @@ OAuth credential) → Claude Code worker → deliverable on disk, exactly as spe
 | `connectors/cotal-connector-codex/` | **Our Codex CLI mesh connector** — the autonomous-worker half Cotal doesn't ship (their npm 0.1.4 experiment is pull-only on connector-core 0.2.0). Push delegation via `codex exec` / `exec resume <threadId>`, cotal tools over local streamable-HTTP MCP |
 | `connectors/cotal-connector-agy/` | **Our Antigravity mesh connector** — the first anywhere: pTTY-wrapped `agy -p` turns, `--conversation` resume, global MCP-config merge/restore, `--add-dir` grounding |
 | **Two upstream PRs** | Both connectors ported to the Cotal monorepo's TypeScript standards and submitted: [Cotal-AI/Cotal#254](https://github.com/Cotal-AI/Cotal/pull/254) (codex) + [Cotal-AI/Cotal#255](https://github.com/Cotal-AI/Cotal/pull/255) (agy) — bodies in [`docs/cotal-pr-drafts.md`](docs/cotal-pr-drafts.md) |
-| `benchmark/` | 12-task validated suite (coding, agentic, recall, reasoning, hallucination-resistance) + runners for harness, coordination, throughput, failover, and cost studies — **10 runs published as 8 studies** (runs 1–2 & 4 ran one identical suite and are presented as a single six-arm matrix) in [`benchmark/RESULTS.md`](benchmark/RESULTS.md) |
+| `benchmark/` | 12-task validated suite (coding, agentic, recall, reasoning, hallucination-resistance) + runners for harness, coordination, throughput, failover, and cost studies — **11 runs published as 9 studies** (runs 1–2 & 4 ran one identical suite and are presented as a single six-arm matrix) in [`benchmark/RESULTS.md`](benchmark/RESULTS.md), incl. Run 11: Cotal's v0.4 fix adopted and proven (`benchmark/reclaim/`) |
 | `overview.html` | The interactive submission page — 3 tabs, clickable inspector, task simulation, 25-scene narrated walkthrough with per-slide explainers (incl. the v0.4 arc: what our benchmark provoked upstream, what we found inside their fix, and how we switched it on) — deployed at the link above |
 | **Open-source MCP servers** | The subagent backends behind our baselines, published standalone on [github.com/Wally-Ahmed](https://github.com/Wally-Ahmed): [`openrouter-subagents`](https://github.com/Wally-Ahmed/openrouter-subagents) (any OpenRouter model as a subagent, full unified reasoning control) + [`gpt-subagents-subscription`](https://github.com/Wally-Ahmed/gpt-subagents-subscription) (expert GPT subagents via Sign in with ChatGPT) |
 
-## The findings (10 hermetic runs, 8 studies)
+## The findings (11 hermetic runs, 9 studies)
 
 1. **Capability is saturated everywhere — including honesty.** 57/58 hermetic tasks passed
    across every arm. The hallucination probe (3 questions about functions that don't
@@ -71,7 +71,11 @@ OAuth credential) → Claude Code worker → deliverable on disk, exactly as spe
    results. **Upstream impact:** within 24 hours of these findings going public, the
    Cotal team merged [#258](https://github.com/Cotal-AI/Cotal/pull/258) — the v0.4
    control surface and agent lifecycle: work pools with crash redelivery, restart
-   supervision — per the Cotal team, a direct response to these benchmarks.
+   supervision — per the Cotal team, a direct response to these benchmarks. **And we
+   closed the loop (Run 11):** we adopted their published fix as its first consumer —
+   a ~110-line supervisor plays the pool's missing owner role, and the same kill
+   protocol now heals autonomously (re-lease ~2s after the kill, second builder
+   commits in 122s). Run 8's verdict is superseded; it stands as the pre-v0.4 baseline.
 6. **Methodology matters; we paid for the lesson.** Dev-env tooling quietly inflated one
    harness's numbers ~2×, and an ungrounded harness once wrote answers into the benchmark
    templates. Both caught, fixed (hermetic mode + integrity tripwire), and documented in

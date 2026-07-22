@@ -60,7 +60,8 @@ const builderAlive = (name) => {
 };
 function dmTask(builder) {
   const msg = `TASK: complete the assignment described in ${WORK}/PROMPT.md, working in the directory ${WORK}. Do the work yourself; do not delegate. DONE-WHEN: cd ${WORK} && python3 test.py prints PASS.`;
-  execFileSync("cotal", ["send", "ask", builder, msg], { encoding: "utf8", timeout: 30000 });
+  // `send dm <agent>` — `ask` is role-anycast; a bare NAME there blackholes (exit 0, no delivery).
+  execFileSync("cotal", ["send", "dm", builder, msg], { encoding: "utf8", timeout: 30000 });
   log(`DM'd task to ${builder}`);
 }
 const testPasses = () => spawnSync("python3", ["test.py"], { cwd: WORK, timeout: 60000 }).status === 0;

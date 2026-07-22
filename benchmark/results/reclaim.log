@@ -1,0 +1,35 @@
+[+0s] workdir: /tmp/bench-reclaim-sPRP
+[+3s] pre-run roster:
+manager/manager  endpoint  ○ idle  supervisor (pty)
+workerb/builder  agent     ○ idle  Standing by for new task assignments; inbox backlog is history replay, nothing actionable
+workerc/builder  agent     ○ idle  Idle — no open assignments; backlog is replay-only. DND to suppress history chatter.
+[+3s] supervisor started (pid 69655)
+[+0s] self-broker up on :37831 (pool decoupled from the mesh broker)
+[+0s] connected to nats://127.0.0.1:37831 (space=reclaim)
+[+0s] pool ready: supervisor/tasks ack_wait=15000ms
+[+0s] enqueued work item seq=1 id=reclaim-1784729341591
+[+1s] LEASED attempt=1 fencingToken=1 → workerb (deliveryCount=1)
+[+2s] DM'd task to workerb
+[+11s] builder working: workerb — letting it run 20s
+[+16s] redelivery deliveryCount=2 — assignee workerb is alive
+[+31s] killing workerb
+✓ stopped workerb
+[+34s] victim=workerb killed — now the pool's ack_wait redelivery decides, not us
+[+36s] roster: workerb:offline workerc:idle 
+[+32s] redelivery deliveryCount=3 — assignee workerb is OFFLINE
+[+33s] RE-LEASED attempt=3 fencingToken=2 → workerc (was workerb, killed)
+[+34s] DM'd task to workerc
+[+47s] roster: workerc:working 
+[+47s] redelivery deliveryCount=4 — assignee workerc is alive
+[+62s] redelivery deliveryCount=5 — assignee workerc is alive
+[+77s] redelivery deliveryCount=6 — assignee workerc is alive
+[+91s] redelivery deliveryCount=7 — assignee workerc is alive
+[+106s] redelivery deliveryCount=8 — assignee workerc is alive
+[+122s] redelivery deliveryCount=9 — assignee workerc is alive
+[+122s] COMMITTED won=true disposition=committed worker=workerc attempt=3 fencingToken=2
+[+122s] TERMINAL FACT: {"v":1,"disposition":"committed","pool":"tasks","caller":{"owner":"u_hh","actor":"runner","uid":"hhreclaimhhreclaimhhreclai","id":"reclaim-1784729341591"},"sourceSeq":1,"attempt":3,"fencingToken":2,"worker":{"kind":"agent","owner":"u_hh","actor":"workerc","lifecycleUid":"workercxxxxxxxxxxxxxxxxxxx"},"outcome":{"pass":true,"reassignments":1,"seconds":122,"task":"/tmp/bench-reclaim-sPRP"},"ts":1784729463234}
+[+122s] RESULT pass=true total=122s reassignments=1 finisher=workerc
+[+135s] RESULT supervisor_rc=0 total=135s victim=workerb kill_at=34s work=/tmp/bench-reclaim-sPRP
+[+135s] post-run roster:
+manager/manager  endpoint  ○ idle  supervisor (pty)
+workerc/builder  agent     ● working  Idle — no open assignments; backlog is replay-only. DND to suppress history chatter.
