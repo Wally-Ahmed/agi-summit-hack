@@ -485,13 +485,13 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   display:none;margin-bottom:2px;
   box-shadow:0 18px 40px -20px rgba(0,0,0,.6),0 0 30px rgba(94,234,212,.12);
 }
-.scenevis.show{display:block;animation:fadein .4s ease;position:sticky;top:64px;z-index:30}
-/* video-only (fit) scenes: centered lightbox — big, and never clipped by the fold,
-   no matter where the focused section scrolled the page */
-.scenevis.show.pinned{
-  position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);
-  width:min(92vw,1240px);height:min(52vh,414px);z-index:60;
-  box-shadow:0 30px 80px -20px rgba(0,0,0,.85),0 0 60px rgba(94,234,212,.2);
+/* shown strip pins under the tab bar via position:fixed (NOT sticky — sticky only pins
+   once the page has scrolled past the strip's DOM slot inside #arch, so scenes that
+   focus content ABOVE it, like the finale badges, left it stranded below the fold).
+   Same size and top-of-page placement as ever; just no scroll dependency. */
+.scenevis.show{
+  display:block;animation:fadein .4s ease;position:fixed;top:64px;left:16px;right:16px;
+  margin:0 auto;width:min(1100px,calc(100vw - 32px));z-index:30;
 }
 .scenevis .frame{position:absolute;inset:0}
 .scenevis .frame img,.scenevis .frame video{
@@ -1092,15 +1092,13 @@ arch.insertBefore(vis, arch.firstChild);
 let visFront = visA;
 function sceneVis(n, fit){
   if(n == null){
-    vis.classList.remove("show"); vis.classList.remove("pinned");
+    vis.classList.remove("show");
     visA.classList.remove("on"); visB.classList.remove("on");
     visV.style.opacity = 0; visV.pause(); visV.removeAttribute("src");
     return;
   }
-  /* per-scene fit override: "contain" shows the full frame letterboxed (bg matches the strip)
-     — and rides the pinned centered lightbox so it is never cut off by the fold */
+  /* per-scene fit override: "contain" shows the full frame letterboxed (bg matches the strip) */
   visV.style.objectFit = fit || ""; visA.style.objectFit = fit || ""; visB.style.objectFit = fit || "";
-  vis.classList.toggle("pinned", !!fit);
   /* generated clip wins when present; the schematic still is the always-on fallback */
   visV.style.opacity = 0; visV.pause();
   visV.onloadeddata = ()=>{ visV.style.opacity = 1; visV.play().catch(()=>{}); vis.classList.add("show"); };
@@ -1175,8 +1173,8 @@ const TOUR = [
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
-  {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:24},
-  {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:25},
+  {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:24},
+  {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:25},
   {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
