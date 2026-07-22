@@ -350,6 +350,7 @@ button.cta.stop:hover{box-shadow:0 8px 20px rgba(248,113,113,.4),0 1px 0 rgba(25
   box-shadow:0 2px 8px rgba(129,140,248,.35),0 1px 0 rgba(255,255,255,.2) inset;
 }
 .chip.new{background:linear-gradient(180deg,var(--win),#22c997);box-shadow:0 2px 8px rgba(52,211,153,.35),0 1px 0 rgba(255,255,255,.2) inset}
+.chip.superseded{background:linear-gradient(180deg,#b45309,#92400e);color:#fef3c7;box-shadow:0 2px 8px rgba(245,158,11,.3),0 1px 0 rgba(255,255,255,.15) inset}
 
 /* slider / walkthrough */
 .slider{margin-bottom:18px}
@@ -759,9 +760,9 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </article>
 
         <article class="slide">
-          <span class="chip">Resilience · pre-v0.4 baseline</span>
+          <span class="chip">Resilience · pre-v0.4 baseline</span> <span class="chip superseded">STALE — cleared by Run 11 →</span>
           <h2>Run 8 — Kill the assigned worker mid-task</h2>
-          <div class="q">The planner gets a task with explicit responsibility language — "monitor progress; if the builder goes offline, re-delegate." We wait until its chosen worker is mid-build, kill that worker, and watch for 15 minutes. <b>Variable isolated: what happens when a worker dies.</b></div>
+          <div class="q"><b>This failure has since been cleared</b> — Run 11 (next study) replays the identical protocol on Cotal's v0.4 work pools and the mesh heals. Kept as the pre-v0.4 baseline. The original test: the planner gets a task with explicit responsibility language — "monitor progress; if the builder goes offline, re-delegate." We wait until its chosen worker is mid-build, kill that worker, and watch for 15 minutes. <b>Variable isolated: what happens when a worker dies.</b></div>
           <div class="bars">
             <div class="barrow"><span>Attempt 1 — bystander killed by mistake</span><div class="barbg"><div class="bar c-mesh" data-w="10"></div></div><span class="score">✅ 94s</span><span class="taskbreak">assignee untouched, finished normally — and the planner re-ran the test itself before accepting</span></div>
             <div class="barrow"><span>Attempt 2 — planner killed by mistake</span><div class="barbg"><div class="bar c-mesh" data-w="6"></div></div><span class="score">✅ 50s</span><span class="taskbreak">delegated work survived planner death; warm worker recreated the solution from memory</span></div>
@@ -1159,7 +1160,7 @@ const TOUR = [
   {cap:"9 trials · 3 stacks · **9 passes**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(4); }, n:11, vis:null},
   {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(5); }, n:13, vis:null},
   {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(6); }, n:14, vis:null},
-  {cap:"**Kill the worker** — the planner can't notice silence", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
+  {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:16, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},

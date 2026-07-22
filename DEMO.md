@@ -59,7 +59,9 @@ Open https://hermes-handoff-overview.fly.dev/ on the projector:
   the plain-language and technical reads. Highlights: run 3 (harness-per-model beats
   one-loop MCP ~30%), run 5 (subscription inversion), run 9 (**zero hallucinations**),
   run 10 (≈$0 marginal vs $0.14–0.51 metered), run 8 (**no autonomous reclaim** — the
-  honest one, with the sqlite autopsy).
+  honest one, with the sqlite autopsy — now marked STALE) and its payoff **run 11**
+  (Cotal shipped the fix our run 8 provoked; we switched it on as first consumer and
+  the same kill **heals in 122s** — the full influence loop on one slider).
 - **③ The Pull Requests** — what we're contributing back: the Codex worker connector and
   the first Antigravity connector, built in-tree against Cotal's current core.
 

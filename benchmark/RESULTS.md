@@ -79,9 +79,9 @@ subscription-native arms. Both tasks validated virgin-fail/ref-pass before use._
   within ~30% of each other — consistent with runs 5/7. Worker choice remains about quota,
   gated-model access, latency, and cost, not capability.
 
-## Run 8 — failover & reclaim (live mesh): kill the assigned worker mid-task
+## Run 8 — failover & reclaim (live mesh): kill the assigned worker mid-task — ⚠ SUPERSEDED, see Run 11
 
-> **Superseded 2026-07-22 by Run 11 (above).** Cotal v0.4 (PR #258) plus our pool-owner
+> **Stale as of 2026-07-22 — cleared by Run 11 (above).** Cotal v0.4 (PR #258) plus our pool-owner
 > supervisor now heals this exact protocol: same kill, autonomous re-lease ~2s later, task
 > committed by the second builder in 122s. Run 8 remains valid as the **pre-v0.4
 > baseline** — the behavior of the bare chat plane, and of any mesh that hasn't adopted
