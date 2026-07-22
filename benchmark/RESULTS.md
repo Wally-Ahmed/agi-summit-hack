@@ -50,6 +50,13 @@ pulses 1–2 belonged to workerb's lease — while `fencingToken` is the lease o
   worked because "planner" is both name and role; the DM verb is `send dm <agent>`). Both
   failures are invisible to the sender — send-and-pray. The pool is the antidote: an
   unsettled lease *cannot* fail silently; it redelivers.
+- **What would close the gap upstream (a v0.4.x wishlist):** (1) a chat-plane pool-owner
+  role — manager- or planner-hosted; our supervisor is the working sketch; (2) scoped
+  work-pool grants minted into planner/agent creds; (3) a `cotal pool` CLI verb plus a
+  delegate-via-pool planner tool; (4) wire the deliberately-deferred trigger — subscribe
+  connector-core to presence and wake the delegator on `offline` (today that event dies
+  one subscription short of the planner). The v0.4 core itself needed zero changes in
+  Run 11 — the entire remaining distance is wiring.
 - Caveats: n=1 clean trial (two earlier attempts died to the chat-plane issues above, not
   the pool — the pool behaved correctly in every attempt, including re-leasing away from a
   builder that never picked up its task); single-box mesh; the supervisor is our harness,

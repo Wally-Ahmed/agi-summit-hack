@@ -652,6 +652,17 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </div>
         <div class="shimnote">Run 8's silence was the disease; <b>v0.4 is the cure — shipped dormant: the code is in the release, but switched off.</b> Not an oversight — their rollout starts a layer down (service endpoints): no CLI command creates a pool, and agent credentials hold zero work-pool permissions, so it sits out of the agents' reach. We wrote the missing role and drove the machinery for real, outside Cotal's own tests, for the first time — <b>the fix our benchmark inspired, switched on by the same benchmark's authors.</b> Proven live in <b>Run 11</b>: same kill, re-lease ~2s later, second builder commits in 122s.</div>
       </div>
+
+      <div class="shimflow" id="v04gap">
+        <h3>Still missing after v0.4 — it's all wiring, not engine (what a v0.4.x should ship)</h3>
+        <div class="shimrow">
+          <div class="shimbox"><b>① no owner</b><span>pools are <b>endpoint</b>-owned — an agent mesh has none,<br>so nobody exists to re-lease dead work<br><b>close it:</b> a chat-plane pool-owner role (manager- or<br>planner-hosted) — our supervisor is the working sketch</span></div>
+          <div class="shimbox"><b>② no permissions</b><span>agent credentials carry <b>zero</b> work-pool grants —<br>the broker refuses even a willing agent<br><b>close it:</b> scoped pool grants minted into<br>planner / agent creds</span></div>
+          <div class="shimbox"><b>③ no switch</b><span>no CLI verb touches pools · connector-core neither<br>imports nor re-exports the API<br><b>close it:</b> <code>cotal pool</code> verbs + a<br>delegate-via-pool planner tool</span></div>
+          <div class="shimbox"><b>④ no trigger</b><span>the restart trigger is deliberately deferred — and the<br><b>offline</b> event still dies one subscription short of the planner<br><b>close it:</b> subscribe connector-core to presence, wake the<br>delegator on offline — smallest diff, biggest payoff</span></div>
+        </div>
+        <div class="shimnote"><b>Is another update needed? Yes — but a small one, and none of it is engine work.</b> Run 11 ran the v0.4 core untouched, straight from the published <code>@cotal-ai/core</code> 0.13.2, and it did everything it promised: death → redelivery → fenced re-lease → durable commit. What a stock mesh still lacks is exactly the four items above — an owner, grants, a verb, one event subscription — and our ~110-line supervisor is the existence proof that each is closable. Run 8 found the disease · v0.4 built the cure · Run 11 proved the dose — <b>the remaining update is switching it on by default.</b></div>
+      </div>
     </div>
 
     <div class="cards">
