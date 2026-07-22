@@ -5,6 +5,13 @@
 CI pending maintainer workflow-approval (first-time contributor). Watch with
 `gh pr checks 254 --repo Cotal-AI/Cotal` / `... 255 ...`.
 
+**Amended again 2026-07-21 (evening):** both live PR bodies also gained a **"The shim, in
+detail"** section — a full technical walkthrough of the serve shim for the Cotal
+engineering team (loopback stateless-per-request MCP, 300 ms debounced single-flight
+pump, exact spawn argv, deliberate ack-at-drain at-most-once semantics, per-harness
+failure paths and kill semantics). Canonical text in `docs/pr-body-*.md`; pushed via
+`gh pr edit --body-file` and verified live.
+
 **Amended 2026-07-21:** both live PR bodies gained a **Prior art** section (codex: the
 pull-only npm 0.1.x experiment → removed 5b3eb21e, the host-mode revival PR #97, ours as
 the third architecture — push-by-respawn; agy: why every existing live-session delivery

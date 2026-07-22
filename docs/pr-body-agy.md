@@ -10,6 +10,46 @@ merged into the global `~/.gemini/config/mcp_config.json` for the worker's lifet
 removed on shutdown and process exit. `--add-dir <workRoot>` is passed on every turn so
 artifacts land in the work directory instead of agy's own workspace scratch.
 
+**The shim, in detail.** The process `cotal spawn` keeps alive is a Node supervisor, not
+agy: it owns the `MeshAgent` identity and inbox plus a loopback streamable-HTTP MCP
+endpoint (ephemeral `127.0.0.1` port, fresh `McpServer` per request — no MCP session
+state to lose across respawns). agy has no per-invocation MCP flag, so the shim merges an
+`mcpServers.cotal` entry into the global `~/.gemini/config/mcp_config.json` once the
+server is listening, and removes it on `shutdown()`, on `process.on("exit")`, and in the
+fatal-error path. It refuses to start over an existing `cotal` entry rather than adopt
+it — that is the one-worker-per-machine limit, fail-loud by design.
+
+The wake/drain pump is identical to the Codex sibling (#254): event-driven wakes with a
+300 ms debounce so bursts coalesce, a single-flight loop that drains the inbox into one
+`📨 Cotal — N new message(s)` injection per turn, and mid-turn arrivals buffering until
+the child exits. What differs is everything about how a turn runs.
+
+A turn spawns `script -qec '<agy command>' /dev/null` in its own process group
+(`detached: true`). The pseudo-TTY wrapper is load-bearing, not cosmetic: on a non-TTY
+stdout `agy -p` exits 0 while dropping its final response, so a bare spawn looks like
+success with empty output; `script -e` propagates agy's real exit code. The wrapped
+command is `agy -p "$(cat '<promptFile>')" --model … --dangerously-skip-permissions
+--print-timeout 25m --add-dir <workRoot> --log-file <logFile>`, plus
+`--conversation <id>` after the first turn. The prompt travels via a single-quote-escaped
+temp file under a `mkdtemp` root (immune to argv limits), and `--add-dir` is what makes
+artifacts land in the work directory instead of agy's own workspace scratch. The child
+env strips every `COTAL_*` variable, prepends `~/.local/bin` to PATH, and defaults
+`TERM=xterm-256color`. Output is plain text — ANSI-stripped, last 200 KB kept.
+
+Continuity rides on agy's server-side conversation state
+(`~/.gemini/antigravity-cli/conversations/`): turn 1's log is scanned for
+`Created conversation <uuid>`, later turns pass it back, and the shim fails loudly if a
+resume turn unexpectedly *creates* a conversation — a silently-broken `--conversation`
+was the failure mode we most feared, and `COTAL_AGY_STATELESS=1` exists as a
+rolling-digest fallback if a future agy release breaks resume. Failure paths mirror the
+process-group reality: a wedged turn hits the 27-minute timeout and gets SIGKILL on the
+negative pid — killing only `script` would leave agy alive underneath it — and shutdown
+sends the group a SIGTERM. Ack semantics are the same deliberate at-most-once as #254
+and worth stating plainly for review: drains ack at drain time, before the spawn, so a
+batch whose turn died is not redelivered (replaying a possibly-half-executed turn would
+replay its side effects); crash-tolerance instead comes from the conversation itself
+surviving — the next wake resumes the same id.
+
 **Code standards.** TypeScript under the shared strict `tsconfig.base.json` (NodeNext,
 `verbatimModuleSyntax`), typed against the `Connector` / `LaunchOpts` / `LaunchSpec`
 surface. The package contract mirrors the sibling connectors: `types` field + `types`
