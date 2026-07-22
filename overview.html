@@ -633,11 +633,29 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         </div>
         <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b></div>
       </div>
+      <div class="shimflow" id="v04flow">
+        <h3>v0.4 (PR #258) — the fix our benchmark provoked, and how we switched it on</h3>
+        <div class="shimrow">
+          <div class="shimbox"><b>Run 8 exposed it</b><span>kill a worker mid-task —<br>no task lifecycle · the planner never re-delegates</span></div>
+          <div class="shimarr">→<i>findings public<br>→ 24 hours</i></div>
+          <div class="shimbox keep"><b>Cotal ships v0.4</b><span>work pools: leases · crash redelivery · restart supervision<br>per the Cotal team, a direct response to these benchmarks</span></div>
+          <div class="shimarr">→<i>our audit:<br>built — but dormant</i></div>
+          <div class="shimbox"><b>locked one layer down</b><span>a pool needs an owner <b>endpoint</b> — chat-plane agents<br>hold <b>zero</b> work-pool grants · nothing upstream consumes it</span></div>
+        </div>
+        <div class="shimrow">
+          <div class="shimbox turn"><b>our response № 1 — stay current</b><span>PRs #254/#255 rebased onto v0.4 the same day<br>versions in lockstep · <code>MESH_FIRST_STEER</code> folded in</span></div>
+          <div class="shimarr">＋</div>
+          <div class="shimbox turn"><b>№ 2 — adopt it ourselves</b><span>our supervisor plays the missing owner role:<br>enqueue → <b>lease</b> → DM a real builder · never ack early</span></div>
+          <div class="shimarr">→<i>kill the builder —<br>the lease surfaces back</i></div>
+          <div class="shimbox mem"><b>the mesh heals</b><span>redelivery → re-lease (fencing token bumps) → next builder finishes<br>verified on published <code>@cotal-ai/core</code> 0.13.2</span></div>
+        </div>
+        <div class="shimnote">Run 8's silence was the disease; <b>v0.4 is the cure — shipped dormant, aimed at service endpoints, out of the agents' reach.</b> We wrote the missing role and drove the machinery for real, outside Cotal's own tests, for the first time — <b>the fix our benchmark inspired, switched on by the same benchmark's authors.</b></div>
+      </div>
     </div>
 
     <div class="cards">
       <div class="card"><div class="path">tools/hermes-handoff/</div><p>The product: a zero-dependency wizard CLI. Detects harnesses + auth, you pick one, it wires Hermes as the front door — planner brain via subscription OAuth (<code>hermes login</code>) or any provider key.</p></div>
-      <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core and kept rebased on upstream main (currently 0.13.1, post-v0.4), and submitted as pull requests <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> to <code>Cotal-AI/Cotal</code>.</p></div>
+      <div class="card"><div class="path">Upstream contributions</div><p>Both connectors ported to the Cotal monorepo's conventions, built against in-tree connector-core, kept rebased on upstream main (post-v0.4, 0.13.x line), and submitted as pull requests <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> to <code>Cotal-AI/Cotal</code> — re-audited against upstream HEAD after the 0.13.2 release: zero conflicts, land-ready. And beyond code: our Run-8 failover findings preceded <a href="https://github.com/Cotal-AI/Cotal/pull/258">PR #258</a> (the v0.4 lifecycle) by 24 hours — per the Cotal team, a direct response — and our reclaim supervisor (<code>benchmark/reclaim/</code>) is the first thing outside Cotal's own tests to drive that machinery.</p></div>
       <div class="card"><div class="path">Our open-source MCP servers — <a href="https://github.com/Wally-Ahmed" target="_blank" rel="noopener">github.com/Wally-Ahmed</a></div><p>The subagent backends behind the benchmarks are ours, published standalone: <a href="https://github.com/Wally-Ahmed/openrouter-subagents" target="_blank" rel="noopener">openrouter-subagents</a> — delegate to any OpenRouter model with full unified reasoning control — and <a href="https://github.com/Wally-Ahmed/gpt-subagents-subscription" target="_blank" rel="noopener">gpt-subagents-subscription</a> — expert GPT subagents on the ChatGPT plan you already pay for. Both drop into any MCP-capable agent.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-codex/</div><p>Our Codex mesh connector — Node shim owns one MeshAgent; cotal tools served over local streamable-HTTP MCP; turn chain via <code>codex exec resume</code>.</p></div>
       <div class="card"><div class="path">connectors/cotal-connector-agy/</div><p>Our Antigravity connector — pTTY turn loop, conversation resume, MCP-config merge/restore. Live-tested: "AGY WORKER OK" on #general.</p></div>
@@ -1131,6 +1149,8 @@ const TOUR = [
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
+  {cap:"Inside v0.4 — **built, shipped… dormant**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:24},
+  {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:25},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
