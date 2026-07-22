@@ -5,6 +5,13 @@
 CI pending maintainer workflow-approval (first-time contributor). Watch with
 `gh pr checks 254 --repo Cotal-AI/Cotal` / `... 255 ...`.
 
+**Refreshed 2026-07-21 (night):** both branches **rebased onto upstream main post-v0.4**
+(#258 doesn't touch the connector surface — clean rebase, zero source conflicts), package
+versions aligned to the **0.13.1** fixed-group line, and **#261's `MESH_FIRST_STEER`
+folded into both shims** (MCP instructions + boot prompt, matching the sibling adapters).
+Rebuilt/typechecked/pack-verified; force-pushed (new heads `1169415b` / `59e35fba`, both
+MERGEABLE); rebase note commented on each PR.
+
 **Amended again 2026-07-21 (evening):** both live PR bodies also gained a **"The shim, in
 detail"** section — a full technical walkthrough of the serve shim for the Cotal
 engineering team (loopback stateless-per-request MCP, 300 ms debounced single-flight
