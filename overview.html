@@ -75,6 +75,18 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
 .badge:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(94,234,212,.4)}
 .badge.alt{color:var(--accent2);background:linear-gradient(180deg,rgba(129,140,248,.08),rgba(129,140,248,.02))}
 .badge.win{color:#fbbf24;background:linear-gradient(180deg,rgba(251,191,36,.12),rgba(251,191,36,.02))}
+.shimflow{margin-top:18px;border-top:1px dashed rgba(94,234,212,.25);padding-top:14px}
+.shimflow h3{margin:0 0 10px;font-size:14px;color:var(--accent)}
+.shimrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.shimbox{flex:1 1 150px;min-width:150px;border:1px solid rgba(94,234,212,.4);border-radius:10px;padding:10px 12px;background:rgba(94,234,212,.04)}
+.shimbox b{display:block;font-size:12.5px;margin-bottom:4px}
+.shimbox span{font-size:11.5px;color:#8b949e;line-height:1.45}
+.shimbox.turn{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.05)}
+.shimbox.mem{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.04)}
+.shimarr{display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--accent);font-size:16px;min-width:86px;text-align:center}
+.shimarr i{font-style:normal;font-size:10.5px;color:#8b949e;margin-top:2px;line-height:1.35}
+.shimnote{margin-top:10px;font-size:12px;color:#8b949e}
+.shimnote b{color:var(--accent)}
 .badge.alt:hover{border-color:var(--accent2);box-shadow:0 6px 16px -8px rgba(129,140,248,.4)}
 a.badge{text-decoration:none;cursor:pointer}
 
@@ -608,6 +620,19 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         <h3>Inspector</h3>
         <p>Click any node or flow step above to see what it is, how it authenticates, and what we built for it.</p>
       </div>
+      <div class="shimflow" id="shimflow">
+        <h3>Inside our connectors — the shim (push-by-respawn)</h3>
+        <div class="shimrow">
+          <div class="shimbox"><b>Cotal mesh</b><span>peers push messages —<br>the worker never polls</span></div>
+          <div class="shimarr">→<i>300&thinsp;ms debounce<br>burst → one batch</i></div>
+          <div class="shimbox keep"><b>the shim · always on</b><span>MeshAgent inbox (cap 200)<br>loopback MCP · <code>cotal_*</code> tools</span></div>
+          <div class="shimarr">→<i>drain → ack → spawn</i></div>
+          <div class="shimbox turn"><b>fresh harness turn</b><span><code>codex exec resume &lt;thread&gt;</code><br><code>agy -p --conversation &lt;id&gt;</code> · pTTY</span></div>
+          <div class="shimarr">⇄<i>works · replies live<br>via <code>cotal_*</code> · exits</i></div>
+          <div class="shimbox mem"><b>memory = the thread</b><span>state lives server-side —<br>a killed turn resumes intact</span></div>
+        </div>
+        <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b></div>
+      </div>
     </div>
 
     <div class="cards">
@@ -1024,17 +1049,21 @@ visFrame.appendChild(visA); visFrame.appendChild(visB); visFrame.appendChild(vis
 vis.appendChild(visFrame);
 arch.insertBefore(vis, arch.firstChild);
 let visFront = visA;
-function sceneVis(n){
+function sceneVis(n, fit){
   if(n == null){
     vis.classList.remove("show"); visA.classList.remove("on"); visB.classList.remove("on");
     visV.style.opacity = 0; visV.pause(); visV.removeAttribute("src");
     return;
   }
+  /* per-scene fit override: "contain" shows the full frame letterboxed (bg matches the strip) */
+  visV.style.objectFit = fit || ""; visA.style.objectFit = fit || ""; visB.style.objectFit = fit || "";
   /* generated clip wins when present; the schematic still is the always-on fallback */
   visV.style.opacity = 0; visV.pause();
   visV.onloadeddata = ()=>{ visV.style.opacity = 1; visV.play().catch(()=>{}); vis.classList.add("show"); };
   visV.onerror = ()=>{};
   visV.src = "walkthrough/img/scene"+n+".mp4";
+  if(fit){ /* contain scenes are video-only — the img fallback would ghost through the letterbox */
+    visA.classList.remove("on"); visB.classList.remove("on"); return; }
   const back = visFront === visA ? visB : visA;
   back.classList.remove("on");
   back.onload = ()=>{ visFront.classList.remove("on"); back.classList.add("on"); visFront = back; vis.classList.add("show"); };
@@ -1081,6 +1110,7 @@ const TOUR = [
   {cap:"Two pull requests — **the worker half Codex was missing** · **the first agy connector**", foc:"#view-prs .panel", fb:"start", run(){ showTab("prs");
      tlater(()=>{const p=document.querySelectorAll("#view-prs .panel")[1]; if(p) p.scrollIntoView({behavior:"smooth",block:"start"});},13000); }, n:17, vis:null},
   {cap:"Deep dive: **idle wake** — why their Codex slept · why ours can't", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:20},
+  {cap:"Inside the shim — **push-by-respawn**, step by step", foc:"#shimflow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:23},
   {cap:"Also open source: **our MCP subagent servers** — OpenRouter · ChatGPT subscription", foc:"#arch .r-workers", run(){ showTab("project"); spotlight(["n-pool"]); }, n:19},
   {cap:"Watch a **real task** travel", foc:"#console", run(){ showTab("project"); spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
   {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
@@ -1096,7 +1126,7 @@ const TOUR = [
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
-  {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", run(){ showTab("project"); spotlight([]); }, n:22}
+  {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
 /* transport bar: per-scene timeline + pause/play */
@@ -1123,7 +1153,7 @@ async function tour(start){
     tourJumped = false;
     markSeg(i);
     caption(scene.cap);
-    sceneVis(scene.vis === undefined ? scene.n : scene.vis);
+    sceneVis(scene.vis === undefined ? scene.n : scene.vis, scene.fit);
     scene.run();
     /* keep the section being narrated on screen */
     if(scene.foc) tlater(()=>{
