@@ -485,14 +485,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   display:none;margin-bottom:2px;
   box-shadow:0 18px 40px -20px rgba(0,0,0,.6),0 0 30px rgba(94,234,212,.12);
 }
-/* shown strip pins under the tab bar via position:fixed (NOT sticky — sticky only pins
-   once the page has scrolled past the strip's DOM slot inside #arch, so scenes that
-   focus content ABOVE it, like the finale badges, left it stranded below the fold).
-   Same size and top-of-page placement as ever; just no scroll dependency. */
-.scenevis.show{
-  display:block;animation:fadein .4s ease;position:fixed;top:64px;left:16px;right:16px;
-  margin:0 auto;width:min(1100px,calc(100vw - 32px));z-index:30;
-}
+.scenevis.show{display:block;animation:fadein .4s ease;position:sticky;top:64px;z-index:30}
 .scenevis .frame{position:absolute;inset:0}
 .scenevis .frame img,.scenevis .frame video{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;
@@ -1169,13 +1162,13 @@ const TOUR = [
   {cap:"**Zero hallucinations** — the harness checks reality", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(5); }, n:13, vis:null},
   {cap:"Metered: **$0.14–0.51/task** · your subscription: **≈$0**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(6); }, n:14, vis:null},
   {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
+  {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:16, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
   {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:24},
   {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:25},
-  {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
@@ -1224,6 +1217,14 @@ async function tour(start){
         /* tuck the previous sibling fully behind the bar/strip so its tail can't peek into the gap */
         const prev = el.previousElementSibling;
         if(prev) top = Math.max(top, prev.getBoundingClientRect().bottom + window.scrollY - (clear - 14));
+      }
+      /* a scene visual must never be stranded below the fold: sticky only pins once the
+         page is scrolled past its slot at the top of #arch, so on vis scenes never
+         settle above the pinning threshold (the finale focuses .badges ABOVE the slot) */
+      if(hasVis){
+        let natTop = 0, oe = vis;
+        while(oe){ natTop += oe.offsetTop; oe = oe.offsetParent; }
+        top = Math.max(top, natTop - 64);
       }
       window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
     }, 400);
