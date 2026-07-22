@@ -66,7 +66,11 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
 .wrap{position:relative}
 #tourbtn{position:absolute;top:2px;right:0;z-index:40}
 @media(max-width:760px){#tourbtn{position:static;margin-bottom:12px}}
-.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
+/* real links live apart from the status badges and read as clickable */
+.badgelinks{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;padding-left:14px;border-left:1px dashed rgba(94,234,212,.35)}
+.badgelinks .badge{color:var(--accent);border-color:rgba(94,234,212,.55);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:760px){.badgelinks{margin-left:0;border-left:none;padding-left:0}}
 .badge{
   border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:12px;color:var(--accent);
   background:linear-gradient(180deg,rgba(94,234,212,.07),rgba(94,234,212,.02));
@@ -518,11 +522,13 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     <span class="badge win">🥇 1st place — Cotal sponsor track · AGI Summit 2026</span>
     <span class="badge">2 connectors built by us</span>
     <span class="badge">2 PRs upstream to Cotal</span>
-    <span class="badge alt">10 benchmark runs · 8 studies</span>
+    <span class="badge alt">11 benchmark runs · 9 studies</span>
     <span class="badge alt">57/58 hermetic tasks passed</span>
     <span class="badge">no API credits needed</span>
-    <a class="badge" href="https://github.com/Wally-Ahmed" target="_blank" rel="noopener">github.com/Wally-Ahmed</a>
-    <a class="badge alt" href="hermes-handoff-project.zip" download>⬇ download the project</a>
+    <span class="badgelinks">
+      <a class="badge" href="https://github.com/Wally-Ahmed" target="_blank" rel="noopener">github.com/Wally-Ahmed ↗</a>
+      <a class="badge" href="hermes-handoff-project.zip" download>⬇ download the project</a>
+    </span>
   </div>
 
   <div class="tabs">
