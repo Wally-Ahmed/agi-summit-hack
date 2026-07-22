@@ -1,0 +1,14 @@
+{
+  "name": "hh-reclaim-supervisor",
+  "private": true,
+  "type": "module",
+  "description": "Run 11 pool supervisor — drives Cotal v0.4 work-pool machinery (PR #258) as the owner endpoint over a live mesh",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@cotal-ai/core": "0.13.2",
+    "@nats-io/jetstream": "^3.1.0",
+    "@nats-io/kv": "^3.1.0",
+    "@nats-io/nats-core": "^3.1.0",
+    "@nats-io/transport-node": "^3.1.0"
+  }
+}
