@@ -1110,7 +1110,7 @@ const TOUR = [
      wsteps.forEach((s,i)=>tlater(()=>{wsteps.forEach(x=>x.classList.remove("live"));s.classList.add("live");if(i>0)wsteps[i-1].classList.add("done");},3500+i*3800));
      }, n:12, vis:null},
   {cap:"One mesh: **Cotal** — live messaging, not HTTP", foc:"#n-bus", run(){ showTab("project"); spotlight(["n-bus"]); }, n:2},
-  {cap:"The planner **never writes code**", foc:"#n-planner", run(){ showTab("project"); spotlight(["n-planner"]); }, n:3},
+  {cap:"The planner only delegates — **any task**, not just code", foc:"#n-planner", run(){ showTab("project"); spotlight(["n-planner"]); }, n:3},
   {cap:"Built by us → **PR'd back upstream to Cotal**", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:4},
   {cap:"Two pull requests — **the worker half Codex was missing** · **the first agy connector**", foc:"#view-prs .panel", fb:"start", run(){ showTab("prs");
      tlater(()=>{const p=document.querySelectorAll("#view-prs .panel")[1]; if(p) p.scrollIntoView({behavior:"smooth",block:"start"});},13000); }, n:17, vis:null},
