@@ -11,6 +11,9 @@
 //      RECLAIM_NATS (default nats://127.0.0.1:4222)   RECLAIM_CREDS (optional .creds path)
 //      RECLAIM_SPACE (default "reclaim" — isolated streams; never the live space's)
 //      RECLAIM_CAP_S (900)  RECLAIM_ACK_WAIT_MS (15000)  RECLAIM_LEASE_TTL_MS (600000)
+//      RECLAIM_SELF_BROKER=1 — spawn a private open-mode nats-server for the pool.
+//        For meshes running mode:"auth": the chat plane keeps the mesh's broker; the
+//        pool rides its own throwaway one.  RECLAIM_NATS_BIN (default "nats-server")
 import { connect } from "@nats-io/transport-node";
 import { credsAuthenticator } from "@nats-io/nats-core";
 import { jetstream, jetstreamManager } from "@nats-io/jetstream";
@@ -19,12 +22,14 @@ import {
   workPoolContext, enqueueWorkItem, leaseWorkItem, commitWorkItem, readWorkTerminal,
   createEndpointStreams, epwStreamName, poolConsumerConfig, poolDurable,
 } from "@cotal-ai/core";
-import { execFileSync, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { execFileSync, spawnSync, spawn } from "node:child_process";
+import { readFileSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const WORK = process.env.RECLAIM_WORK;
 if (!WORK) { console.error("RECLAIM_WORK is required"); process.exit(2); }
-const NATS = process.env.RECLAIM_NATS || "nats://127.0.0.1:4222";
+let NATS = process.env.RECLAIM_NATS || "nats://127.0.0.1:4222";
 const SPACE = process.env.RECLAIM_SPACE || "reclaim";
 const CAP_S = Number(process.env.RECLAIM_CAP_S || 900);
 const ACK_WAIT_MS = Number(process.env.RECLAIM_ACK_WAIT_MS || 15000);
@@ -60,6 +65,22 @@ function dmTask(builder) {
 }
 const testPasses = () => spawnSync("python3", ["test.py"], { cwd: WORK, timeout: 60000 }).status === 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// --- private pool broker (mode:"auth" meshes: chat plane keeps its broker, the pool
+// gets its own open one — same pattern the dry test proved) -----------------------------
+if (process.env.RECLAIM_SELF_BROKER === "1") {
+  const port = 24000 + Math.floor(Math.random() * 20000);
+  const sd = mkdtempSync(join(tmpdir(), "reclaim-pool-"));
+  const bin = process.env.RECLAIM_NATS_BIN || "nats-server";
+  const broker = spawn(bin, ["-js", "-sd", sd, "-p", String(port), "-a", "127.0.0.1"], { stdio: "ignore" });
+  process.on("exit", () => { try { broker.kill("SIGKILL"); } catch {} });
+  NATS = `nats://127.0.0.1:${port}`;
+  for (let i = 0; ; i++) {
+    try { const c = await connect({ servers: NATS }); await c.close(); break; }
+    catch { if (i > 40) { console.error(`self-broker (${bin}) never came up on :${port}`); process.exit(1); } await sleep(250); }
+  }
+  log(`self-broker up on :${port} (pool decoupled from the mesh broker)`);
+}
 
 // --- connect + pool bootstrap (isolated space: EPW_reclaim etc., idempotent) -----------
 const opts = { servers: NATS };

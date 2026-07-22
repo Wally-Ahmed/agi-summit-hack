@@ -54,10 +54,13 @@ fi
 say "pre-run roster:"; cotal endpoints 2>&1 | strip | tee -a "$LOG"
 
 # Start the pool supervisor (owner). It enqueues, leases, DMs the first builder.
+# Optional knobs (RECLAIM_CREDS / RECLAIM_SELF_BROKER / RECLAIM_NATS_BIN) reach the
+# supervisor by plain environment inheritance — set them when invoking this script.
+# (Do NOT add ${VAR:+VAR=...} passthroughs here: expansion-produced words are not
+# treated as prefix assignments by bash — with the var set they become a bogus command.)
 RECLAIM_WORK="$WORK" RECLAIM_CAP_S="$CAP" \
 RECLAIM_NATS="${RECLAIM_NATS:-nats://127.0.0.1:4222}" \
 RECLAIM_SPACE="${RECLAIM_SPACE:-reclaim}" \
-${RECLAIM_CREDS:+RECLAIM_CREDS="$RECLAIM_CREDS"} \
   node "$BENCH_DIR/reclaim/supervisor.mjs" >>"$LOG" 2>&1 &
 SUP=$!
 say "supervisor started (pid $SUP)"
