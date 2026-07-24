@@ -91,6 +91,18 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
 .shimarr i{font-style:normal;font-size:10.5px;color:#8b949e;margin-top:2px;line-height:1.35}
 .shimnote{margin-top:10px;font-size:12px;color:#8b949e}
 .shimnote b{color:var(--accent)}
+/* layers capstone — competitor scorecard */
+.cmpgrid{display:grid;grid-template-columns:132px 1fr 1fr 100px;gap:6px;margin:14px 0 4px}
+.cmpgrid .ch{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b949e;padding:0 4px;align-self:end}
+.cmpdim{display:flex;align-items:center;font-size:12px;font-weight:650;color:#dbe4ee;line-height:1.3;padding:0 2px}
+.cmpcell{border:1px solid;border-radius:8px;padding:8px 10px;font-size:11.5px;line-height:1.45;color:#8b949e}
+.cmpcell b{display:block;font-size:12px;color:#dbe4ee;margin-bottom:2px}
+.cmpcell.mesh{border-color:rgba(94,234,212,.35);background:rgba(94,234,212,.04)}
+.cmpcell.mcp{border-color:rgba(129,140,248,.4);background:rgba(129,140,248,.05)}
+.cmpwin{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;font-size:11px;font-weight:650;line-height:1.25;padding:4px}
+.cmpwin.mesh{color:#5eead4;border:1px solid rgba(94,234,212,.45);background:rgba(94,234,212,.06)}
+.cmpwin.mcp{color:#818cf8;border:1px solid rgba(129,140,248,.5);background:rgba(129,140,248,.06)}
+.cmpwin.split{color:#fbbf24;border:1px solid rgba(251,191,36,.45);background:rgba(251,191,36,.05)}
 .badge.alt:hover{border-color:var(--accent2);box-shadow:0 6px 16px -8px rgba(129,140,248,.4)}
 a.badge{text-decoration:none;cursor:pointer}
 
@@ -692,18 +704,6 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
       <div class="card"><div class="path">Compliance framing</div><p>Every harness is the official CLI under its owner's legitimate auth. No token scraping, no reverse-engineering — the mesh only coordinates.</p></div>
     </div>
 
-    <div class="panel" id="layers" style="margin-top:24px">
-      <span class="chip">two layers · one project</span>
-      <h2>Cotal vs our MCP servers — two different layers of delegation</h2>
-      <div class="shimrow">
-        <div class="shimbox"><b>Cotal = a mesh of harnesses</b><span>Connects agent PRODUCTS — Claude Code, Codex, OpenCode, Antigravity… — as separate peer processes with mesh identity: chat plane (dm / channel / role), spawn + supervision, v0.4 work pools. Structural limit: a model can only join the mesh if a harness wraps it AND a connector exists for that harness — exactly why we wrote connectors <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> (codex) and <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> (agy).</span></div>
-        <div class="shimbox turn"><b>Our MCP servers = models inside the loop</b><span><a href="https://github.com/Wally-Ahmed/openrouter-subagents">openrouter-subagents</a>, gpt-subagents-api, and gpt-subagents-subscription inject foreign MODELS as tool calls inside ONE harness's agent loop — no separate process, no roster entry, no mesh: delegation happens inside the calling agent's own context. A fourth repo, <a href="https://github.com/Wally-Ahmed/antigravity-openrouter-subagents">antigravity-openrouter-subagents</a>, wires the OpenRouter server into Antigravity's global MCP config — the only way agy can use non-Gemini models at all.</span></div>
-      </div>
-      <div class="shimrow" style="margin-top:8px">
-        <div class="shimbox mem"><b>The reach only the MCP layer has — models Cotal structurally cannot touch</b><span>Any model in the full OpenRouter catalog becomes a subagent — including models with NO native harness at all (nothing to write a Cotal connector FOR), and even IMAGE and VIDEO generation models normally used only through dedicated apps and webpages. Through this server they become one tool call inside a coding agent's loop, with unified reasoning-effort control end-to-end — plus Fusion: a parallel panel of models and a judge that synthesizes one answer.</span></div>
-      </div>
-      <div class="shimnote">The two layers are complementary — <b>and this project shipped both</b>: connectors that extend the mesh (<a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a>) and MCP servers that extend the loop. The benchmark used both — MCP subagents powered the foreign-model arms; the mesh powered the delegation and failover studies.</div>
-    </div>
   </section>
 
   <!-- ==================== TAB: BENCHMARKS ==================== -->
@@ -842,6 +842,130 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
     </div>
 
     <div class="explain" id="explain"></div>
+
+    <div class="panel" id="layers" style="margin-top:24px">
+      <span class="chip">capstone · head-to-head</span>
+      <h2>Cotal vs our MCP servers — two different layers of delegation</h2>
+      <div style="margin:12px 0 2px">
+      <svg viewBox="0 0 1160 344" style="width:100%;height:auto;display:block;font-family:var(--sans)" role="img" aria-label="Two delegation layers: the Cotal mesh connects whole harness processes over a broker; our MCP servers inject models directly into one agent's loop, reaching catalog, image and video models no mesh can touch">
+        <defs>
+          <marker id="lyArrT" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#5eead4" opacity=".75"/></marker>
+          <marker id="lyArrI" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#818cf8" opacity=".85"/></marker>
+          <marker id="lyArrA" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#fbbf24" opacity=".85"/></marker>
+        </defs>
+        <!-- LAYER 1 — the mesh -->
+        <rect x="2" y="26" width="538" height="310" rx="12" fill="rgba(94,234,212,.03)" stroke="rgba(94,234,212,.35)"/>
+        <text x="22" y="52" font-size="13" font-weight="650" fill="#5eead4">LAYER 1 · Cotal — a mesh of harnesses</text>
+        <g font-size="12" fill="#dbe4ee" text-anchor="middle">
+          <rect x="22" y="70" width="116" height="58" rx="8" fill="rgba(94,234,212,.06)" stroke="rgba(94,234,212,.45)"/>
+          <text x="80" y="95">Claude Code</text><text x="80" y="111" font-size="9.5" fill="#8b949e">own process · roster ID</text>
+          <rect x="150" y="70" width="116" height="58" rx="8" fill="rgba(94,234,212,.06)" stroke="rgba(94,234,212,.45)"/>
+          <text x="208" y="95">Codex</text><text x="208" y="111" font-size="9.5" fill="#8b949e">own process · roster ID</text>
+          <text x="260" y="83" font-size="9.5" fill="#5eead4" text-anchor="end">#254</text>
+          <rect x="278" y="70" width="116" height="58" rx="8" fill="rgba(94,234,212,.06)" stroke="rgba(94,234,212,.45)"/>
+          <text x="336" y="95">OpenCode</text><text x="336" y="111" font-size="9.5" fill="#8b949e">own process · roster ID</text>
+          <rect x="406" y="70" width="116" height="58" rx="8" fill="rgba(94,234,212,.06)" stroke="rgba(94,234,212,.45)"/>
+          <text x="464" y="95">Antigravity</text><text x="464" y="111" font-size="9.5" fill="#8b949e">own process · roster ID</text>
+          <text x="516" y="83" font-size="9.5" fill="#5eead4" text-anchor="end">#255</text>
+        </g>
+        <g stroke="rgba(94,234,212,.45)" stroke-width="1.5">
+          <line x1="80" y1="130" x2="80" y2="192" marker-end="url(#lyArrT)"/>
+          <line x1="208" y1="130" x2="208" y2="192" marker-end="url(#lyArrT)"/>
+          <line x1="336" y1="130" x2="336" y2="192" marker-end="url(#lyArrT)"/>
+          <line x1="464" y1="130" x2="464" y2="192" marker-end="url(#lyArrT)"/>
+        </g>
+        <rect x="22" y="196" width="500" height="42" rx="8" fill="rgba(94,234,212,.1)" stroke="rgba(94,234,212,.55)"/>
+        <text x="272" y="214" font-size="12" font-weight="650" fill="#5eead4" text-anchor="middle">Cotal mesh — NATS broker</text>
+        <text x="272" y="229" font-size="10" fill="#8b949e" text-anchor="middle">chat plane · roster · spawn &amp; supervise · v0.4 work pools</text>
+        <rect x="22" y="254" width="500" height="44" rx="8" fill="none" stroke="rgba(139,148,158,.5)" stroke-dasharray="5 4"/>
+        <text x="272" y="272" font-size="11" fill="#dbe4ee" text-anchor="middle"><tspan fill="#f87171">✕</tspan> no harness → no connector → no mesh entry</text>
+        <text x="272" y="287" font-size="10" fill="#8b949e" text-anchor="middle">a model can join only if a whole agent product wraps it</text>
+        <text x="272" y="324" font-size="10.5" fill="#8b949e" text-anchor="middle">peers = whole agent PRODUCTS, each a separate process with mesh identity</text>
+        <!-- divider -->
+        <line x1="580" y1="40" x2="580" y2="322" stroke="rgba(139,148,158,.3)" stroke-dasharray="4 5"/>
+        <rect x="551" y="166" width="58" height="24" rx="12" fill="#0d1119" stroke="rgba(139,148,158,.5)"/>
+        <text x="580" y="182" font-size="10.5" fill="#8b949e" text-anchor="middle">vs</text>
+        <!-- LAYER 2 — models inside the loop -->
+        <rect x="620" y="26" width="538" height="310" rx="12" fill="rgba(129,140,248,.04)" stroke="rgba(129,140,248,.45)"/>
+        <text x="640" y="52" font-size="13" font-weight="650" fill="#818cf8">LAYER 2 · our MCP servers — models inside ONE agent's loop</text>
+        <rect x="640" y="70" width="230" height="222" rx="10" fill="rgba(129,140,248,.05)" stroke="rgba(129,140,248,.6)"/>
+        <text x="755" y="92" font-size="12" font-weight="650" fill="#dbe4ee" text-anchor="middle">ONE harness process</text>
+        <text x="755" y="107" font-size="10" fill="#8b949e" text-anchor="middle">its own loop &amp; context — unchanged</text>
+        <path d="M 674 161 A 30 30 0 1 1 674 191" fill="none" stroke="#818cf8" stroke-width="1.8" marker-end="url(#lyArrI)"/>
+        <text x="700" y="181" font-size="9.5" fill="#8b949e" text-anchor="middle">loop</text>
+        <text x="700" y="240" font-size="10" fill="#8b949e" text-anchor="middle">the agent keeps</text>
+        <text x="700" y="253" font-size="10" fill="#8b949e" text-anchor="middle">thinking in place</text>
+        <rect x="836" y="150" width="68" height="52" rx="8" fill="#0d1119" stroke="#818cf8" stroke-width="1.5"/>
+        <text x="870" y="171" font-size="11" font-weight="650" fill="#818cf8" text-anchor="middle">MCP</text>
+        <text x="870" y="185" font-size="10" fill="#8b949e" text-anchor="middle">port</text>
+        <text x="870" y="218" font-size="9.5" fill="#8b949e" text-anchor="middle">ask_openrouter · ask_gpt</text>
+        <g stroke-width="1.5">
+          <line x1="906" y1="168" x2="944" y2="77" stroke="rgba(129,140,248,.55)" marker-end="url(#lyArrI)"/>
+          <line x1="906" y1="172" x2="944" y2="119" stroke="rgba(129,140,248,.55)" marker-end="url(#lyArrI)"/>
+          <line x1="906" y1="176" x2="944" y2="161" stroke="rgba(129,140,248,.55)" marker-end="url(#lyArrI)"/>
+          <line x1="906" y1="180" x2="944" y2="203" stroke="rgba(251,191,36,.55)" marker-end="url(#lyArrA)"/>
+          <line x1="906" y1="184" x2="944" y2="245" stroke="rgba(251,191,36,.55)" marker-end="url(#lyArrA)"/>
+          <line x1="906" y1="188" x2="944" y2="287" stroke="rgba(251,191,36,.55)" marker-end="url(#lyArrA)"/>
+        </g>
+        <g text-anchor="middle">
+          <rect x="950" y="62" width="192" height="30" rx="8" fill="rgba(129,140,248,.07)" stroke="rgba(129,140,248,.5)"/>
+          <text x="1046" y="81" font-size="10.5" fill="#dbe4ee">GPT-5.6 — via ChatGPT plan</text>
+          <rect x="950" y="104" width="192" height="30" rx="8" fill="rgba(129,140,248,.07)" stroke="rgba(129,140,248,.5)"/>
+          <text x="1046" y="123" font-size="10.5" fill="#dbe4ee">Kimi K3 · GLM 5.2 · Grok · …</text>
+          <rect x="950" y="146" width="192" height="30" rx="8" fill="rgba(129,140,248,.07)" stroke="rgba(129,140,248,.5)"/>
+          <text x="1046" y="165" font-size="10.5" fill="#dbe4ee">the full OpenRouter catalog</text>
+          <rect x="950" y="188" width="192" height="30" rx="8" fill="rgba(251,191,36,.06)" stroke="rgba(251,191,36,.5)"/>
+          <text x="1046" y="200" font-size="10.5" fill="#dbe4ee">models with NO harness</text>
+          <text x="1046" y="212" font-size="9" fill="#8b949e">nothing to write a connector for</text>
+          <rect x="950" y="230" width="192" height="30" rx="8" fill="rgba(251,191,36,.06)" stroke="rgba(251,191,36,.5)"/>
+          <text x="1046" y="242" font-size="10.5" fill="#dbe4ee">image generation models</text>
+          <text x="1046" y="254" font-size="9" fill="#8b949e">normally app- or webpage-only</text>
+          <rect x="950" y="272" width="192" height="30" rx="8" fill="rgba(251,191,36,.06)" stroke="rgba(251,191,36,.5)"/>
+          <text x="1046" y="284" font-size="10.5" fill="#dbe4ee">video generation models</text>
+          <text x="1046" y="296" font-size="9" fill="#8b949e">normally app- or webpage-only</text>
+        </g>
+        <text x="889" y="324" font-size="10.5" fill="#8b949e" text-anchor="middle">one tool call each — the answer returns into the same context · no roster entry, no separate process</text>
+      </svg>
+      </div>
+      <h3 style="margin:16px 0 2px;font-size:14px;color:var(--accent)">Scored like competitors — every round cites the studies above</h3>
+      <div class="cmpgrid">
+        <div class="ch"></div><div class="ch" style="color:#5eead4">Cotal mesh</div><div class="ch" style="color:#818cf8">our MCP servers</div><div class="ch" style="text-align:center">round</div>
+        <div class="cmpdim">Head-to-head —<br>same 3 tasks</div>
+        <div class="cmpcell mesh"><b>3/3 · 95 s</b>workers execute in place — the handoff itself costs ≈ nothing (Run 3)</div>
+        <div class="cmpcell mcp"><b>3/3 · 137 s</b>generation at a distance — the caller transcribes the answer back (Run 3)</div>
+        <div class="cmpwin mesh">mesh<br>+30%</div>
+        <div class="cmpdim">Parallel<br>throughput</div>
+        <div class="cmpcell mesh"><b>3 workers · 3/3 · 203 s</b>heterogeneous fan-out; makespan = the slowest worker (Run 6)</div>
+        <div class="cmpcell mcp"><b>concurrent asks</b>batch calls + Fusion panels — but every answer re-enters one loop's context budget</div>
+        <div class="cmpwin mesh">mesh<br>at scale</div>
+        <div class="cmpdim">Failover<br>&amp; custody</div>
+        <div class="cmpcell mesh"><b>kill → re-lease → committed 122 s</b>v0.4 pools + fencing tokens (Run 11) · the #286 presence gap — our fix in flight</div>
+        <div class="cmpcell mcp"><b>dies with its caller</b>no roster, no supervision — retry is the caller's job; nothing standing to go stale either</div>
+        <div class="cmpwin mesh">only the<br>mesh heals</div>
+        <div class="cmpdim">Model<br>reach</div>
+        <div class="cmpcell mesh"><b>harness-wrapped models only</b>joining costs a product + a connector — PRs #254/#255 are that price tag, paid by us</div>
+        <div class="cmpcell mcp"><b>the whole catalog</b>models with no harness at all · image + video generation · Fusion panel + judge</div>
+        <div class="cmpwin mcp">MCP —<br>structural</div>
+        <div class="cmpdim">Where the<br>answer lands</div>
+        <div class="cmpcell mesh"><b>in the worker's workspace</b>executed in place — but in another context; results travel the chat plane</div>
+        <div class="cmpcell mcp"><b>inside the caller's context</b>zero-loss return — built for expert consults, reviews, audit legs</div>
+        <div class="cmpwin split">split<br>by job</div>
+        <div class="cmpdim">Standing<br>weight</div>
+        <div class="cmpcell mesh"><b>broker · roster · connectors · creds</b>a real ops surface — the 24-hour cred rotation bit us live en route to Run 11</div>
+        <div class="cmpcell mcp"><b>a local server + a key</b>nothing to spawn, rotate, or supervise between calls</div>
+        <div class="cmpwin mcp">MCP travels<br>light</div>
+      </div>
+      <h3 style="margin:16px 0 2px;font-size:14px;color:var(--accent)">The contenders in full</h3>
+      <div class="shimrow">
+        <div class="shimbox"><b>Cotal = a mesh of harnesses</b><span>Connects agent PRODUCTS — Claude Code, Codex, OpenCode, Antigravity… — as separate peer processes with mesh identity: chat plane (dm / channel / role), spawn + supervision, v0.4 work pools. Structural limit: a model can only join the mesh if a harness wraps it AND a connector exists for that harness — exactly why we wrote connectors <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> (codex) and <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a> (agy).</span></div>
+        <div class="shimbox turn"><b>Our MCP servers = models inside the loop</b><span><a href="https://github.com/Wally-Ahmed/openrouter-subagents">openrouter-subagents</a>, gpt-subagents-api, and gpt-subagents-subscription inject foreign MODELS as tool calls inside ONE harness's agent loop — no separate process, no roster entry, no mesh: delegation happens inside the calling agent's own context. A fourth repo, <a href="https://github.com/Wally-Ahmed/antigravity-openrouter-subagents">antigravity-openrouter-subagents</a>, wires the OpenRouter server into Antigravity's global MCP config — the only way agy can use non-Gemini models at all.</span></div>
+      </div>
+      <div class="shimrow" style="margin-top:8px">
+        <div class="shimbox mem"><b>The reach only the MCP layer has — models Cotal structurally cannot touch</b><span>Any model in the full OpenRouter catalog becomes a subagent — including models with NO native harness at all (nothing to write a Cotal connector FOR), and even IMAGE and VIDEO generation models normally used only through dedicated apps and webpages. Through this server they become one tool call inside a coding agent's loop, with unified reasoning-effort control end-to-end — plus Fusion: a parallel panel of models and a judge that synthesizes one answer.</span></div>
+      </div>
+      <div class="shimnote"><b>Final score 3–2, one split.</b> Read as competitors, the mesh takes coordination — the head-to-head, the fan-out, and the only failover story on the board — while the MCP layer takes reach and weight, delegating to models a mesh structurally cannot touch. The split round is the design rule that falls out: <b>give execution to the mesh, expertise to the loop.</b> Complementary in the end — <b>and this project shipped both</b>: connectors that extend the mesh (<a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a>) and MCP servers that extend the loop. The benchmark itself ran on both — MCP subagents powered the foreign-model arms; the mesh powered the delegation and failover studies.</div>
+    </div>
+
 
     <div class="meth">
       <div class="card"><b>Hermetic by default</b><p>Every harness runs stock — exactly as its vendor ships it, nothing extra loaded. No arm gets outside context or added startup cost.</p></div>
@@ -1201,7 +1325,6 @@ const TOUR = [
   {cap:"Deep dive: **idle wake** — why their Codex slept · why ours can't", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:20},
   {cap:"Inside the shim — **push-by-respawn**, step by step", foc:"#shimflow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:23},
   {cap:"Also open source: **our MCP subagent servers** — OpenRouter · ChatGPT subscription", foc:"#arch .r-workers", run(){ showTab("project"); spotlight(["n-pool"]); }, n:19},
-  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("project"); spotlight([]); }, n:27, vis:null},
   {cap:"Watch a **real task** travel", foc:"#console", run(){ showTab("project"); spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
   {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
   {cap:"Fan-out **finishes** · serial **stalls**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(1); }, n:10, vis:null},
@@ -1214,6 +1337,7 @@ const TOUR = [
   {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
   {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:16, vis:null},
+  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:27, vis:null},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
