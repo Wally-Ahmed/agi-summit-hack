@@ -712,7 +712,15 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="shimbox turn"><b>honest rows</b><span>offline shows<br><code>last seen 40m · was: &lt;activity&gt;</code></span></div>
           <div class="shimbox mem"><b>proven</b><span>red-green ×3 — each test fails with its fix removed<br>re-run on the REAL opencode binary:<br>shim killed → offline PUBLISHED → clean exit</span></div>
         </div>
-        <div class="shimnote"><b>The audit that hardened it found real bugs in our own first cut.</b> A dead-pipe crash — one log line written to the SIGKILLed shim’s pipe kills the serve before it can say goodbye — proven on node <b>and</b> bun; a session-adoption path that strands stale activity; a shutdown a wedged broker could hang. Each is fixed, and each fix is locked in by a test that fails without it. Built for the Cotal team — <b>headed upstream</b>.</div>
+        <div class="shimrow" id="dd286ledger">
+          <div class="shimbox"><b>① orphaned serve</b><span>manager kills the shim hard — the serve under it<br>survived, heartbeating idle forever<br><b>fix:</b> a two-second lifeline on the shim pid —<br>gone means publish offline, drain, exit</span></div>
+          <div class="shimbox"><b>② stale idle</b><span>going idle never cleared activity — finished work<br>stayed on the roster, incl. a session-adoption path<br><b>fix:</b> idle always clears it, everywhere</span></div>
+          <div class="shimbox"><b>③ dead-pipe crash</b><span>with the shim dead, one stderr log line killed the serve<br>before the offline publish — node <b>and</b> bun<br><b>fix:</b> one-line stderr no-op at lifeline arm</span></div>
+          <div class="shimbox"><b>④ wedgeable shutdown</b><span>could double-fire; a half-open broker could<br>hold the drain for minutes<br><b>fix:</b> single-flight flag + unref’d ten-second hard exit</span></div>
+          <div class="shimbox"><b>⑤ lying rows</b><span>offline rendered like live<br><b>fix:</b> <code>last seen &lt;relative&gt; · was: &lt;activity&gt;</code><br>+ unknown-guard on bad timestamps</span></div>
+          <div class="shimbox mem"><b>state</b><span>every fix locked by a test that fails without it<br>twelve files · +687 · gates green<br>proven on the real opencode binary</span></div>
+        </div>
+        <div class="shimnote"><b>And underneath, more waited.</b> A dead-pipe crash — one log line written to the SIGKILLed shim’s pipe kills the serve before it can say goodbye — proven on node <b>and</b> bun; a session-adoption path that strands stale activity; a shutdown a wedged broker could hang. Each is fixed, and each fix is locked in by a test that fails without it — proven end to end on the real opencode binary. <b>Ready for the Cotal team.</b></div>
       </div>
     </div>
 
@@ -1295,6 +1303,7 @@ const TOUR = [
   {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); }, n:28},
   {cap:"**Anatomy of a ghost** — the orphaned serve · the activity that never cleared", foc:"#deepdive286", fb:"start", run(){ showTab("project"); spotlight([]); }, n:29},
   {cap:"**The fix, proven** — red-green ×3 · real binary · headed upstream", foc:"#dd286fix", fb:"start", run(){ showTab("project"); spotlight([]); }, n:30},
+  {cap:"**The bug list, in detail** — five bugs · five repairs · test-locked", foc:"#dd286ledger", fb:"start", run(){ showTab("project"); spotlight([]); }, n:31},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
