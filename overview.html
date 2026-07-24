@@ -507,6 +507,12 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;
 }
 .scenevis .frame img.on{opacity:1;animation:kenburns 16s ease-in-out forwards}
+/* popup mode — scenes narrated on tabs that don't contain the diagram panel: the strip
+   re-parents to <body> and floats bottom-center (fixed can't escape a display:none
+   ancestor). bottom clears the fixed caption at bottom:28px. Placed after .show so
+   fixed beats sticky at equal specificity; top:auto neutralizes .show's top:64px —
+   otherwise the over-constrained fixed box ignores bottom and pins to the top. */
+.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:auto;bottom:104px;width:min(64vw,960px);z-index:55;margin:0;box-shadow:0 24px 70px rgba(0,0,0,.65)}
 @keyframes kenburns{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.17) translate(-2.5%,-2%)}}
 
 /* short viewports — 16:9 screens where browser chrome leaves ~860–1000px: slim the
@@ -1246,13 +1252,19 @@ visFrame.appendChild(visA); visFrame.appendChild(visB); visFrame.appendChild(vis
 vis.appendChild(visFrame);
 arch.insertBefore(vis, arch.firstChild);
 let visFront = visA;
-function sceneVis(n, fit){
+function sceneVis(n, fit, pop){
   if(n == null){
     vis.classList.remove("show");
     visA.classList.remove("on"); visB.classList.remove("on");
     visV.style.opacity = 0; visV.pause(); visV.removeAttribute("src");
     return;
   }
+  /* popup scenes play on tabs where #arch is display:none — position:fixed can't escape
+     a hidden ancestor, so the strip re-parents to <body> and floats; docked scenes
+     adopt it back into the diagram panel */
+  vis.classList.toggle("float", !!pop);
+  if(pop){ if(vis.parentElement !== document.body) document.body.appendChild(vis); }
+  else if(vis.parentElement !== arch) arch.insertBefore(vis, arch.firstChild);
   /* per-scene fit override: "contain" shows the full frame letterboxed (bg matches the strip) */
   visV.style.objectFit = fit || ""; visA.style.objectFit = fit || ""; visB.style.objectFit = fit || "";
   /* generated clip wins when present; the schematic still is the always-on fallback */
@@ -1337,13 +1349,13 @@ const TOUR = [
   {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
   {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:16, vis:null},
-  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:27, vis:null},
+  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:27, pop:true},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
   {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:24},
   {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:25},
-  {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); }, n:28, vis:null},
+  {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); }, n:28},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
@@ -1380,7 +1392,7 @@ async function tour(start){
     markSeg(i);
     caption(scene.cap);
     mediaMeta(scene.cap);
-    sceneVis(scene.vis === undefined ? scene.n : scene.vis, scene.fit);
+    sceneVis(scene.vis === undefined ? scene.n : scene.vis, scene.fit, scene.pop);
     scene.run();
     /* keep the section being narrated on screen */
     if(scene.foc) tlater(()=>{
@@ -1389,13 +1401,14 @@ async function tour(start){
       /* leave clearance for the sticky media strip: anchor on the union of the focused
          element AND the spotlighted (.live) nodes, so neither ends up under the strip */
       const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
+      const inFlow = hasVis && !scene.pop;   /* popped strips float over the page — no in-flow clearance to leave */
       /* the sticky tab bar overlays the top (measure it — height varies with viewport);
          the media strip pins below it on vis scenes, so its bottom is the occluder there.
          Measure the strip's REAL pinned box — its height and sticky top are viewport-
          dependent (CSS clamp + short-viewport media query) — instead of mirroring CSS. */
       const barH = document.querySelector(".tabs")?.offsetHeight || 64;
       let stickyTop = 64, clear;
-      if(hasVis){
+      if(inFlow){
         if(!vis.offsetHeight) vis.style.display = "block";   /* media not loaded yet → force-measure */
         const stripH = vis.offsetHeight;
         const st = parseFloat(getComputedStyle(vis).top);
@@ -1417,7 +1430,7 @@ async function tour(start){
       /* a scene visual must never be stranded below the fold: sticky only pins once the
          page is scrolled past its slot at the top of #arch, so on vis scenes never
          settle above the pinning threshold (the finale focuses .badges ABOVE the slot) */
-      if(hasVis){
+      if(inFlow){
         let natTop = 0, oe = vis;
         while(oe){ natTop += oe.offsetTop; oe = oe.offsetParent; }
         top = Math.max(top, natTop - stickyTop);
