@@ -75,8 +75,21 @@ For EVERY assignment: act as the orchestrator, not the implementer.
 4. Verify everything works end-to-end yourself before reporting done — run the checks,
    curl the deploys, read the diffs; never relay a subagent's "done" unverified.
 
-Do a part yourself only when it is trivially small (one-file edit, single command), when
-it IS the glue/verification, or when Wally explicitly says to do it yourself.
+Do a part yourself only when it is trivially small (a small or one-line edit, single
+command), when it IS the glue/verification, or when Wally explicitly says to do it yourself.
+
+## Conductor Rule (standing directive — Wally, 2026-07-24)
+
+The main loop is the CONDUCTOR. It is imperative that its context window stays SMALL.
+
+1. Edit files yourself ONLY for small / one-line changes.
+2. Anything that requires complex reasoning — design work, multi-file edits, debugging,
+   asset builds, deep analysis — is handed off to a subagent with a self-contained spec.
+3. The conductor keeps only: spec-writing, dispatch, integration/glue, conflict
+   resolution, and end-to-end verification of subagent output.
+4. Protect the context window: consume subagent REPORTS instead of raw files; never pull
+   large files, transcripts, or logs into the conductor's context when a subagent can
+   read them and return a summary.
 
 ## Project Rule
 
