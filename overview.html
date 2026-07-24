@@ -1590,6 +1590,8 @@ function pauseTour(){
   tourTimers.forEach(e=>{ clearTimeout(e.id); e.remain = Math.max(0, e.fireAt - Date.now()); });
   /* hand the page back: visuals off, choreography dim lifted, caption hidden (CSS-gated) */
   document.body.classList.add("tourpaused");
+  /* and leave forced fullscreen — the reader gets their browser back while paused */
+  if(document.fullscreenElement && document.exitFullscreen){ document.exitFullscreen().catch(()=>{}); }
   mediaState("paused");
 }
 function resumeTour(){
@@ -1602,6 +1604,10 @@ function resumeTour(){
     capTimer = setTimeout(()=>captionEl.classList.remove("show"), capRemain); capRemain = 0; }
   tourTimers.forEach(e=>{ if(e.remain != null){ e.fireAt = Date.now() + e.remain; e.id = setTimeout(e.fn, e.remain); e.remain = null; } });
   document.body.classList.remove("tourpaused");
+  /* re-enter fullscreen (play click is a user gesture; media-key resumes may be denied — fine) */
+  if(document.fullscreenEnabled && !document.fullscreenElement && document.documentElement.requestFullscreen){
+    try{ document.documentElement.requestFullscreen({navigationUI:"hide"}).catch(()=>{}); }catch(e){}
+  }
   mediaState("playing");
 }
 function togglePause(){ tourPaused ? resumeTour() : pauseTour(); }
