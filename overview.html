@@ -665,7 +665,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="shimarr">⇄<i>works · replies live<br>via <code>cotal_*</code> · exits</i></div>
           <div class="shimbox mem"><b>memory = the thread</b><span>state lives server-side —<br>a killed turn resumes intact</span></div>
         </div>
-        <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b></div>
+        <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b> (Distinct from the <b>opencode connector’s</b> shim in the #286 deep-dive below — different codebase, opposite lifecycle: ours is the persistent side, theirs is the ephemeral side.)</div>
       </div>
       <div class="shimflow" id="v04flow">
         <h3>v0.4 (PR #258) — the fix our benchmark provoked, and how we switched it on</h3>
@@ -699,8 +699,9 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 
       <div class="shimflow" id="deepdive286">
         <h3>Inside the #286 fix — anatomy of a ghost, and the repair</h3>
+        <div class="shimnote" style="margin:4px 0 12px"><b>Not our shim.</b> Two different processes on this page share the name. The shim in <b>this</b> section is the <b>opencode connector’s own launcher — upstream Cotal code</b>: there the shim is the short-lived side and the <code>opencode serve</code> under it is the persistent side. <b>Our</b> connectors’ shim (the push-by-respawn panel above) is the opposite design — the always-on process <b>we built</b> that owns the mesh identity and respawns one-shot harness turns. Same word, different codebases, opposite lifecycles.</div>
         <div class="shimrow">
-          <div class="shimbox"><b>① the kill</b><span>manager SIGKILLs the shim —<br>pty-level, nothing catches it</span></div>
+          <div class="shimbox"><b>① the kill</b><span>manager SIGKILLs the opencode connector’s shim —<br>pty-level, nothing catches it</span></div>
           <div class="shimarr">→</div>
           <div class="shimbox"><b>② the orphan</b><span>the <code>opencode serve</code> underneath survives —<br>plugin + heartbeat keep publishing “idle” forever</span></div>
           <div class="shimarr">→</div>
@@ -713,7 +714,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="shimbox mem"><b>proven</b><span>red-green ×3 — each test fails with its fix removed<br>re-run on the REAL opencode binary:<br>shim killed → offline PUBLISHED → clean exit</span></div>
         </div>
         <div class="shimrow" id="dd286ledger">
-          <div class="shimbox"><b>① orphaned serve</b><span>manager kills the shim hard — the serve under it<br>survived, heartbeating idle forever<br><b>fix:</b> a two-second lifeline on the shim pid —<br>gone means publish offline, drain, exit</span></div>
+          <div class="shimbox"><b>① orphaned serve</b><span>manager kills the opencode connector’s shim hard — the serve under it<br>survived, heartbeating idle forever<br><b>fix:</b> a two-second lifeline on the shim pid —<br>gone means publish offline, drain, exit</span></div>
           <div class="shimbox"><b>② stale idle</b><span>going idle never cleared activity — finished work<br>stayed on the roster, incl. a session-adoption path<br><b>fix:</b> idle always clears it, everywhere</span></div>
           <div class="shimbox"><b>③ dead-pipe crash</b><span>with the shim dead, one stderr log line killed the serve<br>before the offline publish — node <b>and</b> bun<br><b>fix:</b> one-line stderr no-op at lifeline arm</span></div>
           <div class="shimbox"><b>④ wedgeable shutdown</b><span>could double-fire; a half-open broker could<br>hold the drain for minutes<br><b>fix:</b> single-flight flag + unref’d ten-second hard exit</span></div>
