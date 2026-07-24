@@ -546,8 +546,10 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
    and — deliberately unset here — the SAME height and object-fit rules as the docked
    strip, including the short-viewport media query, so a popup scene's visual appears in
    the one place and size the viewer already knows from every other scene. Placed after
-   .show so fixed beats sticky at equal specificity. */
-.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:64px;width:min(1048px,calc(100vw - 52px));z-index:55;margin:0}
+   .show so fixed beats sticky at equal specificity. Centered with auto margins, NOT a
+   transform — .show's fadein animation animates transform, which would override a
+   translateX(-50%) for its whole run and flash the box half-off-center. */
+.scenevis.float{position:fixed;left:0;right:0;margin:0 auto;top:64px;width:min(1048px,calc(100vw - 52px));z-index:55}
 @keyframes kenburns{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.17) translate(-2.5%,-2%)}}
 
 /* in-page section animation — boxes, cards, and grid cells rise in as they enter view,
@@ -1289,6 +1291,22 @@ const arch = document.getElementById("arch"), captionEl = document.getElementByI
     if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
   }), {threshold:.12});
   units.forEach(el=>io.observe(el));
+  /* tour hook: replay one section's cascade (reset with transitions suppressed so there's
+     no exit fade, then stagger back in) — the narrated section animates with its scene
+     even if it already revealed on an earlier pass */
+  window.revealReplay = root=>{
+    if(!root) return;
+    if(!root.querySelector(".rv") && root.children.length){
+      /* section with no tagged units (prose panels, rows added later): animate its
+         immediate children instead, tagged lazily on first focus */
+      [...root.children].forEach((el,i)=>{ el.style.setProperty("--rvd", (i%8)*60+"ms"); el.classList.add("rv"); });
+    }
+    const els = root.querySelectorAll(".rv");
+    if(!els.length) return;
+    els.forEach(el=>{ el.style.transition = "none"; el.classList.remove("in"); });
+    void els[0].offsetWidth;
+    requestAnimationFrame(()=>els.forEach(el=>{ el.style.transition = ""; el.classList.add("in"); }));
+  };
 })();
 
 const vis = document.createElement("div"); vis.className = "scenevis";
@@ -1492,11 +1510,13 @@ async function tour(start){
         let natTop = 0, oe = vis;
         while(oe){ natTop += oe.offsetTop; oe = oe.offsetParent; }
         vis.style.position = "";
-        /* a target ABOVE the slot (the finale's .badges) can never clear that floor —
-           let the strip unpin into its slot instead of pinning the target offscreen */
-        if(uTop + window.scrollY >= natTop) top = Math.max(top, natTop - stickyTop);
+        /* unconditional floor: the scene's visual must always end pinned on screen —
+           for targets above the slot (the finale's .badges) the visual IS the payoff,
+           so it wins over the target (the original shipped finale framing) */
+        top = Math.max(top, natTop - stickyTop);
       }
       window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
+      if(window.revealReplay) revealReplay(el);   /* narrated section cascades in with the scene */
     }, 400);
     await playScene(scene.n);
     tourTimers.forEach(clearTimeout); tourTimers = [];
