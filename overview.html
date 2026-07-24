@@ -541,15 +541,22 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 }
 .scenevis .frame img.on{opacity:1;animation:kenburns 16s ease-in-out forwards}
 /* popup mode — scenes narrated on tabs that don't contain the diagram panel: the strip
-   re-parents to <body> and floats bottom-center (fixed can't escape a display:none
-   ancestor). bottom clears the fixed caption at bottom:28px. Placed after .show so
-   fixed beats sticky at equal specificity; top:auto neutralizes .show's top:64px —
-   otherwise the over-constrained fixed box ignores bottom and pins to the top.
-   Sized to the clips' native 3:1 so the box hugs the video edge-to-edge — the
-   short-viewport strip height/contain rules would otherwise squash + pillarbox it. */
-.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:auto;bottom:104px;width:min(64vw,960px);height:auto;aspect-ratio:3/1;z-index:55;margin:0;box-shadow:0 24px 70px rgba(0,0,0,.65)}
-.scenevis.float .frame img,.scenevis.float .frame video{object-fit:cover}
+   re-parents to <body> and floats as a CLONE of the docked strip (fixed can't escape a
+   display:none ancestor). Same top:64px pin, same panel width (1100 wrap − 2×26 padding),
+   and — deliberately unset here — the SAME height and object-fit rules as the docked
+   strip, including the short-viewport media query, so a popup scene's visual appears in
+   the one place and size the viewer already knows from every other scene. Placed after
+   .show so fixed beats sticky at equal specificity. */
+.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:64px;width:min(1048px,calc(100vw - 52px));z-index:55;margin:0}
 @keyframes kenburns{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.17) translate(-2.5%,-2%)}}
+
+/* in-page section animation — boxes, cards, and grid cells rise in as they enter view,
+   staggered within their row, so the page itself moves alongside the scene visuals.
+   Classes are added by JS only (no-JS renders fully); reduced-motion gets no animation. */
+@media (prefers-reduced-motion:no-preference){
+  .rv{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease;transition-delay:var(--rvd,0ms)}
+  .rv.in{opacity:1;transform:none}
+}
 
 /* short viewports — 16:9 screens where browser chrome leaves ~860–1000px: slim the
    strip and caption so the focused content still clears the fold, and letterbox the
@@ -1267,6 +1274,23 @@ note.textContent = "next worker: " + WORKERS[0].label;
 const arch = document.getElementById("arch"), captionEl = document.getElementById("caption"),
       tourbtn = document.getElementById("tourbtn");
 /* cinema stage: double-buffered crossfade of per-scene generated artwork */
+/* in-page reveal: tag the page's animatable units and animate each once as it first
+   enters the viewport (works inside tabs too — the observer fires when a hidden tab is
+   shown). Stagger runs within each parent row so grids cascade left-to-right. */
+(()=>{
+  if(!("IntersectionObserver" in window)) return;
+  const units = document.querySelectorAll(".shimbox,.card,.cmpgrid>*,.shimcmp-cell,.shimcmp-ch");
+  units.forEach(el=>{
+    const sibs = el.parentElement ? [...el.parentElement.children] : [el];
+    el.style.setProperty("--rvd", (sibs.indexOf(el) % 8) * 60 + "ms");
+    el.classList.add("rv");
+  });
+  const io = new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  }), {threshold:.12});
+  units.forEach(el=>io.observe(el));
+})();
+
 const vis = document.createElement("div"); vis.className = "scenevis";
 const visFrame = document.createElement("div"); visFrame.className = "frame";
 const visA = new Image(), visB = new Image();
@@ -1432,14 +1456,14 @@ async function tour(start){
       /* leave clearance for the sticky media strip: anchor on the union of the focused
          element AND the spotlighted (.live) nodes, so neither ends up under the strip */
       const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
-      const inFlow = hasVis && !scene.pop;   /* popped strips float over the page — no in-flow clearance to leave */
+      const inFlow = hasVis && !scene.pop;   /* popped strips clone the docked pin (same clearance below) but occupy no in-flow slot (no scroll floor) */
       /* the sticky tab bar overlays the top (measure it — height varies with viewport);
          the media strip pins below it on vis scenes, so its bottom is the occluder there.
          Measure the strip's REAL pinned box — its height and sticky top are viewport-
          dependent (CSS clamp + short-viewport media query) — instead of mirroring CSS. */
       const barH = document.querySelector(".tabs")?.offsetHeight || 64;
       let stickyTop = 64, clear;
-      if(inFlow){
+      if(hasVis){
         if(!vis.offsetHeight) vis.style.display = "block";   /* media not loaded yet → force-measure */
         const stripH = vis.offsetHeight;
         const st = parseFloat(getComputedStyle(vis).top);
