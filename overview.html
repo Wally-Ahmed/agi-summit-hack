@@ -1385,13 +1385,21 @@ function stepClear(){
   document.querySelectorAll(".stepping").forEach(e=>e.classList.remove("stepping"));
   document.querySelectorAll(".stepu").forEach(e=>e.classList.remove("stepu","steplit"));
 }
-function choreo(rootSel, unitSel, startMs, endMs, group){
+function choreo(rootSel, unitSel, seq, endMs){
+  /* seq = [{t,i}] beats at NARRATION timestamps (word-level STT of the scene mp3):
+     i = unit index | [indices] | "*" (all) | a selector scoped to root. Each beat lights
+     exactly what the voice is saying at that moment — the page follows the narration,
+     it never free-runs. */
   const root = document.querySelector(rootSel); if(!root) return;
   const units = [...root.querySelectorAll(unitSel)]; if(!units.length) return;
-  const g = group || 1, steps = Math.ceil(units.length/g), beat = (endMs-startMs)/steps;
-  tlater(()=>{ root.classList.add("stepping"); units.forEach(u=>u.classList.add("stepu")); }, startMs);
-  for(let s=0; s<steps; s++)
-    tlater(()=>units.forEach((u,j)=>u.classList.toggle("steplit", Math.floor(j/g)===s)), startMs + s*beat);
+  tlater(()=>{ root.classList.add("stepping"); units.forEach(u=>u.classList.add("stepu")); }, Math.max(0, seq[0].t - 400));
+  seq.forEach(st=>tlater(()=>{
+    let lit;
+    if(st.i === "*") lit = units;
+    else if(typeof st.i === "string") lit = [...root.querySelectorAll(st.i)];
+    else lit = [].concat(st.i).map(j=>units[j]).filter(Boolean);
+    units.forEach(u=>u.classList.toggle("steplit", lit.includes(u)));
+  }, st.t));
   tlater(()=>{ root.classList.remove("stepping"); units.forEach(u=>u.classList.remove("steplit")); }, endMs);
 }
 /* scene-advance fallback (missing mp3 / blocked autoplay): dedicated suspendable state —
@@ -1444,16 +1452,16 @@ const TOUR = [
   {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
   {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:16, vis:null},
-  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); choreo("#layers",".cmpgrid>*:not(.ch)",1600,28500,4); }, n:27, pop:true},
+  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); choreo("#layers",".cmpgrid>*:not(.ch)",[{t:500,i:".cmpcell.mesh"},{t:5500,i:".cmpcell.mcp"},{t:26200,i:"*"}],29800); }, n:27, pop:true},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
-  {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#v04flow",".shimbox",1500,40500); }, n:24},
-  {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#v04flow",".shimbox",1500,46500); }, n:25},
-  {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); choreo("#v04gap",".shimbox",1500,36500); }, n:28},
-  {cap:"**Anatomy of a ghost** — the orphaned serve · the activity that never cleared", foc:"#deepdive286", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#shimcmp",".shimcmp-cell",1500,19500,3); choreo("#deepdive286 .shimrow",".shimbox",20000,33000); }, n:29},
-  {cap:"**The fix, proven** — red-green ×3 · real binary · headed upstream", foc:"#dd286fix", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#dd286fix",".shimbox",1500,41500); }, n:30},
-  {cap:"**The bug list, in detail** — five bugs · five repairs · test-locked", foc:"#dd286ledger", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#dd286ledger",".shimbox",1500,68000); }, n:31},
+  {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#v04flow",".shimbox",[{t:500,i:0},{t:2900,i:1},{t:27400,i:2}],42000); }, n:24},
+  {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#v04flow",".shimbox",[{t:3900,i:3},{t:19000,i:4},{t:33500,i:5},{t:44000,i:"*"}],48500); }, n:25},
+  {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); choreo("#v04gap",".shimbox",[{t:21600,i:0},{t:22400,i:1},{t:23200,i:2},{t:24000,i:3},{t:24800,i:"*"}],37500); }, n:28},
+  {cap:"**Anatomy of a ghost** — the orphaned serve · the activity that never cleared", foc:"#deepdive286", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#deepdive286 .shimrow",".shimbox",[{t:3700,i:0},{t:6600,i:1},{t:12000,i:2},{t:17600,i:"*"}],33500); }, n:29},
+  {cap:"**The fix, proven** — red-green ×3 · real binary · headed upstream", foc:"#dd286fix", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#dd286fix",".shimbox",[{t:1200,i:0},{t:8200,i:1},{t:24500,i:2},{t:31200,i:3}],42800); }, n:30},
+  {cap:"**The bug list, in detail** — five bugs · five repairs · test-locked", foc:"#dd286ledger", fb:"start", run(){ showTab("project"); spotlight([]); choreo("#dd286ledger",".shimbox",[{t:2700,i:0},{t:18800,i:1},{t:29900,i:2},{t:41300,i:3},{t:49800,i:4},{t:61000,i:5}],70500); }, n:31},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
