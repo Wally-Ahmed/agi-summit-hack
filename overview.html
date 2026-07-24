@@ -82,15 +82,48 @@ h2{font-family:var(--sans);font-size:19px;font-weight:650;color:var(--accent);le
 .shimflow{margin-top:18px;border-top:1px dashed rgba(94,234,212,.25);padding-top:14px}
 .shimflow h3{margin:0 0 10px;font-size:14px;color:var(--accent)}
 .shimrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
-.shimbox{flex:1 1 150px;min-width:150px;border:1px solid rgba(94,234,212,.4);border-radius:10px;padding:10px 12px;background:rgba(94,234,212,.04)}
+.shimrow + .shimrow{margin-top:14px}
+.shimbox{flex:1 1 150px;min-width:150px;border:1px solid rgba(94,234,212,.4);border-radius:10px;padding:14px 16px;background:rgba(94,234,212,.04)}
 .shimbox b{display:block;font-size:12.5px;margin-bottom:4px}
 .shimbox span{font-size:11.5px;color:#8b949e;line-height:1.45}
 .shimbox.turn{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.05)}
 .shimbox.mem{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.04)}
+#dd286ledger .shimbox{flex-basis:300px;min-width:200px}
 .shimarr{display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--accent);font-size:16px;min-width:86px;text-align:center}
 .shimarr i{font-style:normal;font-size:10.5px;color:#8b949e;margin-top:2px;line-height:1.35}
 .shimnote{margin-top:10px;font-size:12px;color:#8b949e}
 .shimnote b{color:var(--accent)}
+/* two-shims comparison — namespaced .shimcmp* · geometry echoes .cmpgrid, colors echo .cmpcell.mesh/.mcp */
+.shimcmp{margin:4px 0 16px;border:1px solid var(--line);border-radius:12px;padding:14px 16px 12px;background:linear-gradient(180deg,rgba(255,255,255,.015),transparent 60%)}
+.shimcmp-title{font-family:var(--sans);font-size:13.5px;font-weight:650;color:#dbe4ee;letter-spacing:-.005em}
+.shimcmp-sub{font-size:11.5px;color:#8b949e;margin:3px 0 12px;line-height:1.5}
+.shimcmp-grid{display:grid;grid-template-columns:108px 1fr 1fr;gap:6px}
+.shimcmp-ch{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b949e;padding:0 4px 2px;align-self:end;line-height:1.5}
+.shimcmp-ch.their{color:var(--accent)}
+.shimcmp-ch.ourcol{color:var(--accent2)}
+.shimcmp-dim{display:flex;align-items:center;font-size:12px;font-weight:650;color:#dbe4ee;line-height:1.3;padding:0 4px}
+.shimcmp-cell{border:1px solid;border-radius:8px;padding:8px 10px;font-size:11.5px;line-height:1.5;color:#8b949e}
+.shimcmp-cell b{display:block;font-size:12px;color:#dbe4ee;margin-bottom:2px}
+.shimcmp-cell.their{border-color:rgba(94,234,212,.35);background:rgba(94,234,212,.04)}
+.shimcmp-cell.ourcol{border-color:rgba(129,140,248,.4);background:rgba(129,140,248,.05)}
+.shimcmp-cell.tree{font-family:var(--mono);font-size:11px;line-height:1.7;color:#a8b3c7}
+.shimcmp-cell.tree .ln{padding-left:0}
+.shimcmp-cell.tree .in1{padding-left:14px}
+.shimcmp-cell.tree .in2{padding-left:28px}
+.shimcmp-cell.tree code{white-space:nowrap}
+.shimcmp .tag{display:inline-block;border-radius:5px;padding:0 6px;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;vertical-align:1px;margin:0 2px;line-height:1.7}
+.shimcmp .tag.pe{color:var(--win);border:1px solid rgba(52,211,153,.5);background:rgba(52,211,153,.06)}
+.shimcmp .tag.ep{color:var(--warn);border:1px dashed rgba(251,191,36,.55);background:rgba(251,191,36,.05)}
+.shimcmp .kill{color:var(--fail);font-size:10.5px}
+.shimcmp .ghost{color:var(--fail)}
+.shimcmp .heal{color:var(--win)}
+.shimcmp-note{margin-top:10px;font-size:12px;color:#8b949e}
+.shimcmp-note b{color:var(--accent)}
+@media (max-width:760px){
+  .shimcmp-grid{grid-template-columns:1fr 1fr}
+  .shimcmp-dim{grid-column:1 / -1;padding:6px 4px 0}
+  .shimcmp-ch:first-child{display:none}
+}
 /* layers capstone — competitor scorecard */
 .cmpgrid{display:grid;grid-template-columns:132px 1fr 1fr 100px;gap:6px;margin:14px 0 4px}
 .cmpgrid .ch{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b949e;padding:0 4px;align-self:end}
@@ -668,7 +701,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="shimarr">⇄<i>works · replies live<br>via <code>cotal_*</code> · exits</i></div>
           <div class="shimbox mem"><b>memory = the thread</b><span>state lives server-side —<br>a killed turn resumes intact</span></div>
         </div>
-        <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b> (Distinct from the <b>opencode connector’s</b> shim in the #286 deep-dive below — different codebase, opposite lifecycle: ours is the persistent side, theirs is the ephemeral side.)</div>
+        <div class="shimnote">Between turns there is <b>no harness process at all</b> — nothing to wake, nothing to die. <b>The shim is the alarm clock.</b> (A second, unrelated “shim” appears in the #286 deep-dive below — the two-shims table there tells them apart.)</div>
       </div>
       <div class="shimflow" id="v04flow">
         <h3>v0.4 (PR #258) — the fix our benchmark provoked, and how we switched it on</h3>
@@ -702,7 +735,49 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 
       <div class="shimflow" id="deepdive286">
         <h3>Inside the #286 fix — anatomy of a ghost, and the repair</h3>
-        <div class="shimnote" style="margin:4px 0 12px"><b>Not our shim.</b> Two different processes on this page share the name. The shim in <b>this</b> section is the <b>opencode connector’s own launcher — upstream Cotal code</b>: there the shim is the short-lived side and the <code>opencode serve</code> under it is the persistent side. <b>Our</b> connectors’ shim (the push-by-respawn panel above) is the opposite design — the always-on process <b>we built</b> that owns the mesh identity and respawns one-shot harness turns. Same word, different codebases, opposite lifecycles.</div>
+        <div class="shimcmp" id="shimcmp">
+          <div class="shimcmp-title">Two shims — same word, opposite lifecycles</div>
+          <div class="shimcmp-sub">Two unrelated processes on this page are both called “the shim”. The #286 bugs in this section belong to the <b>left</b> column; the push-by-respawn panel above documents the <b>right</b>.</div>
+          <div class="shimcmp-grid">
+            <div class="shimcmp-ch"></div>
+            <div class="shimcmp-ch their">#286 shim · opencode connector</div>
+            <div class="shimcmp-ch ourcol">our shim · codex + agy connectors</div>
+
+            <div class="shimcmp-dim">process tree</div>
+            <div class="shimcmp-cell their tree">
+              <div class="ln">manager’s kill ladder</div>
+              <div class="ln in1">└─ shim <span class="tag ep">ephemeral</span> <span class="kill">× SIGKILL lands here</span></div>
+              <div class="ln in2">└─ <code>opencode serve</code> <span class="tag pe">persistent</span></div>
+              <div class="ln in2">survives the kill · heartbeats “idle” forever — <span class="ghost">the ghost</span></div>
+            </div>
+            <div class="shimcmp-cell ourcol tree">
+              <div class="ln">shim <span class="tag pe">persistent</span> — owns the mesh identity</div>
+              <div class="ln in1">└─ harness turn <span class="tag ep">ephemeral</span> — <code>codex exec resume</code> · <code>agy -p</code></div>
+              <div class="ln in1">spawned per message · works · exits — <span class="heal">nothing left to orphan</span></div>
+            </div>
+
+            <div class="shimcmp-dim">who wrote it</div>
+            <div class="shimcmp-cell their"><b>Cotal upstream</b>ships inside the opencode connector — the codebase this deep-dive repairs</div>
+            <div class="shimcmp-cell ourcol"><b>us</b>built for the codex + agy connectors — upstream PRs <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a></div>
+
+            <div class="shimcmp-dim">lives</div>
+            <div class="shimcmp-cell their"><b>ephemeral wrapper</b>a thin launcher babysitting a server that outlives it — the short-lived side of its pair</div>
+            <div class="shimcmp-cell ourcol"><b>always-on owner</b>holds the agent’s mesh identity and connection for the worker’s whole life — the long-lived side of its pair</div>
+
+            <div class="shimcmp-dim">wraps</div>
+            <div class="shimcmp-cell their"><b>a persistent server</b>one long-lived <code>opencode serve</code> handles every turn</div>
+            <div class="shimcmp-cell ourcol"><b>one-shot turns</b>a fresh harness process per mesh message — <code>codex exec resume</code> / <code>agy -p</code> — that exits when the turn ends</div>
+
+            <div class="shimcmp-dim">if it dies</div>
+            <div class="shimcmp-cell their"><b>orphans the serve — the #286 ghost</b>the serve keeps heartbeating “idle” · fixed in <a href="https://github.com/Cotal-AI/Cotal/pull/294">PR #294</a>: the serve watches the shim pid — gone means publish offline, drain, exit</div>
+            <div class="shimcmp-cell ourcol"><b>drops clean — respawn heals</b>the mesh identity dies with it, nothing survives to keep publishing; a respawned shim resumes the same thread, memory intact</div>
+
+            <div class="shimcmp-dim">role on this page</div>
+            <div class="shimcmp-cell their"><b>the bug we fixed</b><a href="https://github.com/Cotal-AI/Cotal/issues/286">issue #286</a> → <a href="https://github.com/Cotal-AI/Cotal/pull/294">PR #294</a></div>
+            <div class="shimcmp-cell ourcol"><b>the connectors we contributed</b>PRs <a href="https://github.com/Cotal-AI/Cotal/pull/254">#254</a> + <a href="https://github.com/Cotal-AI/Cotal/pull/255">#255</a></div>
+          </div>
+          <div class="shimcmp-note">One line to keep: <b>theirs babysits a long-lived server and can die leaving it orphaned; ours IS the long-lived thing — and deliberately re-creates short-lived turns.</b></div>
+        </div>
         <div class="shimrow">
           <div class="shimbox"><b>① the kill</b><span>manager SIGKILLs the opencode connector’s shim —<br>pty-level, nothing catches it</span></div>
           <div class="shimarr">→</div>
@@ -724,7 +799,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
           <div class="shimbox"><b>⑤ lying rows</b><span>offline rendered like live<br><b>fix:</b> <code>last seen &lt;relative&gt; · was: &lt;activity&gt;</code><br>+ unknown-guard on bad timestamps</span></div>
           <div class="shimbox mem"><b>state</b><span>every fix locked by a test that fails without it<br>twelve files · +687 · gates green<br>proven on the real opencode binary</span></div>
         </div>
-        <div class="shimnote"><b>And underneath, more waited.</b> A dead-pipe crash — one log line written to the SIGKILLed shim’s pipe kills the serve before it can say goodbye — proven on node <b>and</b> bun; a session-adoption path that strands stale activity; a shutdown a wedged broker could hang. Each is fixed, and each fix is locked in by a test that fails without it — proven end to end on the real opencode binary. <b>Ready for the Cotal team.</b></div>
+        <div class="shimnote"><b>And underneath, more waited.</b> A dead-pipe crash — one log line written to the SIGKILLed shim’s pipe kills the serve before it can say goodbye — proven on node <b>and</b> bun; a session-adoption path that strands stale activity; a shutdown a wedged broker could hang. Each is fixed, and each fix is locked in by a test that fails without it — proven end to end on the real opencode binary. <b>Submitted upstream as <a href="https://github.com/Cotal-AI/Cotal/pull/294">PR #294</a>.</b></div>
       </div>
     </div>
 
@@ -894,7 +969,7 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
         <div class="cmpcell mcp"><b>concurrent asks</b>batch calls + Fusion panels — but every answer re-enters one loop's context budget</div>
         <div class="cmpwin mesh">mesh<br>at scale</div>
         <div class="cmpdim">Failover<br>&amp; custody</div>
-        <div class="cmpcell mesh"><b>kill → re-lease → committed 122 s</b>v0.4 pools + fencing tokens (Run 11) · the #286 presence gap — our fix in flight</div>
+        <div class="cmpcell mesh"><b>kill → re-lease → committed 122 s</b>v0.4 pools + fencing tokens (Run 11) · the #286 presence gap — our fix submitted upstream as PR #294</div>
         <div class="cmpcell mcp"><b>dies with its caller</b>no roster, no supervision — retry is the caller's job; nothing standing to go stale either</div>
         <div class="cmpwin mesh">only the<br>mesh heals</div>
         <div class="cmpdim">Model<br>reach</div>
@@ -1214,6 +1289,10 @@ function sceneVis(n, fit, pop){
   vis.classList.toggle("float", !!pop);
   if(pop){ if(vis.parentElement !== document.body) document.body.appendChild(vis); }
   else if(vis.parentElement !== arch) arch.insertBefore(vis, arch.firstChild);
+  /* enter layout NOW — the focus scroll fires on a timer and needs final docTops and a
+     real sticky-top; the strip is a fixed-height dark box until media crossfades in
+     (the async .show adds on load below then become no-ops) */
+  vis.classList.add("show");
   /* per-scene fit override: "contain" shows the full frame letterboxed (bg matches the strip) */
   visV.style.objectFit = fit || ""; visA.style.objectFit = fit || ""; visB.style.objectFit = fit || "";
   /* generated clip wins when present; the schematic still is the always-on fallback */
@@ -1381,11 +1460,17 @@ async function tour(start){
       }
       /* a scene visual must never be stranded below the fold: sticky only pins once the
          page is scrolled past its slot at the top of #arch, so on vis scenes never
-         settle above the pinning threshold (the finale focuses .badges ABOVE the slot) */
+         settle above the pinning threshold. Measure the slot with the sticky
+         displacement REMOVED — while pinned, offsetTop reports the displaced box, so
+         the floor would track scrollY and forbid every upward scroll. */
       if(inFlow){
+        vis.style.position = "static";
         let natTop = 0, oe = vis;
         while(oe){ natTop += oe.offsetTop; oe = oe.offsetParent; }
-        top = Math.max(top, natTop - stickyTop);
+        vis.style.position = "";
+        /* a target ABOVE the slot (the finale's .badges) can never clear that floor —
+           let the strip unpin into its slot instead of pinning the target offscreen */
+        if(uTop + window.scrollY >= natTop) top = Math.max(top, natTop - stickyTop);
       }
       window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
     }, 400);
