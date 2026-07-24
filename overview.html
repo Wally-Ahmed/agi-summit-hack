@@ -567,6 +567,13 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 .stepping .stepu{opacity:.38;transition:opacity .45s ease,box-shadow .45s ease,transform .45s ease;transition-delay:0ms}
 .stepping .stepu.steplit{opacity:1;box-shadow:0 0 0 1px rgba(94,234,212,.65),0 10px 34px -10px rgba(94,234,212,.28);transform:translateY(-2px)}
 
+/* paused tour hands the page back to the reader: strip/popup gone, choreography dim
+   lifted, caption hidden. Pure CSS gate — nothing is destroyed, everything returns the
+   instant play resumes (scene timers are frozen/re-armed in pauseTour/resumeTour). */
+.tourpaused .scenevis{display:none}
+.tourpaused .caption{opacity:0}
+.tourpaused .stepping .stepu{opacity:1;box-shadow:none;transform:none}
+
 /* short viewports — 16:9 screens where browser chrome leaves ~860–1000px: slim the
    strip and caption so the focused content still clears the fold, and letterbox the
    strip media (contain) instead of cropping. Viewports >1000px tall are untouched. */
@@ -1376,7 +1383,9 @@ function spotlight(ids){
   if(ids && ids.length){ arch.classList.add("dimmed"); ids.forEach(id=>glow(id,true)); }
   else arch.classList.remove("dimmed");
 }
-function tlater(fn, ms){ tourTimers.push(setTimeout(fn, ms)); }
+/* pause-aware scene timers: entries remember their fire time so pauseTour can freeze the
+   remaining delay and resumeTour re-arms it — beats never drift ahead of paused audio */
+function tlater(fn, ms){ const e = { fn, fireAt: Date.now() + ms, remain: null }; e.id = setTimeout(fn, ms); tourTimers.push(e); }
 /* section choreography: step-highlight a section's units in narration time. All timers
    ride tourTimers so a jump/stop cancels the beats; stepClear() (every scene start +
    stopTour) removes any lit state a cancelled run left behind. `group` = units per beat
@@ -1553,7 +1562,7 @@ async function tour(start){
       if(window.revealReplay) revealReplay(el);   /* narrated section cascades in with the scene */
     }, 400);
     await playScene(scene.n);
-    tourTimers.forEach(clearTimeout); tourTimers = [];
+    tourTimers.forEach(e=>clearTimeout(e.id)); tourTimers = [];
     if(!tourJumped) tourIdx = i + 1;
   }
   if(tourOn) stopTour();
@@ -1562,8 +1571,9 @@ function jumpTo(i){
   if(!tourOn){ tour(i); return; }
   tourJumped = true; tourIdx = i;
   tourPaused = false; ppBtn.textContent = "❚❚"; visVWasPlaying = false; mediaState("playing");
+  document.body.classList.remove("tourpaused");
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
-  tourTimers.forEach(clearTimeout); tourTimers = [];
+  tourTimers.forEach(e=>clearTimeout(e.id)); tourTimers = [];
   if(tourResolve) tourResolve();
 }
 let visVWasPlaying = false;   /* was the vis clip running when we paused? */
@@ -1576,6 +1586,10 @@ function pauseTour(){
   /* freeze the vis clip and the caption's auto-fade clock */
   visVWasPlaying = !visV.paused; if(visVWasPlaying) visV.pause();
   if(capTimer){ clearTimeout(capTimer); capRemain = Math.max(0, capMs - (Date.now() - capArmed)); }
+  /* freeze every pending scene timer (choreography beats, focus scroll) with the audio */
+  tourTimers.forEach(e=>{ clearTimeout(e.id); e.remain = Math.max(0, e.fireAt - Date.now()); });
+  /* hand the page back: visuals off, choreography dim lifted, caption hidden (CSS-gated) */
+  document.body.classList.add("tourpaused");
   mediaState("paused");
 }
 function resumeTour(){
@@ -1586,6 +1600,8 @@ function resumeTour(){
   if(visVWasPlaying){ visV.play().catch(()=>{}); visVWasPlaying = false; }
   if(capRemain > 0){ capMs = capRemain; capArmed = Date.now();
     capTimer = setTimeout(()=>captionEl.classList.remove("show"), capRemain); capRemain = 0; }
+  tourTimers.forEach(e=>{ if(e.remain != null){ e.fireAt = Date.now() + e.remain; e.id = setTimeout(e.fn, e.remain); e.remain = null; } });
+  document.body.classList.remove("tourpaused");
   mediaState("playing");
 }
 function togglePause(){ tourPaused ? resumeTour() : pauseTour(); }
@@ -1631,8 +1647,9 @@ function stopTour(){
   if(tourResolve) tourResolve(); tourResolve = null;
   mediaKeysOff(); clearFallback(); visVWasPlaying = false;
   tourbar.classList.remove("show"); markSeg(-1); tourPaused = false; ppBtn.textContent = "❚❚";
-  tourTimers.forEach(clearTimeout); tourTimers = [];
+  tourTimers.forEach(e=>clearTimeout(e.id)); tourTimers = [];
   caption(null); sceneVis(null); spotlight([]); clearGlow(); stepClear(); arch.classList.remove("dimmed");
+  document.body.classList.remove("tourpaused");
   document.querySelectorAll("#wizflow .step").forEach(s=>s.classList.remove("live","done"));
   glow("n-hh",false);
   tourbtn.textContent = "▶ Narrated walkthrough"; tourbtn.classList.remove("stop");
