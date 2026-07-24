@@ -1452,7 +1452,7 @@ const TOUR = [
   {cap:"**Kill the worker** — the planner can't notice silence · since **cleared** (v0.4 arc ahead)", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(7); }, n:18, vis:null},
   {cap:"**Run 11 on the board** — killed +34s · re-leased ~2s · **committed 122s**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(8); }, n:26, vis:null},
   {cap:"What we test **next**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(9); }, n:16, vis:null},
-  {cap:"**Our own service vs Cotal** — their mesh · our pre-existing open-source MCP servers", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); choreo("#layers",".cmpgrid>*:not(.ch)",[{t:500,i:"*"},{t:5900,i:".cmpcell.mesh"},{t:12700,i:".cmpcell.mcp"},{t:32100,i:"*"}],35400); }, n:27, pop:true},
+  {cap:"**Our own service vs Cotal** — their mesh · our pre-existing open-source MCP servers", foc:"#layers", fb:"start", run(){ showTab("benchmarks"); slideTo(9); choreo("#layers",".cmpgrid>*:not(.ch)",[{t:500,i:"*"},{t:5600,i:".cmpcell.mesh"},{t:12400,i:".cmpcell.mcp"},{t:24300,i:"*"}],27300); }, n:27, pop:true},
   {cap:"One wizard · one harness · **any task**", foc:"#product", fb:"start", run(){ showTab("project"); spotlight([]);
      tlater(()=>{ARR=["n-hh","n-user","n-planner","n-bus","n-claude","n-codex","n-agy","n-pool"];ARR.forEach(id=>glow(id,true));},800); }, n:8, vis:null},
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
