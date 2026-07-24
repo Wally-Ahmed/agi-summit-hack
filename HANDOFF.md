@@ -718,3 +718,59 @@ OPEN, unreviewed, only our own Jul-22 rebase comments). Walkthrough thread (para
 scenes; #layers de-duplicated (328d3c4 — popup is sole schematic carrier); animation agent
 rebuilding scenes 27-30 mp4s (virtual-time capture, motion-proof gate) still in flight; deploy +
 MP4 re-record remain user-gated.
+
+---
+
+**CHECKPOINT 12 (2026-07-24 — compaction prep).**
+
+**GIT HISTORY PURGE — DONE + VERIFIED (git-filter-repo).** Internal-notes doc removed from ALL
+commits; every historical HANDOFF.md version dropped, current scrubbed copy re-committed fresh
+(history now shows HANDOFF in exactly 1 commit); leaky commit-message terms redacted. Force-pushed:
+origin/main = **2ad4d95** (local realigned, matches). Fresh-clone verified: 0 leaky messages, 0
+internal-doc paths, 1 clean HANDOFF, working HANDOFF grep 0. Pre-purge backup bundle:
+`~/Desktop/agi-summit-hack-prepurge-20260724-0151.bundle` (contains the secret — keep private).
+STILL OWED to Wally: GitHub may retain orphaned commits by SHA post-force-push → give him the
+support ask (repo GC / dissociate) to guarantee eviction.
+
+**⚠️ TRADE SECRET STILL LIVE ON THE SITE.** hermes-handoff-overview.fly.dev's project zip serves
+the OLD pre-purge HEAD → still contains the internal-notes doc + old HANDOFF. Wally ORDERED the
+zip purge (a deploy) and it is GRANTED, but I paused before running it. **Task #32 (pending):
+stage.sh + fly deploy from purged HEAD, then download the live zip and prove the secret is absent
++ byte-verify page + build stamp (31 scenes).** This deploy is the ONE exception to the standing
+fly-deploy gate — Wally explicitly ordered it. Run it on resume unless he says otherwise.
+
+**WALKTHROUGH — 31 scenes, all animated, results-only framing (process is [[trade-secret-rule]]).**
+Latest local+pushed tip before purge realign was the walkthrough work; after purge, origin/main
+2ad4d95 contains ALL of it. Scenes 27-30 videos rebuilt as REAL animation (virtual-time WAAPI
+capture, ≥92% motion-gate; skill's references/scene-videos.md now documents this as the default,
+"still-slideshows rejected"). Scene 31 "The bug list, in detail" + #dd286ledger row (5 bugs→5
+fixes) added; scene 29 re-recut to drop process wording. Explicit SHIM DISAMBIGUATION added
+(commit was eff72a1, now in purged history): #deepdive286 opens with a "Not our shim" note — the
+#286 shim = the **opencode connector's own launcher (upstream Cotal code)**, ephemeral over a
+persistent `opencode serve`; OUR connectors' shim (push-by-respawn panel) = the always-on process
+WE built that owns mesh identity. Mirror tag in the our-shim panel. NOT deployed (see task #32).
+Both MP4s still user-gated ([[mp4-rerecord-gate]]); no re-record.
+
+**#286 FIX — FROZEN at b03d3f6c, AWAITING WALLY'S "CHANGES FIRST".** /tmp/cotal-fix-286, branch
+fix/286-dead-agents-go-dark, single commit b03d3f6c on d1275701, CLEAN-TO-SHIP (all gates green,
+red-green proven, real-binary re-earned; internal review closed with full agreement — evidence
+LOCAL ONLY /tmp/cotal-fix-286-audit/). Final diff /tmp/fix286-final.diff (12 files +687/−9), PR
+body /tmp/fix286-pr-body.md (rider R1 applied). At the step-6 PR gate Wally answered **"Changes
+first"** then **"Hold — changes coming"** — he has NOT yet specified the changes. DO NOT push the
+branch / open the PR / comment upstream until he gives the edits AND says send it. #254/#255 stay
+untouched.
+
+**UPSTREAM COTAL CHECK (2026-07-24, this session).** main moved d1275701 → **6b765957** (8 commits,
+today): @cotal-ai/core **0.13.x → 0.14.2** (changeset releases #291/#293), Node-22 preflight (#292:
+bin/cotal.ts, bin/run.ts), repeat-global-install fix (#290: cli/src/commands/setup.ts,
+cli/src/lib/nats-bin.ts), docs. **NONE of our fix's SOURCE files touched** (plugin.ts, serve.ts,
+endpoints.ts, status.ts, ui.ts, offline-display smoke all clean) — zero code conflict. BUT every
+package.json got version-bumped to 0.14.2 + connector-opencode/CHANGELOG.md → our branch now needs
+a REBASE for version numbers + pnpm-lock + our changeset, BROADER than the #285 smoke:ci note
+already in the draft. Issue/PR status UNCHANGED: **#286 still OPEN** (unfixed upstream), #288 still
+OPEN/paused-zero-code, #285 OPEN, #254/#255 OPEN & unreviewed. So our fix is still needed and still
+lands clean on code; flag the 0.14.2 rebase to Wally as a likely "changes-first" item.
+
+**Task list live:** #29 ✓ #30 ✓ #31 ✓ (purge) · #32 PENDING (zip-purge deploy, granted). Conductor
+Rule in CLAUDE.md; all change-work via subagents; results-only public content; local memory holds
+[[trade-secret-rule]], [[orchestrator-enforcement]], [[subagent-loop-steering]], [[mp4-rerecord-gate]].
