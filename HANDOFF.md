@@ -774,3 +774,38 @@ lands clean on code; flag the 0.14.2 rebase to Wally as a likely "changes-first"
 **Task list live:** #29 ✓ #30 ✓ #31 ✓ (purge) · #32 PENDING (zip-purge deploy, granted). Conductor
 Rule in CLAUDE.md; all change-work via subagents; results-only public content; local memory holds
 [[trade-secret-rule]], [[orchestrator-enforcement]], [[subagent-loop-steering]], [[mp4-rerecord-gate]].
+
+---
+
+**CHECKPOINT 13 (2026-07-24 ~16:45Z) — PR #294 SENT · ZIP PURGE DEPLOYED · supersedes cp12's ⚠️ and freeze.**
+
+**#286 PR IS OPEN: https://github.com/Cotal-AI/Cotal/pull/294** (Wally's explicit "Rebase, gates,
+send"). Commit **7d1f0103** = b03d3f6c rebased clean onto upstream **6b765957** (v0.14.2) + rider R2
+folded (plugin.ts:51-52 comment now "control plane and shim lifeline can race" — matches the 2 real
+call sites), trailers stripped, single commit. Gates 10/10 green post-rebase (typecheck/build/unit/
+3 new smokes/4 neighbors) + my spot re-run of shim-orphan (7/7). Triple secret-sweep before push:
+commit %B, full diff, PR body — zero process terms (PR_DRAFT.md:29 "no wrapper to orphan" = benign
+process-tree language, kept). PR verified live: 12 files +687/−9, body rendered (12.3k), base main.
+CI = none yet (outside-contributor approve-and-run, same as #254/#255). **#294 is now under the same
+hands-off rule as #254/#255** ([[pr-update-approval]] updated): no touches without Wally. Watch:
+`gh pr checks 294 --repo Cotal-AI/Cotal`. Context: #286 was ASSIGNED upstream (maintainer+Copilot,
+their attempt #288 stalled) — we beat them to it.
+
+**ZIP-PURGE DEPLOY (#32) DONE + VERIFIED — trade secret fully OFF the live site.** Build stamp
+`53b94dd · 16:27Z · 31 scenes`; live HTML byte-identical to local; zip HTTP 200 (39.5MB) with 0
+pattern-doc files, 0 .git, HANDOFF 0 secret-term hits. The one granted deploy exception is CONSUMED —
+fly-deploy gate is CLOSED again. GitHub-side residual: paste-ready support ask (GC orphaned SHAs,
+e.g. eff72a1/0fa7e3a) DELIVERED to Wally — his action at support.github.com.
+
+**Scene-27 popup FIXED (commit 53b94dd, deployed).** Root cause: float popup inherited the
+short-viewport strip height (180px) + object-fit:contain → squashed pillarboxed video. Fix:
+`.scenevis.float` height:auto + aspect-ratio:3/1 + cover-fit override. Measured after: 3.013:1 vs
+3.000 natural, centered ±0px, clear of caption/tourbar; neighbors + docked scenes unaffected.
+
+**IN FLIGHT — task #33 (scroll + padding).** Wally: auto-scroll around new scenes n:29-31 +
+neighbors inconsistent/wrong spots; boxes in "Inside the #286 fix — anatomy of a ghost" + repair
+section need padding. Read-only diagnostician measuring (hypotheses: late media load shifts layout,
+scroll races tab reflow, stale targets/clamp math, positional-array drift); fixer dispatched on its
+report → verify by screenshot → commit. Any deploy of that fix needs a NEW grant from Wally.
+
+**Task list:** #32 ✓ #34 ✓ (PR #294 sent) · #33 in_progress. Standing rules unchanged otherwise.
