@@ -1201,6 +1201,7 @@ const TOUR = [
   {cap:"Deep dive: **idle wake** — why their Codex slept · why ours can't", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:20},
   {cap:"Inside the shim — **push-by-respawn**, step by step", foc:"#shimflow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:23},
   {cap:"Also open source: **our MCP subagent servers** — OpenRouter · ChatGPT subscription", foc:"#arch .r-workers", run(){ showTab("project"); spotlight(["n-pool"]); }, n:19},
+  {cap:"**Two layers, one project** — Cotal meshes harnesses · our MCP servers reach any model", foc:"#layers", fb:"start", run(){ showTab("project"); spotlight([]); }, n:27, vis:null},
   {cap:"Watch a **real task** travel", foc:"#console", run(){ showTab("project"); spotlight([]); arch.classList.remove("dimmed"); simulate(); }, n:5, vis:null},
   {cap:"Cotal's setup beats one-loop MCP subagents by **~30%**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(0); }, n:6, vis:null},
   {cap:"Fan-out **finishes** · serial **stalls**", foc:".slider", fb:"start", run(){ showTab("benchmarks"); slideTo(1); }, n:10, vis:null},
@@ -1218,6 +1219,7 @@ const TOUR = [
   {cap:"**24 hours later** — Cotal ships the v0.4 lifecycle (PR #258)", foc:"#arch .gaps", run(){ showTab("project"); spotlight(["n-codex","n-agy"]); }, n:21},
   {cap:"Inside v0.4 — built, shipped… **dormant: in the release, but switched off**", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:24},
   {cap:"So we **switched it on ourselves** — lease · kill · redeliver · finish", foc:"#v04flow", fb:"start", run(){ showTab("project"); spotlight([]); }, n:25},
+  {cap:"**Corroborated upstream** — issue #286 · filed hours after this page went live", foc:"#v04gap", run(){ showTab("project"); spotlight([]); }, n:28, vis:null},
   {cap:"🥇 **First place** — Cotal sponsor track · AGI Summit 2026", foc:".badges", fb:"start", fit:"contain", run(){ showTab("project"); spotlight([]); }, n:22}
 ];
 let ARR;
