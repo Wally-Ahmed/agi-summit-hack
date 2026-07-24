@@ -1145,16 +1145,17 @@ function sceneVis(n, fit){
   back.src = "walkthrough/img/scene"+n+".png";
 }
 let tourOn = false, tourTimers = [], tourAudio = null, tourResolve = null, tourIdx = 0, tourJumped = false, tourPaused = false;
-let capTimer = null;
+let capTimer = null, capMs = 0, capArmed = 0, capRemain = 0;   /* fade clock bookkeeping so pause can freeze it */
 function caption(txt){
-  clearTimeout(capTimer);
+  clearTimeout(capTimer); capRemain = 0;
   if(txt===null){ captionEl.classList.remove("show"); return; }
   captionEl.textContent = "";
   rich(captionEl, txt);
   captionEl.classList.add("show");
   /* orientation title, not a subtitle: linger long enough to read, then fade out so it
      never sits over the content being narrated; every scene start resets the clock */
-  capTimer = setTimeout(()=>captionEl.classList.remove("show"), Math.min(6000, 2800 + 28*txt.length));
+  capMs = Math.min(6000, 2800 + 28*txt.length); capArmed = Date.now();
+  capTimer = setTimeout(()=>captionEl.classList.remove("show"), capMs);
 }
 function spotlight(ids){
   clearGlow();
@@ -1162,15 +1163,24 @@ function spotlight(ids){
   else arch.classList.remove("dimmed");
 }
 function tlater(fn, ms){ tourTimers.push(setTimeout(fn, ms)); }
+/* scene-advance fallback (missing mp3 / blocked autoplay): dedicated suspendable state —
+   pausing the tour must also pause this 9s countdown so a paused tour never fallback-skips */
+let fbTimer = null, fbCb = null, fbRemain = 0, fbArmed = 0;
+function armFallback(cb, ms){
+  clearTimeout(fbTimer);
+  fbCb = cb; fbRemain = ms; fbArmed = Date.now();
+  fbTimer = setTimeout(cb, ms);
+}
+function clearFallback(){ clearTimeout(fbTimer); fbTimer = null; fbCb = null; fbRemain = 0; }
 function playScene(n){
   return new Promise(resolve=>{
     let settled = false;
-    const done = ()=>{ if(!settled){ settled = true; if(tourResolve===done) tourResolve = null; resolve(); } };
+    const done = ()=>{ if(!settled){ settled = true; clearFallback(); if(tourResolve===done) tourResolve = null; resolve(); } };
     tourResolve = done;
     tourAudio = new Audio("walkthrough/scene"+n+".mp3");
     tourAudio.addEventListener("ended", done);
-    tourAudio.addEventListener("error", ()=>tourTimers.push(setTimeout(done, 9000)));
-    tourAudio.play().catch(()=>tourTimers.push(setTimeout(done, 9000)));
+    tourAudio.addEventListener("error", ()=>{ if(!settled) armFallback(done, 9000); });
+    tourAudio.play().catch(()=>{ if(!settled) armFallback(done, 9000); });
   });
 }
 const TOUR = [
@@ -1234,6 +1244,7 @@ async function tour(start){
     try{ document.documentElement.requestFullscreen({navigationUI:"hide"}).catch(()=>{}); }catch(e){}
   }
   tourOn = true; tourPaused = false; ppBtn.textContent = "❚❚";
+  mediaKeysOn();
   tourbtn.textContent = "■ Stop walkthrough"; tourbtn.classList.add("stop");
   tourbar.classList.add("show");
   tourIdx = Number.isInteger(start) ? start : 0;   /* tourbtn click passes a MouseEvent */
@@ -1242,6 +1253,7 @@ async function tour(start){
     tourJumped = false;
     markSeg(i);
     caption(scene.cap);
+    mediaMeta(scene.cap);
     sceneVis(scene.vis === undefined ? scene.n : scene.vis, scene.fit);
     scene.run();
     /* keep the section being narrated on screen */
@@ -1295,18 +1307,67 @@ async function tour(start){
 function jumpTo(i){
   if(!tourOn){ tour(i); return; }
   tourJumped = true; tourIdx = i;
-  tourPaused = false; ppBtn.textContent = "❚❚";
+  tourPaused = false; ppBtn.textContent = "❚❚"; visVWasPlaying = false; mediaState("playing");
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
   tourTimers.forEach(clearTimeout); tourTimers = [];
   if(tourResolve) tourResolve();
 }
-function togglePause(){
-  if(!tourOn || !tourAudio) return;
-  tourPaused = !tourPaused;
-  if(tourPaused){ tourAudio.pause(); ppBtn.textContent = "▶"; }
-  else { tourAudio.play().catch(()=>{}); ppBtn.textContent = "❚❚"; }
+let visVWasPlaying = false;   /* was the vis clip running when we paused? */
+function pauseTour(){
+  if(!tourOn || tourPaused || !tourAudio) return;
+  tourPaused = true; ppBtn.textContent = "▶";
+  tourAudio.pause();
+  /* suspend the 9s scene-advance fallback — record what's left; a paused tour must never skip */
+  if(fbTimer){ clearTimeout(fbTimer); fbTimer = null; fbRemain = Math.max(0, fbRemain - (Date.now() - fbArmed)); }
+  /* freeze the vis clip and the caption's auto-fade clock */
+  visVWasPlaying = !visV.paused; if(visVWasPlaying) visV.pause();
+  if(capTimer){ clearTimeout(capTimer); capRemain = Math.max(0, capMs - (Date.now() - capArmed)); }
+  mediaState("paused");
 }
+function resumeTour(){
+  if(!tourOn || !tourPaused || !tourAudio) return;
+  tourPaused = false; ppBtn.textContent = "❚❚";
+  tourAudio.play().catch(()=>{});                       /* resumes from the paused currentTime */
+  if(fbCb && fbRemain > 0) armFallback(fbCb, fbRemain); /* re-arm fallback with remaining time */
+  if(visVWasPlaying){ visV.play().catch(()=>{}); visVWasPlaying = false; }
+  if(capRemain > 0){ capMs = capRemain; capArmed = Date.now();
+    capTimer = setTimeout(()=>captionEl.classList.remove("show"), capRemain); capRemain = 0; }
+  mediaState("playing");
+}
+function togglePause(){ tourPaused ? resumeTour() : pauseTour(); }
 ppBtn.addEventListener("click", togglePause);
+/* hardware media keys (Mac ⏯/F8, headset buttons, OS media UI) drive the SAME pause/resume
+   as the on-page button, via the Media Session API. Handlers live only while a tour runs;
+   everything is feature-detected + try/caught so headless recorders and old browsers no-op.
+   Note: there is no combined "playpause" action in the spec — the hardware ⏯ key is routed
+   by the OS to "play" or "pause" based on playbackState, which we keep in sync below. */
+const hasMS = "mediaSession" in navigator;
+function mediaState(s){ if(!hasMS) return; try{ navigator.mediaSession.playbackState = s; }catch(e){} }
+function mediaMeta(cap){
+  if(!hasMS) return;
+  try{
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: cap ? cap.replace(/\*\*/g,"").replace(/`/g,"") : "hermes-handoff walkthrough",
+      artist: "hermes-handoff — narrated walkthrough"
+    });
+  }catch(e){}
+}
+function mediaKeysOn(){
+  if(!hasMS) return;
+  const acts = [["play", resumeTour], ["pause", pauseTour],
+    ["previoustrack", ()=>{ if(tourOn) jumpTo(Math.max(tourIdx - 1, 0)); }],
+    ["nexttrack",     ()=>{ if(tourOn) jumpTo(Math.min(tourIdx + 1, TOUR.length)); }]];
+  for(const a of acts){ try{ navigator.mediaSession.setActionHandler(a[0], a[1]); }catch(e){} }
+  mediaState("playing");
+}
+function mediaKeysOff(){
+  if(!hasMS) return;
+  for(const a of ["play","pause","previoustrack","nexttrack"]){
+    try{ navigator.mediaSession.setActionHandler(a, null); }catch(e){}
+  }
+  try{ navigator.mediaSession.metadata = null; }catch(e){}
+  mediaState("none");
+}
 function stopTour(){
   tourOn = false;
   /* leave fullscreen on any stop path — natural finish, tourbtn stop, or programmatic
@@ -1314,6 +1375,7 @@ function stopTour(){
   if(document.fullscreenElement && document.exitFullscreen){ document.exitFullscreen().catch(()=>{}); }
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
   if(tourResolve) tourResolve(); tourResolve = null;
+  mediaKeysOff(); clearFallback(); visVWasPlaying = false;
   tourbar.classList.remove("show"); markSeg(-1); tourPaused = false; ppBtn.textContent = "❚❚";
   tourTimers.forEach(clearTimeout); tourTimers = [];
   caption(null); sceneVis(null); spotlight([]); clearGlow(); arch.classList.remove("dimmed");
