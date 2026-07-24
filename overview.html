@@ -497,6 +497,15 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
 .scenevis .frame img.on{opacity:1;animation:kenburns 16s ease-in-out forwards}
 @keyframes kenburns{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.17) translate(-2.5%,-2%)}}
 
+/* short viewports — 16:9 screens where browser chrome leaves ~860–1000px: slim the
+   strip and caption so the focused content still clears the fold, and letterbox the
+   strip media (contain) instead of cropping. Viewports >1000px tall are untouched. */
+@media (max-height:1000px){
+  .scenevis{height:clamp(150px,20vh,320px)}
+  .scenevis .frame img,.scenevis .frame video{object-fit:contain}
+  .caption{bottom:10px;padding:9px 20px;font-size:14.5px}
+}
+
 @media (max-width:760px){
   .r-plan,.r-workers{grid-template-columns:1fr}
   .barrow{grid-template-columns:1fr}
@@ -1217,6 +1226,13 @@ const tsegs = TOUR.map((s,i)=>{
 function markSeg(i){ tsegs.forEach((s,j)=>{ s.classList.toggle("active", j===i); s.classList.toggle("done", i>=0 && j<i); }); }
 async function tour(start){
   if(tourOn){ stopTour(); return; }
+  /* the tour normally starts from a user gesture (tourbtn / timeline click) — take the
+     whole screen for it. A rejected request (headless recorder's programmatic tour(0),
+     or a browser denial) is a harmless no-op and the tour proceeds windowed; ESC
+     mid-tour exits fullscreen but must never stop playback (no fullscreenchange hook). */
+  if(document.fullscreenEnabled && !document.fullscreenElement && document.documentElement.requestFullscreen){
+    try{ document.documentElement.requestFullscreen({navigationUI:"hide"}).catch(()=>{}); }catch(e){}
+  }
   tourOn = true; tourPaused = false; ppBtn.textContent = "❚❚";
   tourbtn.textContent = "■ Stop walkthrough"; tourbtn.classList.add("stop");
   tourbar.classList.add("show");
@@ -1236,9 +1252,21 @@ async function tour(start){
          element AND the spotlighted (.live) nodes, so neither ends up under the strip */
       const hasVis = (scene.vis === undefined ? scene.n : scene.vis) != null;
       /* the sticky tab bar overlays the top (measure it — height varies with viewport);
-         the media strip pins at top:64px on vis scenes, so its bottom is the occluder there */
+         the media strip pins below it on vis scenes, so its bottom is the occluder there.
+         Measure the strip's REAL pinned box — its height and sticky top are viewport-
+         dependent (CSS clamp + short-viewport media query) — instead of mirroring CSS. */
       const barH = document.querySelector(".tabs")?.offsetHeight || 64;
-      const clear = (hasVis ? 64 + Math.min(Math.max(innerHeight*.3,200),320) : barH) + 14;
+      let stickyTop = 64, clear;
+      if(hasVis){
+        if(!vis.offsetHeight) vis.style.display = "block";   /* media not loaded yet → force-measure */
+        const stripH = vis.offsetHeight;
+        const st = parseFloat(getComputedStyle(vis).top);
+        vis.style.display = "";
+        if(!isNaN(st)) stickyTop = st;
+        clear = stickyTop + stripH + 14;
+      } else {
+        clear = barH + 14;
+      }
       const rects = [el, ...document.querySelectorAll("#arch .live")].map(c=>c.getBoundingClientRect());
       const uTop = Math.min(...rects.map(r=>r.top)), uH = Math.max(...rects.map(r=>r.bottom)) - uTop;
       const targetY = scene.fb === "start" ? clear : Math.max((innerHeight - uH)/2, clear);
@@ -1254,7 +1282,7 @@ async function tour(start){
       if(hasVis){
         let natTop = 0, oe = vis;
         while(oe){ natTop += oe.offsetTop; oe = oe.offsetParent; }
-        top = Math.max(top, natTop - 64);
+        top = Math.max(top, natTop - stickyTop);
       }
       window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
     }, 400);
@@ -1281,6 +1309,9 @@ function togglePause(){
 ppBtn.addEventListener("click", togglePause);
 function stopTour(){
   tourOn = false;
+  /* leave fullscreen on any stop path — natural finish, tourbtn stop, or programmatic
+     (no-op if the user already ESC'd out mid-tour) */
+  if(document.fullscreenElement && document.exitFullscreen){ document.exitFullscreen().catch(()=>{}); }
   if(tourAudio){ tourAudio.pause(); tourAudio = null; }
   if(tourResolve) tourResolve(); tourResolve = null;
   tourbar.classList.remove("show"); markSeg(-1); tourPaused = false; ppBtn.textContent = "❚❚";
