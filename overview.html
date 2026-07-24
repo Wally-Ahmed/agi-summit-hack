@@ -511,8 +511,11 @@ code{background:#0c0f17;border:1px solid var(--line);border-radius:5px;padding:1
    re-parents to <body> and floats bottom-center (fixed can't escape a display:none
    ancestor). bottom clears the fixed caption at bottom:28px. Placed after .show so
    fixed beats sticky at equal specificity; top:auto neutralizes .show's top:64px —
-   otherwise the over-constrained fixed box ignores bottom and pins to the top. */
-.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:auto;bottom:104px;width:min(64vw,960px);z-index:55;margin:0;box-shadow:0 24px 70px rgba(0,0,0,.65)}
+   otherwise the over-constrained fixed box ignores bottom and pins to the top.
+   Sized to the clips' native 3:1 so the box hugs the video edge-to-edge — the
+   short-viewport strip height/contain rules would otherwise squash + pillarbox it. */
+.scenevis.float{position:fixed;left:50%;transform:translateX(-50%);top:auto;bottom:104px;width:min(64vw,960px);height:auto;aspect-ratio:3/1;z-index:55;margin:0;box-shadow:0 24px 70px rgba(0,0,0,.65)}
+.scenevis.float .frame img,.scenevis.float .frame video{object-fit:cover}
 @keyframes kenburns{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.17) translate(-2.5%,-2%)}}
 
 /* short viewports — 16:9 screens where browser chrome leaves ~860–1000px: slim the
