@@ -809,3 +809,30 @@ scroll races tab reflow, stale targets/clamp math, positional-array drift); fixe
 report → verify by screenshot → commit. Any deploy of that fix needs a NEW grant from Wally.
 
 **Task list:** #32 ✓ #34 ✓ (PR #294 sent) · #33 in_progress. Standing rules unchanged otherwise.
+
+---
+
+**CHECKPOINT 14 (2026-07-24 ~18:45Z) — FINAL DEPLOY LIVE · SESSION CLOSED OUT. Supersedes cp13.**
+
+**Live site = build `6f35a5d · 31 scenes`** (Wally's "push final deploy"). Verified: HTML
+byte-identical, zip 200/39.9MB with 0 pattern-docs + 0 secret terms, `/#deepdive286` fragment
+lands the section at top on the project tab. The day's full wave is live: tour scroll fixes
+(sync strip layout, unpinned clamp measure, finale visual-pinned framing restored), deep-dive
+padding + two-shims comparison table (single disambiguation artifact), scene-27 popup as a
+docked-strip clone (top:64, panel width, no flash — auto-margin centering beats the fadein
+transform), competitor framing (callout + column chip + closing-note dedup + "before the
+hackathon" line removed from narration), scene-27 re-voiced twice (final: 27.8s, STT-verified,
+video re-timed from source), in-page reveal cascade + per-scene replay, **narration-beat
+choreography** (word-timestamp STT beats; col-contrast in 27, kill/orphan/lie + their-column
+table in 29, One-through-Five ledger walk in 31, v0.4 splits in 24/25/28), and the **pause
+overhaul**: pause exits browser fullscreen + hides visuals + lifts dim + freezes pause-aware
+scene timers; play restores all (all verified by measurement, 16:9 matrix 1920/1600/1366 clean).
+
+**PR #294**: OPEN, body now carries the live deep-dive link (the ONE pre-authorized edit —
+grant CONSUMED, [[pr-update-approval]] updated). CI still awaits maintainer approve-and-run.
+#254/#255 untouched. ALL PRs hands-off without Wally.
+
+**Gates re-closed:** fly-deploy (this deploy consumed the grant), MP4 re-record still user-gated,
+walkthrough-MP4 on Desktop remains the old cut. Wally's remaining external action: the GitHub
+support ask (orphaned pre-purge SHAs — wording delivered in-session). Local 8899 no-store server
+may still be running (kill freely). Tasks #29-#36 ALL COMPLETE.
